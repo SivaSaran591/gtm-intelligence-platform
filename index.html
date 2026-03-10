@@ -1,0 +1,736 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GTM Intelligence Platform</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;1,9..144,300;1,9..144,400&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --blue: #0066FF;
+  --blue-dk: #0044CC;
+  --blue-lt: #EBF2FF;
+  --blue-mid: #C7DCFF;
+  --green: #059669;
+  --green-lt: #F0FDF4;
+  --amber: #D97706;
+  --purple: #7C3AED;
+  --indigo: #4F46E5;
+  --red: #DC2626;
+  --bg: #F4F5F8;
+  --surface: #FFFFFF;
+  --s2: #F8F9FB;
+  --s3: #EEF0F4;
+  --border: #E2E5EC;
+  --border2: #C8CDDA;
+  --text: #0D1117;
+  --text2: #4A5568;
+  --text3: #8A94A6;
+  --text4: #C4CAD6;
+  --sh1: 0 1px 3px rgba(0,0,0,.06), 0 1px 2px rgba(0,0,0,.04);
+  --sh2: 0 4px 16px rgba(0,0,0,.07), 0 2px 4px rgba(0,0,0,.04);
+  --sh3: 0 16px 48px rgba(0,0,0,.10), 0 4px 8px rgba(0,0,0,.05);
+  --navy: #0a0f1e;
+  --navy2: #0d1a3a;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
+}
+
+/* ── NAV ─────────────────────────────────────────────────── */
+.nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  height: 56px;
+  background: rgba(255,255,255,.92);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border);
+  box-shadow: var(--sh1);
+  display: flex; align-items: center; padding: 0 32px; gap: 6px;
+}
+.nav-logo {
+  display: flex; align-items: center; gap: 10px; margin-right: 12px;
+  text-decoration: none;
+}
+.nav-logo-mark {
+  width: 28px; height: 28px;
+  background: linear-gradient(135deg, var(--blue-dk), var(--blue));
+  border-radius: 7px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 13px; color: #fff; font-weight: 800;
+}
+.nav-logo-name {
+  font-size: 13px; font-weight: 800; color: var(--text);
+  letter-spacing: -.02em;
+}
+.nav-div { width: 1px; height: 20px; background: var(--border); margin: 0 6px; }
+.nav-link {
+  padding: 6px 12px; border-radius: 7px;
+  font-size: 12px; font-weight: 700; color: var(--text3);
+  text-decoration: none; transition: all .15s; white-space: nowrap;
+}
+.nav-link:hover { color: var(--text); background: var(--s3); }
+.nav-link.active { color: var(--blue); background: var(--blue-lt); }
+.nav-right { margin-left: auto; display: flex; align-items: center; gap: 8px; }
+.nav-badge {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px; font-weight: 600; letter-spacing: .07em;
+  color: var(--text4); padding: 3px 9px;
+  border: 1px solid var(--border); border-radius: 20px;
+}
+
+/* ── HERO ────────────────────────────────────────────────── */
+.hero {
+  min-height: 100vh;
+  display: flex; flex-direction: column; justify-content: center;
+  padding: 120px 0 80px;
+  position: relative; overflow: hidden;
+}
+.hero-bg {
+  position: absolute; inset: 0; z-index: 0;
+  background: linear-gradient(160deg, #0a0f1e 0%, #0d1a3a 45%, #091428 100%);
+}
+.hero-grid {
+  position: absolute; inset: 0; z-index: 1;
+  background-image:
+    linear-gradient(rgba(0,102,255,.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0,102,255,.06) 1px, transparent 1px);
+  background-size: 48px 48px;
+}
+.hero-glow {
+  position: absolute; top: -160px; left: 50%; transform: translateX(-50%);
+  width: 900px; height: 500px;
+  background: radial-gradient(ellipse at center, rgba(0,102,255,.18) 0%, transparent 70%);
+  z-index: 1;
+}
+.hero-content {
+  position: relative; z-index: 2;
+  max-width: 900px; margin: 0 auto; padding: 0 32px;
+  text-align: center;
+}
+.hero-eyebrow {
+  display: inline-flex; align-items: center; gap: 8px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px; font-weight: 600; letter-spacing: .16em; text-transform: uppercase;
+  color: rgba(0,102,255,.7);
+  border: 1px solid rgba(0,102,255,.25);
+  background: rgba(0,102,255,.08);
+  padding: 5px 14px; border-radius: 20px;
+  margin-bottom: 28px;
+}
+.hero-eyebrow-dot {
+  width: 5px; height: 5px; border-radius: 50%; background: var(--blue);
+  animation: pulse 2s ease-in-out infinite;
+}
+@keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.4;transform:scale(.6)} }
+
+.hero-title {
+  font-family: 'Fraunces', serif;
+  font-size: clamp(42px, 6vw, 72px);
+  font-weight: 300;
+  line-height: 1.08;
+  color: #fff;
+  margin-bottom: 20px;
+  letter-spacing: -.02em;
+}
+.hero-title em { font-style: italic; color: rgba(0,102,255,.9); }
+.hero-subtitle {
+  font-size: 17px; font-weight: 400; line-height: 1.7;
+  color: rgba(255,255,255,.55);
+  max-width: 620px; margin: 0 auto 40px;
+}
+.hero-desc {
+  font-size: 13px; line-height: 1.8; color: rgba(255,255,255,.35);
+  max-width: 680px; margin: 0 auto 48px;
+  border-top: 1px solid rgba(255,255,255,.08);
+  padding-top: 24px;
+}
+.hero-cta {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 13px 28px;
+  background: var(--blue); color: #fff;
+  font-size: 13px; font-weight: 700; letter-spacing: .01em;
+  border-radius: 9px; text-decoration: none;
+  transition: all .2s; box-shadow: 0 4px 20px rgba(0,102,255,.35);
+}
+.hero-cta:hover {
+  background: var(--blue-dk);
+  box-shadow: 0 6px 28px rgba(0,102,255,.45);
+  transform: translateY(-1px);
+}
+.hero-cta-ghost {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 13px 24px;
+  background: rgba(255,255,255,.06); color: rgba(255,255,255,.7);
+  font-size: 13px; font-weight: 600;
+  border: 1px solid rgba(255,255,255,.12);
+  border-radius: 9px; text-decoration: none;
+  transition: all .2s; margin-left: 10px;
+}
+.hero-cta-ghost:hover {
+  background: rgba(255,255,255,.1); color: #fff;
+}
+
+/* ── STATS STRIP ─────────────────────────────────────────── */
+.stats-strip {
+  position: relative; z-index: 2;
+  display: flex; justify-content: center; gap: 0;
+  margin-top: 64px;
+  border-top: 1px solid rgba(255,255,255,.07);
+  padding-top: 40px;
+}
+.stat-item {
+  padding: 0 40px;
+  border-right: 1px solid rgba(255,255,255,.07);
+  text-align: center;
+}
+.stat-item:last-child { border-right: none; }
+.stat-val {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 28px; font-weight: 600;
+  color: #fff; letter-spacing: -.03em; line-height: 1;
+  margin-bottom: 5px;
+}
+.stat-val span { color: var(--blue); }
+.stat-lbl {
+  font-size: 10px; font-weight: 600; letter-spacing: .08em;
+  text-transform: uppercase; color: rgba(255,255,255,.3);
+}
+
+/* ── SECTION COMMON ──────────────────────────────────────── */
+.section { padding: 80px 0; }
+.section-inner { max-width: 1100px; margin: 0 auto; padding: 0 32px; }
+.section-hd { margin-bottom: 48px; }
+.section-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px; font-weight: 700; letter-spacing: .16em; text-transform: uppercase;
+  color: var(--blue); margin-bottom: 10px;
+  display: flex; align-items: center; gap: 8px;
+}
+.section-label::before {
+  content: ''; display: inline-block;
+  width: 20px; height: 2px; background: var(--blue); border-radius: 2px;
+}
+.section-title {
+  font-family: 'Fraunces', serif;
+  font-size: clamp(28px, 3.5vw, 40px);
+  font-weight: 300; line-height: 1.15;
+  color: var(--text); letter-spacing: -.02em;
+}
+.section-title em { font-style: italic; color: var(--blue); }
+.section-sub {
+  font-size: 14px; color: var(--text3); line-height: 1.7;
+  margin-top: 10px; max-width: 560px;
+}
+
+/* ── ARCHITECTURE FLOW ───────────────────────────────────── */
+.arch-section { background: var(--navy); padding: 80px 0; }
+.arch-flow {
+  display: flex; flex-direction: column; align-items: center;
+  gap: 0; max-width: 560px; margin: 0 auto;
+}
+.arch-node {
+  width: 100%;
+  background: rgba(255,255,255,.04);
+  border: 1px solid rgba(255,255,255,.09);
+  border-radius: 14px;
+  padding: 20px 24px;
+  display: flex; align-items: center; gap: 16px;
+  transition: all .2s; cursor: pointer; text-decoration: none;
+}
+.arch-node:hover {
+  background: rgba(0,102,255,.1);
+  border-color: rgba(0,102,255,.3);
+  transform: translateX(4px);
+}
+.arch-node-icon {
+  width: 40px; height: 40px; border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px; flex-shrink: 0;
+}
+.arch-node-body { flex: 1; }
+.arch-node-name {
+  font-size: 13px; font-weight: 800; color: #fff;
+  margin-bottom: 2px; letter-spacing: -.01em;
+}
+.arch-node-desc { font-size: 11px; color: rgba(255,255,255,.4); line-height: 1.45; }
+.arch-node-score {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase;
+  padding: 3px 8px; border-radius: 4px; flex-shrink: 0;
+}
+.arch-arrow {
+  display: flex; flex-direction: column; align-items: center;
+  padding: 6px 0; gap: 2px;
+}
+.arch-arrow-line {
+  width: 1px; height: 20px;
+  background: linear-gradient(to bottom, rgba(0,102,255,.4), rgba(0,102,255,.1));
+}
+.arch-arrow-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 8px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase;
+  color: rgba(0,102,255,.5);
+  background: rgba(0,102,255,.08); border: 1px solid rgba(0,102,255,.18);
+  padding: 2px 8px; border-radius: 10px;
+}
+.arch-arrow-line2 {
+  width: 1px; height: 20px;
+  background: linear-gradient(to bottom, rgba(0,102,255,.1), rgba(0,102,255,.4));
+}
+
+/* ── MODULE CARDS ────────────────────────────────────────── */
+.modules-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+}
+@media (max-width: 720px) { .modules-grid { grid-template-columns: 1fr; } }
+
+.module-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: var(--sh1);
+  transition: box-shadow .2s, transform .2s, border-color .2s;
+  display: flex; flex-direction: column;
+}
+.module-card:hover {
+  box-shadow: var(--sh3);
+  transform: translateY(-2px);
+  border-color: var(--border2);
+}
+.module-card-top {
+  padding: 24px 24px 0;
+  display: flex; align-items: flex-start; justify-content: space-between;
+}
+.module-card-icon {
+  width: 44px; height: 44px; border-radius: 11px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 20px; flex-shrink: 0;
+}
+.module-card-tag {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase;
+  padding: 3px 9px; border-radius: 4px;
+}
+.module-card-body { padding: 16px 24px; flex: 1; }
+.module-card-name {
+  font-size: 18px; font-weight: 800; color: var(--text);
+  letter-spacing: -.02em; margin-bottom: 4px;
+}
+.module-card-name span { color: var(--blue); }
+.module-card-sub {
+  font-size: 10px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase;
+  color: var(--text3); margin-bottom: 12px;
+}
+.module-card-desc {
+  font-size: 13px; color: var(--text2); line-height: 1.65;
+}
+.module-card-signals {
+  display: flex; gap: 5px; flex-wrap: wrap; margin-top: 14px;
+}
+.signal-pill {
+  font-size: 10px; font-weight: 600;
+  padding: 2px 9px; border-radius: 4px;
+  background: var(--s3); color: var(--text3);
+}
+.module-card-foot {
+  padding: 16px 24px;
+  border-top: 1px solid var(--border);
+  background: var(--s2);
+  display: flex; align-items: center; justify-content: space-between;
+}
+.module-card-meta { font-size: 10px; color: var(--text3); font-weight: 600; }
+.open-btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 8px 18px;
+  background: var(--blue); color: #fff;
+  font-size: 11px; font-weight: 700; letter-spacing: .02em;
+  border-radius: 7px; text-decoration: none;
+  transition: all .15s;
+}
+.open-btn:hover { background: var(--blue-dk); box-shadow: 0 3px 12px rgba(0,102,255,.3); }
+.open-btn-arrow { font-size: 13px; }
+
+/* ── ACCENTUATED TOP BORDER per module ───────────────────── */
+.card-so { border-top: 3px solid var(--blue); }
+.card-cf { border-top: 3px solid var(--purple); }
+.card-dl { border-top: 3px solid var(--red); }
+.card-pp { border-top: 3px solid var(--green); }
+
+.icon-so { background: var(--blue-lt); }
+.icon-cf { background: #F5F3FF; }
+.icon-dl { background: #FEF2F2; }
+.icon-pp { background: var(--green-lt); }
+
+.tag-so { background: var(--blue-lt); color: var(--blue); }
+.tag-cf { background: #F5F3FF; color: var(--purple); }
+.tag-dl { background: #FEF2F2; color: var(--red); }
+.tag-pp { background: var(--green-lt); color: var(--green); }
+
+/* ── HOW IT WORKS ─────────────────────────────────────────── */
+.how-grid {
+  display: grid; grid-template-columns: repeat(4,1fr); gap: 14px;
+}
+@media (max-width: 840px) { .how-grid { grid-template-columns: repeat(2,1fr); } }
+.how-card {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 12px; padding: 20px; box-shadow: var(--sh1);
+  position: relative; overflow: hidden;
+}
+.how-card::before {
+  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+  border-radius: 12px 12px 0 0;
+}
+.how-card.c1::before { background: var(--blue); }
+.how-card.c2::before { background: var(--purple); }
+.how-card.c3::before { background: var(--red); }
+.how-card.c4::before { background: var(--green); }
+.how-num {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px; font-weight: 700; letter-spacing: .1em;
+  color: var(--text4); margin-bottom: 10px;
+}
+.how-title { font-size: 13px; font-weight: 800; color: var(--text); margin-bottom: 6px; }
+.how-desc { font-size: 11px; color: var(--text3); line-height: 1.6; }
+
+/* ── FOOTER ──────────────────────────────────────────────── */
+.footer {
+  background: var(--navy);
+  border-top: 1px solid rgba(255,255,255,.06);
+  padding: 40px 32px;
+  text-align: center;
+}
+.footer-name {
+  font-family: 'Fraunces', serif;
+  font-size: 22px; font-weight: 300; color: #fff;
+  letter-spacing: -.01em; margin-bottom: 8px;
+}
+.footer-name em { font-style: italic; color: rgba(0,102,255,.8); }
+.footer-sub {
+  font-size: 11px; color: rgba(255,255,255,.3); font-weight: 500;
+  margin-bottom: 20px;
+}
+.footer-links {
+  display: flex; justify-content: center; gap: 6px; flex-wrap: wrap;
+}
+.footer-link {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase;
+  color: rgba(255,255,255,.3); padding: 4px 10px;
+  border: 1px solid rgba(255,255,255,.08); border-radius: 4px;
+  text-decoration: none; transition: all .15s;
+}
+.footer-link:hover { color: rgba(255,255,255,.7); border-color: rgba(255,255,255,.2); }
+.footer-copy {
+  margin-top: 28px; font-size: 10px; color: rgba(255,255,255,.15);
+}
+
+/* ── SCROLL FADE IN ──────────────────────────────────────── */
+.fade-up {
+  opacity: 0; transform: translateY(20px);
+  transition: opacity .5s ease, transform .5s ease;
+}
+.fade-up.visible { opacity: 1; transform: translateY(0); }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="nav">
+  <a class="nav-logo" href="index.html">
+    <div class="nav-logo-mark">G</div>
+    <span class="nav-logo-name">GTM Intelligence</span>
+  </a>
+  <div class="nav-div"></div>
+  <a class="nav-link active" href="index.html">Platform</a>
+  <a class="nav-link" href="signalops.html">SignalOps</a>
+  <a class="nav-link" href="campaignforge.html">CampaignForge</a>
+  <a class="nav-link" href="deallens.html">DealLens</a>
+  <a class="nav-link" href="partnerpulse.html">PartnerPulse</a>
+  <div class="nav-right">
+    <span class="nav-badge">Conceptual · Portfolio</span>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-grid"></div>
+  <div class="hero-glow"></div>
+  <div class="hero-content">
+    <div class="hero-eyebrow">
+      <div class="hero-eyebrow-dot"></div>
+      GTM Intelligence Suite · 4 Modules
+    </div>
+    <h1 class="hero-title">
+      Turning signals into<br><em>pipeline, campaigns,</em><br>deals, and partner growth.
+    </h1>
+    <p class="hero-subtitle">
+      A conceptual GTM intelligence platform designed to connect every layer of the modern revenue engine — from the first market signal to the final partner QBR.
+    </p>
+    <p class="hero-desc">
+      This portfolio demonstrates how four purpose-built intelligence modules can work together as a unified platform: market signal detection, AI campaign activation, pipeline risk intelligence, and partner ecosystem analytics.
+    </p>
+    <a class="hero-cta" href="#modules">Explore Modules ↓</a>
+    <a class="hero-cta-ghost" href="#architecture">View Architecture</a>
+
+    <div class="stats-strip">
+      <div class="stat-item">
+        <div class="stat-val"><span>4</span></div>
+        <div class="stat-lbl">Platform Modules</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-val"><span>38</span></div>
+        <div class="stat-lbl">Target Accounts</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-val"><span>24</span></div>
+        <div class="stat-lbl">Active Deals</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-val"><span>14</span></div>
+        <div class="stat-lbl">Partner Entities</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT CONNECTS -->
+<section class="section" style="background:var(--surface);">
+  <div class="section-inner">
+    <div class="section-hd fade-up">
+      <div class="section-label">Platform Logic</div>
+      <h2 class="section-title">One intelligence loop,<br><em>four connected layers.</em></h2>
+      <p class="section-sub">Each module operates independently but feeds the next. Market signals become campaigns. Campaigns generate deals. Deals inform partner performance.</p>
+    </div>
+    <div class="how-grid">
+      <div class="how-card c1 fade-up">
+        <div class="how-num">01 · SIGNAL</div>
+        <div class="how-title">Detect &amp; Prioritise</div>
+        <div class="how-desc">SignalOps identifies accounts showing expansion signals, funding events, and ERP fit. A multi-dimensional TAL scoring model surfaces the right accounts at the right moment.</div>
+      </div>
+      <div class="how-card c2 fade-up" style="transition-delay:.08s">
+        <div class="how-num">02 · ACTIVATE</div>
+        <div class="how-title">Build &amp; Launch</div>
+        <div class="how-desc">CampaignForge converts prioritised signals into targeted GTM programs. AI-generated personas, messaging, and channel strategy — ready to execute.</div>
+      </div>
+      <div class="how-card c3 fade-up" style="transition-delay:.16s">
+        <div class="how-num">03 · MANAGE</div>
+        <div class="how-title">Score &amp; Forecast</div>
+        <div class="how-desc">DealLens monitors every deal in the pipeline for risk signals, engagement gaps, and forecast confidence — with recommended actions for each seller.</div>
+      </div>
+      <div class="how-card c4 fade-up" style="transition-delay:.24s">
+        <div class="how-num">04 · SCALE</div>
+        <div class="how-title">Track &amp; Optimise</div>
+        <div class="how-desc">PartnerPulse measures partner pipeline contribution, performance trends, and QBR readiness — closing the loop from signal to ecosystem impact.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ARCHITECTURE -->
+<section class="arch-section" id="architecture">
+  <div class="section-inner">
+    <div class="section-hd fade-up" style="text-align:center;">
+      <div class="section-label" style="justify-content:center;">Platform Architecture</div>
+      <h2 class="section-title" style="color:#fff;">The intelligence flow</h2>
+      <p class="section-sub" style="color:rgba(255,255,255,.4);margin:10px auto 0;">Click any module to open it.</p>
+    </div>
+    <div class="arch-flow fade-up">
+
+      <a class="arch-node" href="signalops.html">
+        <div class="arch-node-icon icon-so">⬡</div>
+        <div class="arch-node-body">
+          <div class="arch-node-name">SignalOps</div>
+          <div class="arch-node-desc">Market signal intelligence · TAL scoring · 38 India Corporate accounts</div>
+        </div>
+        <div class="arch-node-score tag-so">Signal Layer</div>
+      </a>
+
+      <div class="arch-arrow">
+        <div class="arch-arrow-line"></div>
+        <div class="arch-arrow-label">feeds ↓</div>
+        <div class="arch-arrow-line2"></div>
+      </div>
+
+      <a class="arch-node" href="campaignforge.html">
+        <div class="arch-node-icon icon-cf">⚡</div>
+        <div class="arch-node-body">
+          <div class="arch-node-name">CampaignForge</div>
+          <div class="arch-node-desc">AI campaign activation · Persona builder · GTM program generator</div>
+        </div>
+        <div class="arch-node-score tag-cf">Activation Layer</div>
+      </a>
+
+      <div class="arch-arrow">
+        <div class="arch-arrow-line"></div>
+        <div class="arch-arrow-label">drives ↓</div>
+        <div class="arch-arrow-line2"></div>
+      </div>
+
+      <a class="arch-node" href="deallens.html">
+        <div class="arch-node-icon icon-dl">🔍</div>
+        <div class="arch-node-body">
+          <div class="arch-node-name">DealLens</div>
+          <div class="arch-node-desc">Pipeline intelligence · Deal risk scoring · Forecast confidence · 24 deals</div>
+        </div>
+        <div class="arch-node-score tag-dl">Pipeline Layer</div>
+      </a>
+
+      <div class="arch-arrow">
+        <div class="arch-arrow-line"></div>
+        <div class="arch-arrow-label">informs ↓</div>
+        <div class="arch-arrow-line2"></div>
+      </div>
+
+      <a class="arch-node" href="partnerpulse.html">
+        <div class="arch-node-icon icon-pp">🤝</div>
+        <div class="arch-node-body">
+          <div class="arch-node-name">PartnerPulse</div>
+          <div class="arch-node-desc">Ecosystem intelligence · Partner performance · QBR readiness · 14 partners</div>
+        </div>
+        <div class="arch-node-score tag-pp">Ecosystem Layer</div>
+      </a>
+
+    </div>
+  </div>
+</section>
+
+<!-- MODULES -->
+<section class="section" id="modules">
+  <div class="section-inner">
+    <div class="section-hd fade-up">
+      <div class="section-label">Platform Modules</div>
+      <h2 class="section-title">Four tools.<br><em>One revenue engine.</em></h2>
+      <p class="section-sub">Each module is a working prototype. Click Open Module to explore the full interface.</p>
+    </div>
+    <div class="modules-grid">
+
+      <!-- SignalOps -->
+      <div class="module-card card-so fade-up">
+        <div class="module-card-top">
+          <div class="module-card-icon icon-so">⬡</div>
+          <span class="module-card-tag tag-so">Signal Intelligence</span>
+        </div>
+        <div class="module-card-body">
+          <div class="module-card-name">Signal<span>Ops</span></div>
+          <div class="module-card-sub">GTM Intelligence Engine</div>
+          <div class="module-card-desc">Detects external market signals and prioritises target accounts using a multi-dimensional TAL scoring model. Tracks expansion triggers, funding events, hiring signals, and cloud ERP fit across 38 India Corporate accounts.</div>
+          <div class="module-card-signals">
+            <span class="signal-pill">Expansion Signals</span>
+            <span class="signal-pill">Funding Triggers</span>
+            <span class="signal-pill">TAL Scoring</span>
+            <span class="signal-pill">Dual-Track Logic</span>
+          </div>
+        </div>
+        <div class="module-card-foot">
+          <span class="module-card-meta">38 accounts · India Pilot · Q1 2026</span>
+          <a class="open-btn" href="signalops.html"><span>Open Module</span><span class="open-btn-arrow">→</span></a>
+        </div>
+      </div>
+
+      <!-- CampaignForge -->
+      <div class="module-card card-cf fade-up" style="transition-delay:.08s">
+        <div class="module-card-top">
+          <div class="module-card-icon icon-cf">⚡</div>
+          <span class="module-card-tag tag-cf">AI Activation</span>
+        </div>
+        <div class="module-card-body">
+          <div class="module-card-name">Campaign<span style="color:var(--purple)">Forge</span></div>
+          <div class="module-card-sub">AI GTM Campaign Builder</div>
+          <div class="module-card-desc">AI-driven campaign builder that converts market signals into targeted GTM programs. Generates buyer personas, messaging frameworks, channel strategies, and campaign sequences — ready to execute across digital and field motions.</div>
+          <div class="module-card-signals">
+            <span class="signal-pill">Persona Builder</span>
+            <span class="signal-pill">AI Messaging</span>
+            <span class="signal-pill">Channel Strategy</span>
+            <span class="signal-pill">GTM Programs</span>
+          </div>
+        </div>
+        <div class="module-card-foot">
+          <span class="module-card-meta">AI-assisted · APAC Digital Hub</span>
+          <a class="open-btn" href="campaignforge.html" style="background:var(--purple);"><span>Open Module</span><span class="open-btn-arrow">→</span></a>
+        </div>
+      </div>
+
+      <!-- DealLens -->
+      <div class="module-card card-dl fade-up" style="transition-delay:.16s">
+        <div class="module-card-top">
+          <div class="module-card-icon icon-dl">🔍</div>
+          <span class="module-card-tag tag-dl">Pipeline Intelligence</span>
+        </div>
+        <div class="module-card-body">
+          <div class="module-card-name">Deal<span style="color:var(--red)">Lens</span></div>
+          <div class="module-card-sub">Pipeline Intelligence Engine</div>
+          <div class="module-card-desc">Pipeline intelligence engine that evaluates deal risk, engagement signals, and forecast confidence. Scores every deal across 7 risk dimensions, tracks deal momentum, surfaces comparable deal patterns, and recommends the next best action for each seller.</div>
+          <div class="module-card-signals">
+            <span class="signal-pill">Risk Scoring</span>
+            <span class="signal-pill">Deal Momentum</span>
+            <span class="signal-pill">Forecast Confidence</span>
+            <span class="signal-pill">Seller Guidance</span>
+          </div>
+        </div>
+        <div class="module-card-foot">
+          <span class="module-card-meta">24 deals · Live pipeline monitoring</span>
+          <a class="open-btn" href="deallens.html" style="background:var(--red);"><span>Open Module</span><span class="open-btn-arrow">→</span></a>
+        </div>
+      </div>
+
+      <!-- PartnerPulse -->
+      <div class="module-card card-pp fade-up" style="transition-delay:.24s">
+        <div class="module-card-top">
+          <div class="module-card-icon icon-pp">🤝</div>
+          <span class="module-card-tag tag-pp">Ecosystem Intelligence</span>
+        </div>
+        <div class="module-card-body">
+          <div class="module-card-name">Partner<span style="color:var(--green)">Pulse</span></div>
+          <div class="module-card-sub">Ecosystem Intelligence Platform</div>
+          <div class="module-card-desc">Partner ecosystem intelligence that tracks partner performance, pipeline contribution, and QBR readiness across 14 channel partners. Surfaces tier health, deal registration trends, and partner-sourced revenue momentum across GSIs, resellers, and marketplaces.</div>
+          <div class="module-card-signals">
+            <span class="signal-pill">Partner Performance</span>
+            <span class="signal-pill">Pipeline Contribution</span>
+            <span class="signal-pill">QBR Readiness</span>
+            <span class="signal-pill">Tier Health</span>
+          </div>
+        </div>
+        <div class="module-card-foot">
+          <span class="module-card-meta">14 partners · Channel Intelligence</span>
+          <a class="open-btn" href="partnerpulse.html" style="background:var(--green);"><span>Open Module</span><span class="open-btn-arrow">→</span></a>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="footer-name">GTM <em>Intelligence</em> Platform</div>
+  <div class="footer-sub">A conceptual platform portfolio · Four modules · One revenue engine</div>
+  <div class="footer-links">
+    <a class="footer-link" href="signalops.html">SignalOps</a>
+    <a class="footer-link" href="campaignforge.html">CampaignForge</a>
+    <a class="footer-link" href="deallens.html">DealLens</a>
+    <a class="footer-link" href="partnerpulse.html">PartnerPulse</a>
+  </div>
+  <div class="footer-copy">Built as a portfolio demonstration · Siva Saran Pidaparthy · 2026</div>
+</footer>
+
+<script>
+// Scroll fade-in
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+}, { threshold: 0.1 });
+document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
+</script>
+</body>
+</html>

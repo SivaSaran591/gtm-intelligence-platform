@@ -1,0 +1,3603 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SAP APAC Digital Hub · GTM Intelligence</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;1,9..144,300;1,9..144,400&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* ─── TOKENS ─────────────────────────────────────────────── */
+:root {
+  --blue:     #0066FF;
+  --blue-dk:  #0044CC;
+  --blue-lt:  #EBF2FF;
+  --blue-mid: #C7DCFF;
+  --teal:     #0891B2;
+  --amber:    #D97706;
+  --amber-lt: #FFFBEB;
+  --red:      #DC2626;
+  --red-lt:   #FFF5F5;
+  --green:    #059669;
+  --green-lt: #F0FDF4;
+
+  --bg:       #F4F5F8;
+  --surface:  #FFFFFF;
+  --s2:       #F8F9FB;
+  --s3:       #EEF0F4;
+  --border:   #E2E5EC;
+  --border2:  #C8CDDA;
+
+  --text:     #0D1117;
+  --text2:    #4A5568;
+  --text3:    #8A94A6;
+  --text4:    #C4CAD6;
+
+  --sh1: 0 1px 3px rgba(0,0,0,.06),0 1px 2px rgba(0,0,0,.04);
+  --sh2: 0 4px 16px rgba(0,0,0,.07),0 2px 4px rgba(0,0,0,.04);
+  --sh3: 0 16px 48px rgba(0,0,0,.1),0 4px 8px rgba(0,0,0,.05);
+}
+
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{
+  background:var(--bg);
+  color:var(--text);
+  font-family:'Plus Jakarta Sans',sans-serif;
+  -webkit-font-smoothing:antialiased;
+  min-height:100vh;
+  overflow:hidden;
+}
+
+/* ─── TOPBAR ─────────────────────────────────────────────── */
+.topbar{
+  position:fixed;top:0;left:0;right:0;z-index:500;
+  height:52px;
+  background:var(--surface);
+  border-bottom:1px solid var(--border);
+  display:flex;align-items:center;
+  padding:0 32px;
+  box-shadow:var(--sh1);
+}
+.tb-logo{
+  font-size:20px;font-weight:800;letter-spacing:-.04em;
+  color:var(--blue);margin-right:16px;flex-shrink:0;
+}
+.tb-div{width:1px;height:20px;background:var(--border);margin-right:16px;flex-shrink:0;}
+.tb-title{font-size:12px;font-weight:600;color:var(--text3);}
+.tb-right{margin-left:auto;display:flex;align-items:center;gap:8px;}
+.live-badge{
+  display:flex;align-items:center;gap:5px;
+  padding:3px 10px;
+  background:var(--green-lt);border:1px solid #a7f3d0;
+  border-radius:20px;font-size:10px;font-weight:700;
+  color:var(--green);letter-spacing:.05em;
+}
+.live-dot{width:5px;height:5px;border-radius:50%;background:var(--green);animation:pdot 1.8s ease-in-out infinite;}
+@keyframes pdot{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.3;transform:scale(.6)}}
+.tb-btn{
+  padding:5px 13px;
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:6px;font-family:'Plus Jakarta Sans',sans-serif;
+  font-size:11px;font-weight:700;color:var(--text2);
+  cursor:pointer;transition:all .15s;
+}
+.tb-btn:hover{border-color:var(--blue);color:var(--blue);background:var(--blue-lt);}
+
+/* ─── ROOT VIEWS ─────────────────────────────────────────── */
+.view{
+  position:fixed;top:52px;left:0;right:0;bottom:0;
+  display:none;
+  overflow-y:auto;
+}
+.view.active{display:flex;}
+
+/* ─── WIZARD VIEW ────────────────────────────────────────── */
+#wizardView{
+  flex-direction:column;
+  background:var(--bg);
+}
+
+/* Progress bar */
+.wiz-progress{
+  position:sticky;top:0;z-index:10;
+  background:var(--surface);
+  border-bottom:1px solid var(--border);
+  padding:0 32px;
+  flex-shrink:0;
+  overflow-x:auto;
+  scrollbar-width:none;
+}
+.wiz-progress::-webkit-scrollbar{display:none;}
+.wiz-steps-row{
+  display:flex;align-items:center;
+  padding:12px 0 0;
+  width:max-content;
+  min-width:100%;
+  justify-content:center;
+  gap:0;
+}
+.ws{
+  display:flex;align-items:center;gap:5px;
+  padding-bottom:12px;
+  border-bottom:2px solid transparent;
+  transition:all .25s;
+  cursor:default;
+  flex-shrink:0;
+}
+.ws+.ws{margin-left:0;}
+.ws.done,.ws.active{cursor:pointer;}
+.ws.active{border-bottom-color:var(--blue);}
+.ws.done{border-bottom-color:transparent;}
+.ws-bubble{
+  width:20px;height:20px;border-radius:50%;
+  border:2px solid var(--border2);
+  display:flex;align-items:center;justify-content:center;
+  font-size:9px;font-weight:800;color:var(--text3);
+  flex-shrink:0;transition:all .25s;
+}
+.ws.active .ws-bubble{border-color:var(--blue);background:var(--blue);color:#fff;}
+.ws.done .ws-bubble{border-color:var(--green);background:var(--green);color:#fff;font-size:0;}
+.ws.done .ws-bubble::after{content:'✓';font-size:10px;}
+.ws-lbl{
+  font-size:10px;font-weight:700;color:var(--text3);
+  white-space:nowrap;transition:all .25s;
+  max-width:60px;overflow:hidden;text-overflow:ellipsis;
+}
+.ws.active .ws-lbl{color:var(--blue);max-width:80px;}
+.ws.done .ws-lbl{color:var(--text3);font-size:9px;}
+.ws-arr{color:var(--text4);font-size:11px;margin:0 5px;padding-bottom:12px;flex-shrink:0;opacity:.5;}
+
+/* Wizard body */
+.wiz-body{
+  flex:1;
+  display:flex;align-items:center;justify-content:center;
+  padding:32px 40px 40px;
+}
+.wiz-screen{
+  width:100%;max-width:760px;
+  display:none;
+  flex-direction:column;
+  animation:fadeUp .3s ease;
+}
+.wiz-screen.active{display:flex;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+
+.wiz-q-label{
+  font-family:'JetBrains Mono',monospace;
+  font-size:10px;letter-spacing:.15em;text-transform:uppercase;
+  color:var(--text3);margin-bottom:12px;
+}
+.wiz-question{
+  font-family:'Fraunces',serif;
+  font-size:clamp(28px,4vw,42px);
+  font-weight:400;line-height:1.15;
+  letter-spacing:-.02em;
+  color:var(--text);margin-bottom:36px;
+}
+.wiz-question em{font-style:italic;color:var(--blue);}
+
+/* Choice cards */
+.choice-grid{
+  display:grid;gap:12px;
+  margin-bottom:32px;
+}
+.choice-grid.cols2{grid-template-columns:1fr 1fr;}
+.choice-grid.cols3{grid-template-columns:repeat(3,1fr);}
+.choice-grid.cols1{grid-template-columns:1fr;}
+
+.choice-card{
+  padding:20px 22px;
+  background:var(--surface);
+  border:2px solid var(--border);
+  border-radius:14px;
+  cursor:pointer;
+  transition:all .2s;
+  text-align:left;
+  position:relative;
+  overflow:hidden;
+}
+.choice-card::before{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(135deg,rgba(0,102,255,.04) 0%,transparent 60%);
+  opacity:0;transition:opacity .2s;
+}
+.choice-card:hover{border-color:var(--border2);box-shadow:var(--sh2);transform:translateY(-2px);}
+.choice-card:hover::before{opacity:1;}
+.choice-card.selected{
+  border-color:var(--blue);
+  background:var(--blue-lt);
+  box-shadow:0 0 0 4px var(--blue-mid);
+}
+.choice-card.selected::before{opacity:1;}
+
+.cc-flag{font-size:32px;margin-bottom:10px;display:block;line-height:1;}
+.cc-icon{font-size:28px;margin-bottom:10px;display:block;line-height:1;}
+
+.cc-label{
+  font-size:16px;font-weight:800;
+  color:var(--text);margin-bottom:3px;
+  letter-spacing:-.01em;
+}
+.choice-card.selected .cc-label{color:var(--blue-dk);}
+
+.cc-sub{
+  font-family:'JetBrains Mono',monospace;
+  font-size:10px;color:var(--text3);
+  margin-bottom:6px;
+}
+.choice-card.selected .cc-sub{color:rgba(0,68,204,.65);}
+
+.cc-desc{
+  font-size:12px;color:var(--text3);line-height:1.5;
+}
+.choice-card.selected .cc-desc{color:var(--text2);}
+
+.cc-check{
+  position:absolute;top:14px;right:14px;
+  width:20px;height:20px;border-radius:50%;
+  background:var(--blue);color:#fff;
+  display:none;align-items:center;justify-content:center;
+  font-size:11px;font-weight:800;
+}
+.choice-card.selected .cc-check{display:flex;}
+
+/* Source confirmation (step 4) */
+.source-confirm-grid{
+  display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));
+  gap:10px;margin-bottom:28px;
+}
+.src-confirm-card{
+  padding:14px 16px;
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:10px;box-shadow:var(--sh1);
+  display:flex;align-items:center;gap:10px;
+  opacity:0;transform:translateY(8px);
+  transition:opacity .3s,transform .3s;
+}
+.src-confirm-card.show{opacity:1;transform:none;}
+.src-icon-wrap{
+  width:34px;height:34px;border-radius:8px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:16px;flex-shrink:0;
+}
+.src-icon-wrap.primary{background:var(--blue-lt);}
+.src-icon-wrap.secondary{background:var(--s3);}
+.src-card-info{}
+.src-card-name{font-size:12px;font-weight:700;color:var(--text);}
+.src-card-weight{
+  font-family:'JetBrains Mono',monospace;
+  font-size:9px;letter-spacing:.08em;text-transform:uppercase;
+  margin-top:1px;
+}
+.src-card-weight.primary{color:var(--blue);}
+.src-card-weight.secondary{color:var(--text3);}
+
+/* Wizard nav */
+.wiz-nav{display:flex;align-items:center;gap:12px;}
+.wiz-back{
+  padding:10px 20px;
+  background:transparent;border:1px solid var(--border);
+  border-radius:8px;font-family:'Plus Jakarta Sans',sans-serif;
+  font-size:13px;font-weight:700;color:var(--text2);
+  cursor:pointer;transition:all .15s;display:flex;align-items:center;gap:6px;
+}
+.wiz-back:hover{border-color:var(--border2);color:var(--text);}
+.wiz-next{
+  padding:11px 28px;
+  background:var(--blue);border:none;
+  border-radius:8px;font-family:'Plus Jakarta Sans',sans-serif;
+  font-size:13px;font-weight:800;color:#fff;
+  cursor:pointer;transition:all .2s;
+  display:flex;align-items:center;gap:7px;
+  box-shadow:0 2px 10px rgba(0,102,255,.3);
+  opacity:.3;pointer-events:none;
+}
+.wiz-next.ready{opacity:1;pointer-events:all;}
+.wiz-next.ready:hover{background:var(--blue-dk);transform:translateY(-1px);box-shadow:0 4px 18px rgba(0,102,255,.4);}
+.wiz-next.ready:active{transform:translateY(0);}
+
+/* Run screen (step 5) */
+.run-screen{
+  text-align:center;
+  align-items:center;
+}
+.run-summary-pills{
+  display:flex;flex-wrap:wrap;justify-content:center;gap:8px;
+  margin-bottom:36px;
+}
+.rsp{
+  display:flex;align-items:center;gap:7px;
+  padding:8px 16px;
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:20px;font-size:12px;font-weight:700;
+  color:var(--text2);box-shadow:var(--sh1);
+  cursor:pointer;transition:all .15s;
+}
+.rsp:hover{border-color:var(--blue);color:var(--blue);background:var(--blue-lt);}
+.rsp-icon{font-size:15px;}
+
+.run-cta-area{}
+.run-cta-q{
+  font-family:'Fraunces',serif;
+  font-size:clamp(24px,3.5vw,38px);
+  font-weight:300;font-style:italic;
+  color:var(--text2);margin-bottom:28px;line-height:1.2;
+}
+.run-cta-q strong{font-weight:500;font-style:normal;color:var(--text);}
+
+.run-btn{
+  display:inline-flex;align-items:center;gap:10px;
+  padding:16px 40px;
+  background:var(--blue);border:none;
+  border-radius:12px;font-family:'Plus Jakarta Sans',sans-serif;
+  font-size:15px;font-weight:800;color:#fff;
+  cursor:pointer;transition:all .25s;letter-spacing:.01em;
+  box-shadow:0 4px 20px rgba(0,102,255,.35);
+}
+.run-btn:hover{background:var(--blue-dk);transform:translateY(-2px);box-shadow:0 8px 28px rgba(0,102,255,.45);}
+.run-btn:active{transform:translateY(0);}
+.run-btn:disabled{opacity:.35;cursor:not-allowed;transform:none !important;box-shadow:none !important;}
+.run-btn-icon{font-size:18px;}
+
+/* ─── RESULTS VIEW ───────────────────────────────────────── */
+#resultsView{
+  flex-direction:column;
+  background:var(--bg);
+  overflow-y:auto;
+}
+
+/* Summary bar */
+.summary-bar{
+  position:sticky;top:0;z-index:100;
+  background:var(--surface);
+  border-bottom:1px solid var(--border);
+  padding:10px 32px;
+  display:flex;align-items:center;gap:10px;
+  flex-wrap:wrap;
+  box-shadow:var(--sh1);
+  flex-shrink:0;
+}
+.sb-label{
+  font-family:'JetBrains Mono',monospace;
+  font-size:9px;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--text3);flex-shrink:0;
+}
+.sb-chips{display:flex;flex-wrap:wrap;gap:6px;flex:1;}
+.sb-chip{
+  display:flex;align-items:center;gap:6px;
+  padding:5px 12px;
+  background:var(--s2);border:1px solid var(--border);
+  border-radius:20px;font-size:11px;font-weight:700;
+  color:var(--text2);cursor:default;
+}
+.sb-chip .chip-icon{font-size:13px;}
+.sb-rerun{
+  margin-left:auto;
+  padding:6px 14px;
+  background:var(--surface);border:1px solid var(--border2);
+  border-radius:7px;font-family:'Plus Jakarta Sans',sans-serif;
+  font-size:11px;font-weight:700;color:var(--text2);
+  cursor:pointer;transition:all .15s;flex-shrink:0;
+  display:flex;align-items:center;gap:5px;
+}
+.sb-rerun:hover{border-color:var(--blue);color:var(--blue);background:var(--blue-lt);}
+.sb-reconfigure{
+  padding:6px 16px;
+  background:var(--blue);border:none;
+  border-radius:7px;font-family:'Plus Jakarta Sans',sans-serif;
+  font-size:11px;font-weight:800;color:#fff;
+  cursor:pointer;transition:all .15s;flex-shrink:0;
+  display:flex;align-items:center;gap:5px;
+  box-shadow:0 1px 6px rgba(0,102,255,.3);
+}
+.sb-reconfigure:hover{background:var(--blue-dk);}
+
+/* Pipeline tracker */
+.pipe-tracker{
+  padding:16px 32px;
+  background:var(--surface);border-bottom:1px solid var(--border);
+  display:flex;align-items:center;gap:6px;flex-wrap:wrap;
+  flex-shrink:0;
+}
+.pt-step{
+  display:flex;align-items:center;gap:7px;
+  padding:6px 14px;
+  border:1px solid var(--border);border-radius:7px;
+  background:var(--s2);font-size:11px;font-weight:700;
+  color:var(--text3);transition:all .3s;flex-shrink:0;
+}
+.pt-step.running{border-color:rgba(0,102,255,.4);background:var(--blue-lt);color:var(--blue);}
+.pt-step.done   {border-color:#a7f3d0;background:var(--green-lt);color:var(--green);}
+.pt-spin{
+  width:12px;height:12px;border-radius:50%;
+  border:2px solid currentColor;border-top-color:transparent;
+  animation:spin .7s linear infinite;display:none;flex-shrink:0;
+}
+.pt-step.running .pt-spin{display:block;}
+.pt-arr{color:var(--text4);font-size:12px;}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* Results content */
+.results-content{padding:28px 32px 48px;}
+
+/* Stats */
+.stats-row{
+  display:grid;grid-template-columns:repeat(4,1fr);
+  gap:10px;margin-bottom:26px;
+  opacity:0;transform:translateY(8px);
+  transition:opacity .5s,transform .5s;
+}
+.stats-row.show{opacity:1;transform:none;}
+.stat-card{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:10px;padding:16px 18px;box-shadow:var(--sh1);
+}
+.stat-val{
+  font-size:28px;font-weight:800;letter-spacing:-.03em;
+  line-height:1;margin-bottom:3px;
+}
+.stat-val .u{font-size:13px;font-weight:500;color:var(--text3);}
+.stat-lbl{font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;}
+.c-blue .stat-val{color:var(--blue);}
+.c-red  .stat-val{color:var(--red);}
+.c-amber.stat-val,.c-amber .stat-val{color:var(--amber);}
+.c-green .stat-val{color:var(--green);}
+
+/* Section headers */
+.sec-hd{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:8px;}
+.sec-title{
+  font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--text2);display:flex;align-items:center;gap:8px;
+}
+.sec-title::before{content:'';display:inline-block;width:3px;height:13px;border-radius:2px;background:var(--blue);}
+.sec-meta{font-size:10px;color:var(--text3);font-family:'JetBrains Mono',monospace;}
+
+/* Insight cards */
+.insights-section{display:none;}
+.insights-section.show{display:block;}
+.insights-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(272px,1fr));gap:10px;margin-bottom:24px;}
+
+.ic{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:10px;padding:16px;box-shadow:var(--sh1);
+  opacity:0;transform:translateY(12px);
+  transition:opacity .35s ease,transform .35s ease,box-shadow .15s,border-color .15s;
+}
+.ic.show{opacity:1;transform:none;}
+.ic:hover{box-shadow:var(--sh2);border-color:var(--border2);}
+
+.ic-top{display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:8px;}
+.ic-src{font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--teal);}
+.ic-freq{font-size:9px;font-weight:700;padding:2px 7px;border-radius:10px;text-transform:uppercase;letter-spacing:.05em;flex-shrink:0;}
+.ic-freq.High  {background:var(--red-lt);color:var(--red);}
+.ic-freq.Medium{background:var(--amber-lt);color:var(--amber);}
+.ic-freq.Low   {background:var(--green-lt);color:var(--green);}
+.ic-theme{font-size:12px;font-weight:700;color:var(--text);line-height:1.35;margin-bottom:8px;}
+.ic-quote{
+  font-family:'Fraunces',serif;font-style:italic;
+  font-size:12px;color:var(--text2);line-height:1.65;
+  border-left:3px solid var(--border);padding-left:9px;margin-bottom:11px;
+}
+.ic-quote.pain  {border-left-color:var(--red);}
+.ic-quote.praise{border-left-color:var(--green);}
+.ic-bar-row{display:flex;align-items:center;gap:8px;}
+.ic-bar-track{flex:1;height:4px;background:var(--s3);border-radius:2px;overflow:hidden;}
+.ic-bar-fill{height:100%;border-radius:2px;transition:width 1.3s cubic-bezier(.16,1,.3,1);width:0;}
+.ic-bar-lbl{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text3);flex-shrink:0;min-width:36px;text-align:right;}
+
+/* Themes */
+.themes-row{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:32px;}
+.theme-tag{
+  display:flex;align-items:center;gap:5px;
+  padding:5px 11px;
+  background:var(--red-lt);border:1px solid rgba(220,38,38,.15);
+  border-radius:20px;font-size:11px;font-weight:700;color:var(--red);
+  opacity:0;transform:scale(.88);transition:opacity .3s,transform .3s;
+}
+.theme-tag.show{opacity:1;transform:scale(1);}
+.theme-tag::before{content:'↗';font-size:10px;}
+
+/* Emails */
+.email-section{display:none;}
+.email-section.show{display:block;}
+.email-tabs{display:flex;border-bottom:2px solid var(--border);margin-bottom:16px;}
+.etab{
+  padding:9px 18px;background:transparent;border:none;
+  border-bottom:2px solid transparent;margin-bottom:-2px;
+  font-family:'Plus Jakarta Sans',sans-serif;font-size:12px;font-weight:700;
+  color:var(--text3);cursor:pointer;transition:all .15s;
+  display:flex;flex-direction:column;align-items:flex-start;gap:1px;
+}
+.etab:hover{color:var(--text);}
+.etab.active{color:var(--blue);border-bottom-color:var(--blue);}
+.etab-day{font-family:'JetBrains Mono',monospace;font-size:9px;text-transform:uppercase;letter-spacing:.08em;color:var(--text4);}
+.etab.active .etab-day{color:rgba(0,102,255,.55);}
+
+.email-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow:hidden;box-shadow:var(--sh1);display:none;}
+.email-card.active{display:block;}
+
+.email-meta{
+  background:var(--s2);border-bottom:1px solid var(--border);
+  padding:15px 22px;display:grid;
+  grid-template-columns:1fr auto;gap:8px 16px;align-items:start;
+}
+.emf-lbl{font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:var(--text3);display:block;margin-bottom:3px;}
+.emf-val{font-size:14px;font-weight:700;color:var(--text);}
+.emf-val.subj{color:var(--blue);font-size:15px;}
+.timing-chip{padding:6px 11px;background:var(--blue-lt);border:1px solid var(--blue-mid);border-radius:7px;font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:500;color:var(--blue-dk);white-space:nowrap;align-self:start;}
+.prev-bar{background:var(--s2);border-bottom:1px solid var(--border);padding:9px 22px;}
+.prev-lbl{font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--text3);margin-right:8px;}
+.prev-txt{font-size:12px;color:var(--text2);font-style:italic;}
+.email-body-wrap{padding:26px 26px 16px;}
+.email-body{font-size:14px;line-height:1.9;color:var(--text2);white-space:pre-wrap;min-height:80px;}
+.caret{display:inline-block;width:2px;height:1.1em;background:var(--blue);animation:blink .7s step-end infinite;vertical-align:text-bottom;margin-left:1px;}
+@keyframes blink{50%{opacity:0}}
+.email-foot{padding:12px 22px 16px;border-top:1px solid var(--border);display:flex;justify-content:flex-end;gap:8px;}
+.foot-btn{padding:7px 14px;border-radius:7px;font-family:'Plus Jakarta Sans',sans-serif;font-size:12px;font-weight:700;cursor:pointer;transition:all .15s;display:flex;align-items:center;gap:5px;border:1px solid var(--border);background:var(--surface);color:var(--text2);}
+.foot-btn:hover{border-color:var(--blue);color:var(--blue);background:var(--blue-lt);}
+
+/* Error */
+.err-bar{background:var(--red-lt);border:1px solid rgba(220,38,38,.2);border-radius:8px;padding:11px 16px;font-size:13px;color:var(--red);margin-bottom:20px;display:none;}
+
+/* Idle results */
+.results-idle{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:300px;text-align:center;gap:12px;padding:40px;}
+.results-idle-icon{font-size:48px;opacity:.12;animation:bob 3s ease-in-out infinite;}
+@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+.results-idle-h{font-size:16px;font-weight:700;color:var(--text3);}
+.results-idle-p{font-size:13px;color:var(--text3);max-width:280px;line-height:1.6;}
+
+/* Export btn */
+.export-btn{padding:7px 14px;background:var(--surface);border:1px solid var(--border);border-radius:7px;font-family:'Plus Jakarta Sans',sans-serif;font-size:12px;font-weight:700;color:var(--text2);cursor:pointer;transition:all .15s;}
+.export-btn:hover{border-color:var(--blue);color:var(--blue);background:var(--blue-lt);}
+
+.ref-badge{
+  display:flex;align-items:center;gap:5px;
+  padding:4px 10px;background:var(--blue-lt);
+  border:1px solid var(--blue-mid);border-radius:20px;
+  font-size:11px;font-weight:600;color:var(--blue);
+  white-space:nowrap;
+}
+
+::-webkit-scrollbar-track{background:transparent;}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px;}
+
+/* ─── 1-PAGER MODAL ──────────────────────────────────────── */
+.pager-overlay{
+  position:fixed;inset:0;background:rgba(10,10,20,.75);
+  z-index:900;display:none;align-items:flex-start;justify-content:center;
+  overflow-y:auto;padding:32px 16px 48px;backdrop-filter:blur(4px);
+}
+.pager-overlay.show{display:flex;}
+.pager-modal{
+  background:#fff;width:100%;max-width:820px;
+  box-shadow:0 40px 100px rgba(0,0,0,.4);
+  flex-shrink:0;animation:fadeUp .25s ease;
+  font-family:'Plus Jakarta Sans',sans-serif;overflow:hidden;
+}
+.pager-topbar{
+  background:#0A0A1E;padding:12px 20px;
+  display:flex;align-items:center;justify-content:space-between;
+}
+.pager-topbar-title{color:rgba(255,255,255,.4);font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;}
+.pager-topbar-actions{display:flex;gap:8px;align-items:center;}
+.pager-print-btn{
+  background:#0066FF;color:#fff;border:none;border-radius:5px;
+  padding:6px 16px;font-family:'Plus Jakarta Sans',sans-serif;
+  font-size:11px;font-weight:700;cursor:pointer;letter-spacing:.02em;transition:opacity .15s;
+}
+.pager-print-btn:hover{opacity:.85;}
+.pager-close-btn{
+  width:26px;height:26px;border-radius:5px;
+  border:1px solid rgba(255,255,255,.12);background:transparent;
+  color:rgba(255,255,255,.5);font-size:13px;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;transition:all .15s;
+}
+.pager-close-btn:hover{background:rgba(255,255,255,.08);color:#fff;}
+.pager-body{color:#0A0A1E;font-size:11px;line-height:1.5;}
+/* Header band */
+.pb-header{background:#0A0A1E;padding:28px 32px 24px;display:grid;grid-template-columns:1fr auto;gap:16px;align-items:start;}
+.pb-campaign-label{font-size:8px;font-weight:800;letter-spacing:.18em;text-transform:uppercase;color:#0066FF;margin-bottom:8px;}
+.pb-campaign-name{font-size:22px;font-weight:800;color:#fff;line-height:1.15;letter-spacing:-.02em;margin-bottom:6px;}
+.pb-campaign-meta{font-size:10px;color:rgba(255,255,255,.38);line-height:1.7;}
+.pb-badges{display:flex;flex-direction:column;gap:5px;align-items:flex-end;padding-top:4px;}
+.pb-badge{display:inline-flex;align-items:center;padding:4px 10px;border-radius:4px;font-size:9px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;white-space:nowrap;}
+.pb-badge.market{background:rgba(0,102,255,.2);color:#60a5fa;}
+.pb-badge.segment{background:rgba(255,255,255,.07);color:rgba(255,255,255,.5);}
+.pb-badge.stage{background:rgba(255,255,255,.04);color:rgba(255,255,255,.3);}
+/* Commercial anchor */
+.pb-anchor{background:#0066FF;padding:18px 32px;display:grid;grid-template-columns:auto 1fr;gap:18px;align-items:center;}
+.pb-anchor-eyebrow{font-size:8px;font-weight:800;letter-spacing:.16em;text-transform:uppercase;color:rgba(255,255,255,.45);writing-mode:vertical-rl;transform:rotate(180deg);white-space:nowrap;}
+.pb-anchor-content{}
+.pb-anchor-theme{font-size:15px;font-weight:800;color:#fff;line-height:1.3;margin-bottom:5px;letter-spacing:-.01em;}
+.pb-anchor-sub{font-size:10px;color:rgba(255,255,255,.6);line-height:1.6;font-style:italic;}
+.pb-displacement{margin-top:8px;padding-top:8px;border-top:1px solid rgba(255,255,255,.15);font-size:9px;color:rgba(255,255,255,.5);line-height:1.5;}
+.pb-displacement strong{color:rgba(255,255,255,.7);}
+/* Two-col content */
+.pb-content{display:grid;grid-template-columns:1fr 1fr;gap:0;}
+.pb-col{padding:22px 28px;}
+.pb-col:first-child{border-right:1px solid #e8eaf0;}
+.pb-section{margin-bottom:18px;}
+.pb-section:last-child{margin-bottom:0;}
+.pb-section-title{font-size:8px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:#0066FF;margin-bottom:8px;padding-bottom:5px;border-bottom:1.5px solid #0066FF;}
+/* Config list */
+.pb-config-list{display:flex;flex-direction:column;gap:4px;}
+.pb-config-row{display:grid;grid-template-columns:88px 1fr;gap:8px;align-items:baseline;padding:3px 0;border-bottom:1px solid #f3f4f6;}
+.pb-config-row:last-child{border-bottom:none;}
+.pb-config-key{font-size:9px;font-weight:700;color:#9ca3af;text-transform:uppercase;letter-spacing:.05em;}
+.pb-config-val{font-size:10px;font-weight:600;color:#111827;line-height:1.3;}
+/* Signals */
+.pb-signals{display:flex;flex-direction:column;gap:5px;}
+.pb-signal{padding:7px 10px;border-radius:4px;border-left:2px solid #e5e7eb;background:#f9fafb;}
+.pb-signal.high{border-left-color:#ef4444;background:#fef2f2;}
+.pb-signal.medium{border-left-color:#f59e0b;background:#fffbeb;}
+.pb-signal.low{border-left-color:#10b981;background:#f0fdf4;}
+.pb-signal-theme{font-size:10px;font-weight:700;color:#111827;margin-bottom:2px;}
+.pb-signal-quote{font-size:9px;color:#6b7280;line-height:1.4;font-style:italic;}
+/* Sequence */
+.pb-sequence{display:flex;flex-direction:column;gap:5px;}
+.pb-seq-row{display:grid;grid-template-columns:48px 1fr;border-radius:4px;overflow:hidden;border:1px solid #e5e7eb;}
+.pb-seq-num{background:#0A0A1E;color:#fff;font-size:8px;font-weight:800;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:8px 4px;line-height:1.4;letter-spacing:.04em;}
+.pb-seq-num span{font-size:8px;color:rgba(255,255,255,.35);font-weight:400;margin-top:1px;}
+.pb-seq-content{padding:7px 10px;background:#fff;}
+.pb-seq-subject{font-size:10px;font-weight:700;color:#111827;margin-bottom:2px;}
+.pb-seq-desc{font-size:9px;color:#6b7280;line-height:1.35;}
+.pb-proof{background:#f0fdf4;border:1px solid #bbf7d0;border-radius:4px;padding:8px 10px;margin-top:6px;}
+.pb-proof-label{font-size:8px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:#15803d;margin-bottom:3px;}
+.pb-proof-text{font-size:10px;color:#166534;line-height:1.5;}
+/* Summary */
+.pb-summary{background:#f8faff;border-top:1px solid #e0e7ff;padding:14px 32px;}
+.pb-summary-label{font-size:8px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:#6366f1;margin-bottom:4px;}
+.pb-summary-text{font-size:11px;color:#374151;line-height:1.7;}
+/* Footer */
+.pb-footer{background:#0A0A1E;padding:9px 32px;display:flex;justify-content:space-between;align-items:center;}
+.pb-footer-left{font-size:9px;color:rgba(255,255,255,.25);letter-spacing:.04em;}
+.pb-footer-right{font-size:9px;color:rgba(255,255,255,.15);}
+@media print{
+  body > *:not(#pagerOverlay){display:none !important;}
+  .pager-topbar{display:none !important;}
+  .pager-overlay{display:block !important;position:static !important;padding:0 !important;background:none !important;overflow:visible !important;}
+  .pager-modal{box-shadow:none !important;max-width:100% !important;width:100% !important;}
+  *{-webkit-print-color-adjust:exact !important;print-color-adjust:exact !important;}
+}
+
+
+/* ─── RUN NAMING MODAL ───────────────────────────────────── */
+.rn-overlay{
+  position:fixed;inset:0;background:rgba(0,0,0,.45);
+  z-index:800;display:flex;align-items:center;justify-content:center;
+  opacity:0;pointer-events:none;transition:opacity .2s;
+}
+.rn-overlay.show{opacity:1;pointer-events:all;}
+.rn-modal{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:16px;padding:28px 28px 24px;
+  width:420px;max-width:90vw;
+  box-shadow:0 24px 60px rgba(0,0,0,.25);
+  transform:translateY(12px) scale(.97);
+  transition:transform .22s cubic-bezier(.34,1.56,.64,1);
+}
+.rn-overlay.show .rn-modal{transform:none;}
+.rn-modal-title{
+  font-family:'Fraunces',serif;font-size:20px;font-weight:400;
+  color:var(--text);margin-bottom:6px;
+}
+.rn-modal-sub{font-size:12px;color:var(--text3);margin-bottom:18px;line-height:1.5;}
+.rn-input{
+  width:100%;padding:11px 14px;
+  border:1.5px solid var(--border);border-radius:10px;
+  font-family:'Plus Jakarta Sans',sans-serif;font-size:14px;
+  color:var(--text);background:var(--s2);
+  outline:none;box-sizing:border-box;
+  transition:border-color .15s;margin-bottom:18px;
+}
+.rn-input:focus{border-color:var(--blue);}
+.rn-actions{display:flex;gap:10px;justify-content:flex-end;}
+.rn-skip{
+  padding:9px 18px;border-radius:9px;
+  border:1px solid var(--border);background:transparent;
+  font-family:'Plus Jakarta Sans',sans-serif;font-size:13px;
+  font-weight:600;color:var(--text2);cursor:pointer;
+  transition:all .15s;
+}
+.rn-skip:hover{border-color:var(--text2);}
+.rn-save{
+  padding:9px 22px;border-radius:9px;
+  border:none;background:var(--blue);
+  font-family:'Plus Jakarta Sans',sans-serif;font-size:13px;
+  font-weight:700;color:#fff;cursor:pointer;
+  transition:background .15s;
+}
+.rn-save:hover{background:#0052cc;}
+
+/* ─── OUTREACH TOKEN PILLS ───────────────────────────────── */
+.ot-token{
+  display:inline-flex;align-items:center;
+  background:rgba(0,102,255,.1);
+  border:1px solid rgba(0,102,255,.25);
+  border-radius:4px;padding:0 5px;
+  font-family:'JetBrains Mono',monospace;
+  font-size:11px;font-weight:600;color:var(--blue);
+  vertical-align:baseline;white-space:nowrap;
+}
+
+.top-insight-block{
+  background:linear-gradient(135deg,#0044CC 0%,#0066FF 100%);
+  border-radius:12px;padding:20px 24px;margin-bottom:20px;
+  box-shadow:0 4px 20px rgba(0,102,255,.25);
+  opacity:0;transform:translateY(8px);
+  transition:opacity .5s,transform .5s;
+}
+.top-insight-block.show{opacity:1;transform:none;}
+.ti-label{
+  font-family:'JetBrains Mono',monospace;
+  font-size:9px;letter-spacing:.15em;text-transform:uppercase;
+  color:rgba(255,255,255,.6);margin-bottom:8px;
+}
+.ti-text{
+  font-family:'Fraunces',serif;
+  font-size:clamp(16px,2.5vw,22px);font-weight:400;
+  color:#fff;line-height:1.35;margin-bottom:6px;
+}
+.ti-sub{font-size:12px;color:rgba(255,255,255,.65);line-height:1.5;}
+
+/* ─── SAVED RUNS DRAWER ──────────────────────────────────── */
+.runs-overlay{
+  position:fixed;inset:0;background:rgba(0,0,0,.3);
+  z-index:600;display:none;
+}
+.runs-overlay.show{display:block;}
+.runs-drawer{
+  position:fixed;top:0;right:0;bottom:0;
+  width:420px;background:var(--surface);
+  border-left:1px solid var(--border);
+  z-index:700;display:flex;flex-direction:column;
+  transform:translateX(100%);
+  transition:transform .28s cubic-bezier(.4,0,.2,1);
+  box-shadow:var(--sh3);
+}
+.runs-drawer.open{transform:translateX(0);}
+.runs-drawer-header{
+  padding:18px 20px;border-bottom:1px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between;
+  flex-shrink:0;
+}
+.runs-drawer-title{
+  font-size:14px;font-weight:800;color:var(--text);
+  display:flex;align-items:center;gap:8px;
+}
+.runs-count{
+  padding:2px 8px;background:var(--blue-lt);
+  border:1px solid var(--blue-mid);border-radius:10px;
+  font-size:11px;font-weight:700;color:var(--blue);
+}
+.runs-drawer-close{
+  width:28px;height:28px;border-radius:7px;
+  border:1px solid var(--border);background:var(--surface);
+  cursor:pointer;font-size:12px;color:var(--text2);
+  display:flex;align-items:center;justify-content:center;
+  transition:all .15s;
+}
+.runs-drawer-close:hover{border-color:var(--red);color:var(--red);}
+.runs-list{flex:1;overflow-y:auto;padding:16px;}
+.runs-empty{font-size:13px;color:var(--text3);text-align:center;padding:32px 0;}
+.run-item{
+  background:var(--s2);border:1px solid var(--border);
+  border-radius:10px;padding:14px 16px;margin-bottom:10px;
+  cursor:pointer;transition:all .15s;
+}
+.run-item:hover{border-color:var(--blue);background:var(--blue-lt);}
+.run-item-header{display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:8px;}
+.run-item-ts{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--text3);letter-spacing:.06em;white-space:nowrap;}
+.run-item-account{font-size:13px;font-weight:800;color:var(--text);margin-bottom:2px;}
+.run-item-config{font-size:11px;color:var(--text3);line-height:1.5;}
+.run-item-chips{display:flex;flex-wrap:wrap;gap:4px;margin-top:8px;}
+.run-item-chip{
+  padding:2px 8px;background:var(--surface);
+  border:1px solid var(--border);border-radius:10px;
+  font-size:10px;font-weight:600;color:var(--text2);
+}
+.run-item-del{
+  padding:3px 8px;border-radius:6px;border:1px solid transparent;
+  background:transparent;font-size:10px;color:var(--text3);
+  cursor:pointer;flex-shrink:0;transition:all .15s;
+}
+.run-item-del:hover{border-color:var(--red);color:var(--red);background:var(--red-lt);}
+.run-item-emails{margin-top:10px;border-top:1px solid var(--border);padding-top:10px;display:none;}
+.run-item.expanded .run-item-emails{display:block;}
+.run-email-mini{margin-bottom:8px;}
+.run-email-mini-subj{font-size:11px;font-weight:700;color:var(--blue);margin-bottom:3px;}
+.run-email-mini-body{font-size:11px;color:var(--text2);line-height:1.5;white-space:pre-wrap;max-height:80px;overflow:hidden;position:relative;}
+.run-email-mini-body::after{content:'';position:absolute;bottom:0;left:0;right:0;height:20px;background:linear-gradient(transparent,var(--s2));}
+
+@media(max-width:700px){
+  .choice-grid.cols2,.choice-grid.cols3{grid-template-columns:1fr;}
+  .stats-row{grid-template-columns:1fr 1fr;}
+  .wiz-progress,.results-content{padding-left:16px;padding-right:16px;}
+  .runs-drawer{width:100%;}
+}
+/* ─── PROTOTYPE LABEL ────────────────────────────────────── */
+.proto-label{
+  font-family:'JetBrains Mono',monospace;
+  font-size:9px;font-weight:600;letter-spacing:.08em;
+  color:var(--text4);padding:3px 10px;
+  border:1px solid var(--border);border-radius:20px;
+  white-space:nowrap;
+}
+
+/* ─── SIGNAL DISCOVERY PHASE ─────────────────────────────── */
+.signal-discovery{
+  background:linear-gradient(135deg,#0a0f1e 0%,#0d1a3a 100%);
+  border-radius:12px;padding:20px 24px;margin-bottom:20px;
+  border:1px solid rgba(0,102,255,.2);
+  opacity:0;transform:translateY(8px);
+  transition:opacity .5s,transform .5s;display:none;
+}
+.signal-discovery.show{opacity:1;transform:none;display:block;}
+.sd-label{
+  font-family:'JetBrains Mono',monospace;font-size:9px;
+  letter-spacing:.14em;text-transform:uppercase;
+  color:rgba(0,102,255,.7);margin-bottom:10px;
+}
+.sd-flow{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:14px;}
+.sd-step{
+  font-size:10px;font-weight:700;padding:5px 12px;
+  border-radius:6px;border:1px solid rgba(255,255,255,.1);
+  color:rgba(255,255,255,.35);background:rgba(255,255,255,.04);
+  transition:all .4s;white-space:nowrap;
+}
+.sd-step.active{
+  border-color:rgba(0,102,255,.6);background:rgba(0,102,255,.15);
+  color:#60a5fa;
+}
+.sd-step.done{
+  border-color:rgba(5,150,105,.5);background:rgba(5,150,105,.1);
+  color:#34d399;
+}
+.sd-arr{color:rgba(255,255,255,.15);font-size:12px;}
+.sd-sources{display:flex;flex-wrap:wrap;gap:7px;}
+.sd-src{
+  display:flex;align-items:center;gap:6px;
+  padding:5px 11px;border-radius:20px;
+  font-size:10px;font-weight:700;
+  border:1px solid rgba(255,255,255,.08);
+  color:rgba(255,255,255,.3);background:rgba(255,255,255,.03);
+  transition:all .35s;
+}
+.sd-src.active{
+  border-color:rgba(0,102,255,.5);
+  background:rgba(0,102,255,.12);color:#93c5fd;
+}
+.sd-src.done{
+  border-color:rgba(5,150,105,.4);
+  background:rgba(5,150,105,.08);color:#6ee7b7;
+}
+.sd-src-dot{
+  width:6px;height:6px;border-radius:50%;
+  background:currentColor;opacity:.6;
+  animation:sdpulse 1.2s ease-in-out infinite;
+}
+.sd-src.done .sd-src-dot{animation:none;}
+@keyframes sdpulse{0%,100%{opacity:.6;transform:scale(1)}50%{opacity:.2;transform:scale(.6)}}
+
+/* ─── GTM STRATEGY BLOCK ─────────────────────────────────── */
+.gtm-strategy{display:none;margin-bottom:24px;}
+.gtm-strategy.show{display:block;}
+.gtm-grid{
+  display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));
+  gap:10px;
+}
+.gtm-cell{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:10px;padding:14px 16px;box-shadow:var(--sh1);
+  opacity:0;transform:translateY(10px);
+  transition:opacity .35s,transform .35s;
+}
+.gtm-cell.show{opacity:1;transform:none;}
+.gtm-cell-lbl{
+  font-family:'JetBrains Mono',monospace;font-size:9px;
+  font-weight:700;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--text3);margin-bottom:5px;
+}
+.gtm-cell-val{font-size:13px;font-weight:700;color:var(--text);line-height:1.4;}
+.gtm-cell-sub{font-size:11px;color:var(--text3);margin-top:3px;line-height:1.45;}
+
+/* ─── CAMPAIGN DESIGN ENGINE ─────────────────────────────── */
+.campaign-pillars{display:none;margin-bottom:24px;}
+.campaign-pillars.show{display:block;}
+.pillars-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;}
+.pillar-card{
+  border-radius:12px;padding:18px 18px;
+  opacity:0;transform:translateY(10px);
+  transition:opacity .4s,transform .4s;
+}
+.pillar-card.show{opacity:1;transform:none;}
+.pillar-pain{background:linear-gradient(135deg,#fef2f2,#fff5f5);border:1px solid rgba(220,38,38,.15);}
+.pillar-ops  {background:linear-gradient(135deg,#fffbeb,#fefce8);border:1px solid rgba(215,119,6,.15);}
+.pillar-strat{background:linear-gradient(135deg,#f0fdf4,#ecfdf5);border:1px solid rgba(5,150,105,.15);}
+.pillar-badge{
+  display:inline-flex;align-items:center;gap:5px;
+  padding:3px 9px;border-radius:10px;margin-bottom:10px;
+  font-size:9px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;
+}
+.pillar-pain .pillar-badge{background:rgba(220,38,38,.1);color:var(--red);}
+.pillar-ops  .pillar-badge{background:rgba(215,119,6,.1);color:var(--amber);}
+.pillar-strat .pillar-badge{background:rgba(5,150,105,.1);color:var(--green);}
+.pillar-title{font-size:13px;font-weight:800;color:var(--text);margin-bottom:6px;line-height:1.3;}
+.pillar-impact{font-size:11px;color:var(--text2);margin-bottom:6px;line-height:1.5;}
+.pillar-angle{
+  font-family:'JetBrains Mono',monospace;font-size:10px;
+  color:var(--text3);border-left:2px solid var(--border2);
+  padding-left:8px;line-height:1.5;
+}
+
+/* ─── SALES READINESS SCORE ──────────────────────────────── */
+.readiness-block{display:none;margin-bottom:20px;}
+.readiness-block.show{display:block;}
+.readiness-card{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:12px;padding:18px 22px;box-shadow:var(--sh1);
+  display:flex;align-items:center;gap:24px;flex-wrap:wrap;
+}
+.rs-dial{
+  width:80px;height:80px;border-radius:50%;flex-shrink:0;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  border:3px solid var(--border);
+  background:conic-gradient(var(--rs-col,#0066FF) 0% var(--rs-pct,0%), var(--s3) 0%);
+  position:relative;
+}
+.rs-inner{
+  width:60px;height:60px;border-radius:50%;
+  background:var(--surface);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+}
+.rs-score{font-family:'JetBrains Mono',monospace;font-size:18px;font-weight:800;line-height:1;}
+.rs-max{font-size:9px;color:var(--text3);font-weight:600;}
+.rs-info{flex:1;}
+.rs-band{font-size:16px;font-weight:800;color:var(--text);margin-bottom:3px;}
+.rs-desc{font-size:11px;color:var(--text2);line-height:1.5;margin-bottom:8px;}
+.rs-bars{display:flex;flex-direction:column;gap:5px;}
+.rs-bar-row{display:flex;align-items:center;gap:8px;}
+.rs-bar-lbl{font-size:10px;color:var(--text3);font-weight:600;min-width:110px;}
+.rs-bar-track{flex:1;height:4px;background:var(--s3);border-radius:2px;overflow:hidden;}
+.rs-bar-fill{height:100%;border-radius:2px;transition:width 1.2s cubic-bezier(.16,1,.3,1);}
+
+/* ─── CRM SYNC INDICATOR ─────────────────────────────────── */
+.crm-indicator{
+  display:none;
+  background:linear-gradient(135deg,#f0fdf4,#ecfdf5);
+  border:1px solid rgba(5,150,105,.2);border-radius:10px;
+  padding:12px 16px;margin-bottom:16px;
+}
+.crm-indicator.show{display:block;}
+.crm-sync-badge{
+  display:inline-flex;align-items:center;gap:6px;
+  padding:3px 10px;border-radius:20px;
+  background:rgba(5,150,105,.1);border:1px solid rgba(5,150,105,.25);
+  font-size:10px;font-weight:700;color:var(--green);
+  margin-bottom:8px;font-family:'JetBrains Mono',monospace;
+}
+.crm-sync-dot{width:6px;height:6px;border-radius:50%;background:var(--green);animation:pdot 1.5s ease-in-out infinite;}
+.crm-actions{display:flex;flex-wrap:wrap;gap:7px;margin-top:6px;}
+.crm-action{
+  display:flex;align-items:center;gap:5px;
+  padding:4px 10px;border-radius:6px;
+  font-size:10px;font-weight:700;
+  background:var(--surface);border:1px solid rgba(5,150,105,.2);
+  color:var(--green);
+}
+
+/* ─── ARCHITECTURE PANEL ─────────────────────────────────── */
+.arch-panel{
+  background:linear-gradient(135deg,#0a0f1e,#0d1a3a);
+  border-radius:12px;padding:18px 22px;margin-top:28px;
+  border:1px solid rgba(0,102,255,.15);
+  display:none;
+}
+.arch-panel.show{display:block;}
+.arch-label{
+  font-family:'JetBrains Mono',monospace;font-size:9px;
+  letter-spacing:.14em;text-transform:uppercase;
+  color:rgba(0,102,255,.6);margin-bottom:10px;
+}
+.arch-flow{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+.arch-step{
+  font-size:10px;font-weight:700;padding:6px 13px;
+  border-radius:6px;border:1px solid rgba(255,255,255,.08);
+  color:rgba(255,255,255,.5);background:rgba(255,255,255,.04);
+  white-space:nowrap;
+}
+.arch-arr{color:rgba(255,255,255,.2);font-size:13px;}
+
+/* ─── EMAIL CADENCE TABS (4 emails) ──────────────────────── */
+.etab-day-lbl{font-family:'JetBrains Mono',monospace;font-size:9px;text-transform:uppercase;letter-spacing:.08em;color:var(--text4);}
+.etab.active .etab-day-lbl{color:rgba(0,102,255,.55);}
+
+@media(max-width:700px){
+  .pillars-grid{grid-template-columns:1fr;}
+  .readiness-card{flex-direction:column;}
+}
+
+
+
+
+/* ─── GTM INTELLIGENCE SUITE HEADER ─────────────────────────── */
+.suite-bar{display:flex;flex-direction:column;justify-content:center;padding:0 28px;height:36px;background:linear-gradient(90deg,#0a0f1e 0%,#0d1a3a 100%);border-bottom:1px solid rgba(0,102,255,.18);flex-shrink:0;position:fixed;top:0;left:0;right:0;z-index:600;}
+.suite-bar-top{display:flex;align-items:center;gap:0;}
+.suite-name{font-family:'JetBrains Mono',monospace;font-size:9px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.45);white-space:nowrap;flex-shrink:0;}
+.suite-div{width:1px;height:12px;background:rgba(255,255,255,.12);margin:0 10px;flex-shrink:0;}
+.suite-modules{display:flex;align-items:center;gap:2px;}
+.suite-mod{font-family:'JetBrains Mono',monospace;font-size:9px;font-weight:600;letter-spacing:.06em;color:rgba(255,255,255,.3);padding:1px 7px;border-radius:3px;white-space:nowrap;transition:color .15s,background .15s;text-decoration:none;border:1px solid transparent;}
+.suite-mod:hover{color:rgba(255,255,255,.7);background:rgba(255,255,255,.06);}
+.suite-mod.active{color:#fff;background:rgba(0,102,255,.35);border-color:rgba(0,102,255,.4);}
+.suite-mod-sep{font-size:9px;color:rgba(255,255,255,.15);padding:0 1px;}
+.suite-descriptor{font-size:8px;font-weight:500;color:rgba(255,255,255,.22);letter-spacing:.04em;margin-top:1px;padding-left:1px;}
+/* Push topbar and nav-tabs down by suite-bar height */
+.topbar{top:36px!important;}
+.nav-tabs{top:88px!important;}
+.view{top:88px!important;} .nav-tabs{top:78px!important;}
+
+</style>
+</head>
+<body>
+<!-- GTM INTELLIGENCE SUITE BAR -->
+<div class="suite-bar">
+  <div class="suite-bar-top">
+    <span class="suite-name">GTM Intelligence Suite</span>
+    <div class="suite-div"></div>
+    <div class="suite-modules"><a href="SignalOps___GTM_Intelligence_Engine.html" class="suite-mod" title="Open SignalOps">SignalOps</a><span class="suite-mod-sep">·</span><a href="CampaignForge___AI_GTM_Campaign_Builder.html" class="suite-mod active" title="Open CampaignForge">CampaignForge</a><span class="suite-mod-sep">·</span><a href="DealLens___Pipeline_Intelligence_Engine.html" class="suite-mod" title="Open DealLens">DealLens</a><span class="suite-mod-sep">·</span><a href="PartnerPulse___Ecosystem_Intelligence.html" class="suite-mod" title="Open PartnerPulse">PartnerPulse</a></div>
+  </div>
+  <div class="suite-descriptor">Market signals &nbsp;→&nbsp; Campaign activation &nbsp;→&nbsp; Pipeline intelligence &nbsp;→&nbsp; Partner analytics</div>
+</div>
+  <div class="suite-div"></div>
+  <div class="suite-modules">
+    <a class="suite-mod " href="SignalOps___GTM_Intelligence_Engine.html">SignalOps</a>
+    <span class="suite-mod-sep">·</span>
+    <a class="suite-mod active" href="CampaignForge___AI_GTM_Campaign_Builder.html">CampaignForge</a>
+    <span class="suite-mod-sep">·</span>
+    <a class="suite-mod " href="DealLens___Pipeline_Intelligence_Engine.html">DealLens</a>
+    <span class="suite-mod-sep">·</span>
+    <a class="suite-mod " href="PartnerPulse___Ecosystem_Intelligence.html">PartnerPulse</a>
+  </div>
+</div>
+
+  <div class="suite-modules">
+    <span class="suite-mod ">SignalOps</span>
+    <span class="suite-mod-sep">·</span>
+    <span class="suite-mod active">CampaignForge</span>
+    <span class="suite-mod-sep">·</span>
+    <span class="suite-mod ">DealLens</span>
+    <span class="suite-mod-sep">·</span>
+    <span class="suite-mod ">PartnerPulse</span>
+  </div>
+</div>
+
+
+<!-- ─── TOPBAR ─────────────────────────────────────────────────────── -->
+<header class="topbar">
+  <div class="tb-logo">SAP</div>
+  <div class="tb-div"></div>
+  <div class="tb-title">APAC Digital Hub &middot; GTM Intelligence Platform</div>
+  <div class="tb-right">
+    <div class="live-badge"><div class="live-dot"></div>Live AI</div>
+    <div class="proto-label">Prototype · AI-assisted GTM Intelligence</div>
+    <button class="tb-btn" id="exportAllBtn" onclick="exportAll()" style="display:none">📋 Export</button>
+  <button class="tb-btn" id="onePagerBtn" onclick="generateOnePager()" style="display:none">📄 1-Pager</button>
+  <button class="tb-btn" id="savedRunsBtn" onclick="toggleRunsDrawer()" style="display:none">🗂 Saved Runs</button>
+  </div>
+</header>
+
+<!-- ══════════════════════════════════════════════════════════════════ -->
+<!-- WIZARD VIEW                                                        -->
+<!-- ══════════════════════════════════════════════════════════════════ -->
+<div class="view active" id="wizardView">
+
+  <!-- Progress -->
+  <div class="wiz-progress">
+    <div class="wiz-steps-row">
+      <div class="ws active" id="ws1" onclick="jumpTo(1)">
+        <div class="ws-bubble">1</div>
+        <div class="ws-lbl">Product</div>
+      </div>
+      <div class="ws-arr">›</div>
+      <div class="ws" id="ws2" onclick="jumpTo(2)">
+        <div class="ws-bubble">2</div>
+        <div class="ws-lbl">Industry</div>
+      </div>
+      <div class="ws-arr">›</div>
+      <div class="ws" id="ws3" onclick="jumpTo(3)">
+        <div class="ws-bubble">3</div>
+        <div class="ws-lbl">Segment</div>
+      </div>
+      <div class="ws-arr">›</div>
+      <div class="ws" id="ws4" onclick="jumpTo(4)">
+        <div class="ws-bubble">4</div>
+        <div class="ws-lbl">Market</div>
+      </div>
+      <div class="ws-arr">›</div>
+      <div class="ws" id="ws5" onclick="jumpTo(5)">
+        <div class="ws-bubble">5</div>
+        <div class="ws-lbl">Revenue</div>
+      </div>
+      <div class="ws-arr">›</div>
+      <div class="ws" id="ws6" onclick="jumpTo(6)">
+        <div class="ws-bubble">6</div>
+        <div class="ws-lbl">Persona</div>
+      </div>
+      <div class="ws-arr">›</div>
+      <div class="ws" id="ws7" onclick="jumpTo(7)">
+        <div class="ws-bubble">7</div>
+        <div class="ws-lbl">Sources</div>
+      </div>
+      <div class="ws-arr">›</div>
+      <div class="ws" id="ws8" onclick="jumpTo(8)">
+        <div class="ws-bubble">8</div>
+        <div class="ws-lbl">Run</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Wizard body -->
+  <div class="wiz-body">
+
+    <!-- STEP 1: Product -->
+    <div class="wiz-screen active" id="screen1">
+      <div class="wiz-q-label">Step 1 of 8</div>
+      <h2 class="wiz-question">What are they<br><em>currently running,</em><br>and what will you pitch?</h2>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:28px;margin-bottom:20px">
+        <div>
+          <div style="font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--text3);margin-bottom:12px">They are currently on</div>
+          <div class="choice-grid cols1" id="currentProductGrid">
+            <button class="choice-card" onclick="selCurrentProduct(this,'SAP Business One (B1)')">
+              <div class="cc-check">✓</div><span class="cc-icon">🔵</span>
+              <div class="cc-label">SAP Business One (B1)</div>
+              <div class="cc-desc">SME-focused ERP. Companies often outgrow it as they scale.</div>
+            </button>
+            <button class="choice-card" onclick="selCurrentProduct(this,'S/4HANA Private Cloud')">
+              <div class="cc-check">✓</div><span class="cc-icon">🟣</span>
+              <div class="cc-label">S/4HANA Private Cloud</div>
+              <div class="cc-desc">Hosted SAP with heavy customisation. High TCO, long upgrade cycles.</div>
+            </button>
+            <button class="choice-card" onclick="selCurrentProduct(this,'Unknown / Non-SAP')">
+              <div class="cc-check">✓</div><span class="cc-icon">❓</span>
+              <div class="cc-label">Unknown / Not SAP</div>
+              <div class="cc-desc">Greenfield account. Stack unknown, or running Oracle, Microsoft, legacy on-prem, or spreadsheets.</div>
+            </button>
+          </div>
+        </div>
+        <div>
+          <div style="font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--text3);margin-bottom:12px">You are pitching them</div>
+          <div class="choice-grid cols1" id="pitchProductGrid">
+            <button class="choice-card" onclick="selPitchProduct(this,'S/4HANA Private Cloud')">
+              <div class="cc-check">✓</div><span class="cc-icon">🟣</span>
+              <div class="cc-label">S/4HANA Private Cloud</div>
+              <div class="cc-desc">Full SAP power with flexibility for businesses that need custom processes.</div>
+            </button>
+            <button class="choice-card" onclick="selPitchProduct(this,'S/4HANA Public Cloud')">
+              <div class="cc-check">✓</div><span class="cc-icon">🟢</span>
+              <div class="cc-label">S/4HANA Public Cloud</div>
+              <div class="cc-desc">Standardised cloud ERP. Lower TCO, faster time to value.</div>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Account + Sender + Stage -->
+      <div style="background:var(--s2);border:1px solid var(--border);border-radius:12px;padding:18px 20px;margin-bottom:28px">
+        <div style="font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--text3);margin-bottom:4px">Campaign Intelligence</div>
+        <div style="font-size:12px;color:var(--text3);margin-bottom:14px">Add a sample target account to personalise intelligence and email examples. This represents the type of company this campaign targets, not a single named outreach.</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px">
+          <div>
+            <label style="font-size:11px;font-weight:700;color:var(--text2);display:block;margin-bottom:6px">Sample Account Name <span style="font-weight:400;color:var(--text4)">(optional)</span></label>
+            <input id="accountName" type="text" placeholder="e.g. Mahindra Logistics"
+              style="width:100%;padding:9px 12px;border:1.5px solid var(--border);border-radius:8px;font-family:'Plus Jakarta Sans',sans-serif;font-size:13px;color:var(--text);background:var(--surface);outline:none;box-sizing:border-box"
+              onfocus="this.style.borderColor='var(--blue)'" onblur="this.style.borderColor='var(--border)'"
+              oninput="S.accountName=this.value.trim()">
+          </div>
+          <div>
+            <label style="font-size:11px;font-weight:700;color:var(--text2);display:block;margin-bottom:6px">Sample Account Domain <span style="font-weight:400;color:var(--text4)">(optional)</span></label>
+            <input id="accountDomain" type="text" placeholder="e.g. mahindralogistics.com"
+              style="width:100%;padding:9px 12px;border:1.5px solid var(--border);border-radius:8px;font-family:'Plus Jakarta Sans',sans-serif;font-size:13px;color:var(--text);background:var(--surface);outline:none;box-sizing:border-box"
+              onfocus="this.style.borderColor='var(--blue)'" onblur="this.style.borderColor='var(--border)'"
+              oninput="S.accountDomain=this.value.trim()">
+          </div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:12px">
+          <div>
+            <label style="font-size:11px;font-weight:700;color:var(--text2);display:block;margin-bottom:6px">Your Name <span style="font-weight:400;color:var(--text4)">(optional)</span></label>
+            <input id="senderName" type="text" placeholder="e.g. Priya Sharma"
+              style="width:100%;padding:9px 12px;border:1.5px solid var(--border);border-radius:8px;font-family:'Plus Jakarta Sans',sans-serif;font-size:13px;color:var(--text);background:var(--surface);outline:none;box-sizing:border-box"
+              onfocus="this.style.borderColor='var(--blue)'" onblur="this.style.borderColor='var(--border)'"
+              oninput="S.senderName=this.value.trim()">
+          </div>
+          <div>
+            <label style="font-size:11px;font-weight:700;color:var(--text2);display:block;margin-bottom:6px">Your Title <span style="font-weight:400;color:var(--text4)">(optional)</span></label>
+            <input id="senderTitle" type="text" placeholder="e.g. Enterprise AE, SAP India"
+              style="width:100%;padding:9px 12px;border:1.5px solid var(--border);border-radius:8px;font-family:'Plus Jakarta Sans',sans-serif;font-size:13px;color:var(--text);background:var(--surface);outline:none;box-sizing:border-box"
+              onfocus="this.style.borderColor='var(--blue)'" onblur="this.style.borderColor='var(--border)'"
+              oninput="S.senderTitle=this.value.trim()">
+          </div>
+          <div>
+            <label style="font-size:11px;font-weight:700;color:var(--text2);display:block;margin-bottom:2px">Buying Stage</label>
+            <div style="font-size:10px;color:var(--text3);margin-bottom:6px">Relationship history</div>
+            <select id="buyingStage"
+              style="width:100%;padding:9px 12px;border:1.5px solid var(--border);border-radius:8px;font-family:'Plus Jakarta Sans',sans-serif;font-size:13px;color:var(--text);background:var(--surface);outline:none;box-sizing:border-box;cursor:pointer"
+              onchange="S.buyingStage=this.value||null; checkNext1()">
+              <option value="">Select…</option>
+              <option value="cold">Cold: never engaged</option>
+              <option value="warm">Warm: engaged before</option>
+              <option value="reengage">Re-engage: went quiet</option>
+            </select>
+          </div>
+          <div>
+            <label style="font-size:11px;font-weight:700;color:var(--text2);display:block;margin-bottom:2px">Pipeline Stage</label>
+            <div style="font-size:10px;color:var(--text3);margin-bottom:6px">Match your CRM stage exactly</div>
+            <select id="pipelineStage"
+              style="width:100%;padding:9px 12px;border:1.5px solid var(--border);border-radius:8px;font-family:'Plus Jakarta Sans',sans-serif;font-size:13px;color:var(--text);background:var(--surface);outline:none;box-sizing:border-box;cursor:pointer"
+              onchange="S.pipelineStage=this.value||null; checkNext1()">
+              <option value="">Select stage...</option>
+              <option value="no_opportunity">No Opportunity (not in CRM yet)</option>
+              <option value="f_recognise">F - Recognise</option>
+              <option value="e_consider">E - Consider</option>
+              <option value="d_evaluate">D - Evaluate</option>
+              <option value="c_select">C - Select</option>
+              <option value="" disabled>──────────────</option>
+              <option value="" disabled>B - Negotiate (past outreach)</option>
+              <option value="" disabled>A - Won (past outreach)</option>
+            </select>
+            <div style="font-size:10px;color:var(--text4);margin-top:5px">B and A are past the outreach stage. Use F through C only.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="wiz-nav">
+        <button class="wiz-next" id="next1" onclick="goNext(1)">Continue <span>→</span></button>
+      </div>
+    </div>
+
+    <!-- STEP 2: Industry -->
+    <div class="wiz-screen" id="screen2">
+      <div class="wiz-q-label">Step 2 of 8 · Select one or more</div>
+      <h2 class="wiz-question">Which <em>industry</em><br>are you targeting?</h2>
+      <div class="choice-grid cols3">
+        <button class="choice-card" onclick="toggleIndustry(this,'Manufacturing')">
+          <div class="cc-check">✓</div><span class="cc-icon">🏭</span>
+          <div class="cc-label">Manufacturing</div>
+          <div class="cc-desc">Cement, auto, electronics, chemicals. Ops-heavy, multi-plant, tight margins.</div>
+        </button>
+        <button class="choice-card" onclick="toggleIndustry(this,'FMCG / Food & Beverage')">
+          <div class="cc-check">✓</div><span class="cc-icon">🛒</span>
+          <div class="cc-label">FMCG / Food &amp; Bev</div>
+          <div class="cc-desc">High-volume, short shelf-life. Distribution and demand planning are everything.</div>
+        </button>
+        <button class="choice-card" onclick="toggleIndustry(this,'Pharma / Life Sciences')">
+          <div class="cc-check">✓</div><span class="cc-icon">💊</span>
+          <div class="cc-label">Pharma / Life Sciences</div>
+          <div class="cc-desc">Batch traceability, regulatory compliance and quality control are non-negotiable.</div>
+        </button>
+        <button class="choice-card" onclick="toggleIndustry(this,'Logistics / Distribution')">
+          <div class="cc-check">✓</div><span class="cc-icon">🚚</span>
+          <div class="cc-label">Logistics / Distribution</div>
+          <div class="cc-desc">Margin pressure, real-time visibility and last-mile accuracy at scale.</div>
+        </button>
+        <button class="choice-card" onclick="toggleIndustry(this,'Retail / Consumer')">
+          <div class="cc-check">✓</div><span class="cc-icon">🏪</span>
+          <div class="cc-label">Retail / Consumer</div>
+          <div class="cc-desc">Omnichannel, inventory accuracy and supplier management across hundreds of SKUs.</div>
+        </button>
+        <button class="choice-card" onclick="toggleIndustry(this,'Professional Services / Tech')">
+          <div class="cc-check">✓</div><span class="cc-icon">💻</span>
+          <div class="cc-label">Professional Services</div>
+          <div class="cc-desc">Project profitability, resource utilisation and billing accuracy are the business.</div>
+        </button>
+      </div>
+      <div class="wiz-nav">
+        <button class="wiz-back" onclick="goBack(2)">← Back</button>
+        <button class="wiz-next" id="next2" onclick="goNext(2)">Continue <span>→</span></button>
+      </div>
+    </div>
+
+    <!-- STEP 3: Segment -->
+    <div class="wiz-screen" id="screen3">
+      <div class="wiz-q-label">Step 3 of 8</div>
+      <h2 class="wiz-question">Who are you<br>targeting — <em>Mid-Market</em><br>or Enterprise?</h2>
+      <div class="choice-grid cols2">
+        <button class="choice-card" onclick="selSegment(this,'midmarket')">
+          <div class="cc-check">✓</div><span class="cc-icon">📈</span>
+          <div class="cc-label">Mid-Market</div>
+          <div class="cc-sub">Growing companies scaling operations</div>
+          <div class="cc-desc">Finance and ops teams stretched thin. Speed to value matters more than feature depth.</div>
+        </button>
+        <button class="choice-card" onclick="selSegment(this,'enterprise')">
+          <div class="cc-check">✓</div><span class="cc-icon">🏛</span>
+          <div class="cc-label">Enterprise</div>
+          <div class="cc-sub">Large organisations managing complexity</div>
+          <div class="cc-desc">Multiple business units, cross-border operations, board-level visibility requirements.</div>
+        </button>
+      </div>
+      <div class="wiz-nav">
+        <button class="wiz-back" onclick="goBack(3)">← Back</button>
+        <button class="wiz-next" id="next3" onclick="goNext(3)">Continue <span>→</span></button>
+      </div>
+    </div>
+
+    <!-- STEP 4: Market Unit -->
+    <div class="wiz-screen" id="screen4">
+      <div class="wiz-q-label">Step 4 of 8</div>
+      <h2 class="wiz-question">Which <em>market</em><br>are you running<br>this for?</h2>
+      <div class="choice-grid cols3">
+        <button class="choice-card" onclick="selMarket(this,'india')">
+          <div class="cc-check">✓</div><span class="cc-flag">🇮🇳</span>
+          <div class="cc-label">India</div>
+          <div class="cc-sub">Mumbai · Bengaluru · Pune</div>
+          <div class="cc-desc">Fast-growing businesses navigating tax digitalisation, audit pressure and multi-state operations.</div>
+        </button>
+        <button class="choice-card" onclick="selMarket(this,'sea')">
+          <div class="cc-check">✓</div><span class="cc-flag">🌏</span>
+          <div class="cc-label">Southeast Asia</div>
+          <div class="cc-sub">SG · MY · TH · ID · VN</div>
+          <div class="cc-desc">Regional businesses dealing with different rules in every country they operate in.</div>
+        </button>
+        <button class="choice-card" onclick="selMarket(this,'anz')">
+          <div class="cc-check">✓</div><span class="cc-flag">🇦🇺</span>
+          <div class="cc-label">ANZ</div>
+          <div class="cc-sub">Australia · New Zealand</div>
+          <div class="cc-desc">Cloud-first organisations managing payroll complexity, government reporting and data residency.</div>
+        </button>
+      </div>
+      <div class="wiz-nav">
+        <button class="wiz-back" onclick="goBack(4)">← Back</button>
+        <button class="wiz-next" id="next4" onclick="goNext(4)">Continue <span>→</span></button>
+      </div>
+    </div>
+
+    <!-- STEP 5: Revenue Range (multi-select) -->
+    <div class="wiz-screen" id="screen5">
+      <div class="wiz-q-label">Step 5 of 8 · Select one or more</div>
+      <h2 class="wiz-question">What's their<br><em>annual revenue?</em></h2>
+      <div class="choice-grid cols3" id="revenueGrid"></div>
+      <div class="wiz-nav">
+        <button class="wiz-back" onclick="goBack(5)">← Back</button>
+        <button class="wiz-next" id="next5" onclick="goNext(5)">Continue <span>→</span></button>
+      </div>
+    </div>
+
+    <!-- STEP 6: Persona (multi-select) -->
+    <div class="wiz-screen" id="screen6">
+      <div class="wiz-q-label">Step 6 of 8 · Select one</div>
+      <h2 class="wiz-question">Who is the<br><em>decision-maker</em><br>you're reaching?</h2>
+      <div class="choice-grid cols2">
+        <button class="choice-card" onclick="selectPersona(this,'CFO / Finance Head')">
+          <div class="cc-check">✓</div><span class="cc-icon">💼</span>
+          <div class="cc-label">CFO / Finance Head</div>
+          <div class="cc-desc">Responsible for financial close, cost control, audit readiness and return on every major investment.</div>
+        </button>
+        <button class="choice-card" onclick="selectPersona(this,'CTO / IT Director')">
+          <div class="cc-check">✓</div><span class="cc-icon">🖥</span>
+          <div class="cc-label">CTO / IT Director</div>
+          <div class="cc-desc">Owns the technology stack, system integrations and the decision of what to keep, replace or migrate.</div>
+        </button>
+        <button class="choice-card" onclick="selectPersona(this,'CEO / MD / Founder')">
+          <div class="cc-check">✓</div><span class="cc-icon">🏢</span>
+          <div class="cc-label">CEO / MD / Founder</div>
+          <div class="cc-desc">Focused on growth, competitive positioning and whether the business has the foundation to scale.</div>
+        </button>
+        <button class="choice-card" onclick="selectPersona(this,'COO / Operations Head')">
+          <div class="cc-check">✓</div><span class="cc-icon">⚙️</span>
+          <div class="cc-label">COO / Operations Head</div>
+          <div class="cc-desc">Wants every team working from the same numbers, no more chasing data across spreadsheets.</div>
+        </button>
+        <button class="choice-card" onclick="selectPersona(this,'VP / Head of Supply Chain')">
+          <div class="cc-check">✓</div><span class="cc-icon">🔗</span>
+          <div class="cc-label">VP / Head of Supply Chain</div>
+          <div class="cc-desc">Accountable for inventory accuracy, fulfilment speed and plant throughput across locations.</div>
+        </button>
+      </div>
+      <div class="wiz-nav">
+        <button class="wiz-back" onclick="goBack(6)">← Back</button>
+        <button class="wiz-next" id="next6" onclick="goNext(6)">Continue <span>→</span></button>
+      </div>
+    </div>
+
+    <!-- STEP 7: Sources -->
+    <div class="wiz-screen" id="screen7">
+      <div class="wiz-q-label">Step 7 of 8 · Intelligence Sources</div>
+      <h2 class="wiz-question">Which sources should<br>the AI <em>mine</em> for<br>buyer feedback?</h2>
+      <div style="font-size:13px;color:var(--text3);margin-bottom:20px;margin-top:-20px">Select the sources you want included. At least one required.</div>
+      <div class="choice-grid cols3" id="sourceSelectGrid"></div>
+      <div class="wiz-nav">
+        <button class="wiz-back" onclick="goBack(7)">← Back</button>
+        <button class="wiz-next" id="next7" onclick="goNext(7)">Confirm &amp; Continue <span>→</span></button>
+      </div>
+    </div>
+
+    <!-- STEP 8: Run -->
+    <div class="wiz-screen run-screen" id="screen8">
+      <div class="wiz-q-label">Step 8 of 8 · Ready</div>
+      <div class="run-summary-pills" id="runSummaryPills"></div>
+      <div class="run-cta-area">
+        <div class="run-cta-q">Ready to mine buyer intelligence<br>and build your <strong>Outreach.io-ready email sequence?</strong></div>
+        <button class="run-btn" id="mainRunBtn" onclick="startPipeline()">
+          <span class="run-btn-icon">▶</span>
+          Run Intelligence Pipeline
+        </button>
+      </div>
+    </div>
+
+  </div><!-- /wiz-body -->
+</div><!-- /wizardView -->
+
+
+<!-- ══════════════════════════════════════════════════════════════════ -->
+<!-- RESULTS VIEW                                                       -->
+<!-- ══════════════════════════════════════════════════════════════════ -->
+<div class="view" id="resultsView">
+
+  <!-- Summary bar (clickable chips) -->
+  <div class="summary-bar">
+    <div class="sb-label">Run&nbsp;config</div>
+    <div class="sb-chips" id="summaryChips"></div>
+    <button class="sb-rerun" id="rerunBtn" onclick="rerunPipeline()">⚡ Re-run</button>
+    <button class="sb-reconfigure" onclick="reconfigure()">↩ Reconfigure</button>
+  </div>
+
+  <!-- Pipeline tracker -->
+  <div class="pipe-tracker">
+    <div class="pt-step" id="pt1">
+      <div class="pt-spin"></div><span>01 &nbsp;Signal Discovery</span>
+    </div>
+    <div class="pt-arr">›</div>
+    <div class="pt-step" id="pt2">
+      <div class="pt-spin"></div><span>02 &nbsp;Insight Clustering</span>
+    </div>
+    <div class="pt-arr">›</div>
+    <div class="pt-step" id="pt3">
+      <div class="pt-spin"></div><span>03 &nbsp;Campaign Strategy</span>
+    </div>
+    <div class="pt-arr">›</div>
+    <div class="pt-step" id="pt4">
+      <div class="pt-spin"></div><span>04 &nbsp;Sequence Build</span>
+    </div>
+  </div>
+
+  <!-- Results content -->
+  <div class="results-content">
+    <div class="err-bar" id="errBar"></div>
+
+    <!-- Stats -->
+    <div class="stats-row" id="statsRow">
+      <div class="stat-card c-blue"><div class="stat-val" id="sv0">—</div><div class="stat-lbl">Signals Captured</div></div>
+      <div class="stat-card c-red" ><div class="stat-val" id="sv1">—</div><div class="stat-lbl">High-Freq Pain Points</div></div>
+      <div class="stat-card c-green"><div class="stat-val" id="sv3">—</div><div class="stat-lbl">Emails Generated</div></div>
+      <div class="stat-card" style="border-top:3px solid var(--blue);"><div class="stat-val" id="sv4" style="color:var(--blue);">—</div><div class="stat-lbl">Sales Readiness Score</div></div>
+    </div>
+
+    <!-- Idle state (shown before first run completes) -->
+    <div class="results-idle" id="resultsIdle">
+      <div class="results-idle-icon">⚡</div>
+      <div class="results-idle-h">Pipeline running…</div>
+      <div class="results-idle-p">Mining buyer feedback and synthesising email sequence. This takes about 15 seconds.</div>
+    </div>
+
+    <!-- #1 Talking Point -->
+    <div class="top-insight-block" id="topInsightBlock" style="display:none">
+      <div class="ti-label">Your #1 Talking Point</div>
+      <div class="ti-text" id="topInsightText"></div>
+      <div class="ti-sub" id="topInsightSub"></div>
+    </div>
+
+    <!-- Signal Discovery Engine -->
+    <div class="signal-discovery" id="signalDiscovery">
+      <div class="sd-label">⚡ Signal Discovery Engine · Scanning external sources</div>
+      <div class="sd-flow">
+        <div class="sd-step" id="sdFlow0">Signal Sources</div>
+        <div class="sd-arr">→</div>
+        <div class="sd-step" id="sdFlow1">Signal Extraction</div>
+        <div class="sd-arr">→</div>
+        <div class="sd-step" id="sdFlow2">Insight Clustering</div>
+        <div class="sd-arr">→</div>
+        <div class="sd-step" id="sdFlow3">Campaign Strategy</div>
+      </div>
+      <div class="sd-sources" id="sdSources"></div>
+    </div>
+
+    <!-- Sales Readiness Score -->
+    <div class="readiness-block" id="readinessBlock">
+      <div class="sec-hd"><div class="sec-title">Sales Readiness Score</div></div>
+      <div class="readiness-card" id="readinessCard"></div>
+    </div>
+
+    <!-- CRM Sync Indicator -->
+    <div class="crm-indicator" id="crmIndicator">
+      <div class="crm-sync-badge"><div class="crm-sync-dot"></div>CRM Sync Enabled</div>
+      <div style="font-size:11px;font-weight:700;color:var(--green);margin-bottom:4px;">Campaign Activation</div>
+      <div class="crm-actions" id="crmActions"></div>
+    </div>
+
+    <!-- GTM Strategy Block -->
+    <div class="gtm-strategy" id="gtmStrategy">
+      <div class="sec-hd"><div class="sec-title">GTM Strategy Brief</div><div class="sec-meta">AI-generated · based on signals</div></div>
+      <div class="gtm-grid" id="gtmGrid"></div>
+    </div>
+
+    <!-- Campaign Design — 3 Messaging Pillars -->
+    <div class="campaign-pillars" id="campaignPillars">
+      <div class="sec-hd"><div class="sec-title">Campaign Design Engine · Messaging Pillars</div></div>
+      <div class="pillars-grid" id="pillarsGrid"></div>
+    </div>
+
+    <!-- Insights -->
+    <div class="insights-section" id="insightsSec">
+      <div class="sec-hd">
+        <div class="sec-title">Buyer Feedback Intelligence</div>
+        <div class="sec-meta" id="insightsMeta"></div>
+      </div>
+      <div class="insights-grid" id="insightsGrid"></div>
+      <div class="sec-hd">
+        <div class="sec-title">Top Pain Themes · High Frequency</div>
+      </div>
+      <div class="themes-row" id="themesRow"></div>
+    </div>
+
+    <!-- Email sequence -->
+    <div class="email-section" id="emailSec">
+      <div class="sec-hd" style="margin-top:28px">
+        <div class="sec-title">3-Step Outreach Sequence</div>
+        <div style="display:flex;align-items:center;gap:10px">
+          <div class="ref-badge" id="refBadge" style="display:none">
+            <span style="opacity:.6">📎 Proof point:</span> <span id="refBadgeName"></span>
+          </div>
+          <div id="refWarning" style="display:none;font-size:11px;color:#b45309;background:#fffbeb;border:1px solid #fde68a;border-radius:6px;padding:8px 12px;margin-bottom:10px;"></div>
+          <button class="export-btn" onclick="exportAll()">📋 Export All</button>
+        </div>
+      </div>
+      <div class="email-tabs">
+        <button class="etab active" onclick="swTab(0)"><span class="etab-day-lbl">Email 1 · Day 1</span>Insight-Led Opener</button>
+        <button class="etab" onclick="swTab(1)"><span class="etab-day-lbl">Email 2 · Day 3</span>Problem Deep Dive</button>
+        <button class="etab" onclick="swTab(2)"><span class="etab-day-lbl">Email 3 · Day 7</span>Case Study Reference</button>
+        <button class="etab" onclick="swTab(3)"><span class="etab-day-lbl">Email 4 · Day 12</span>Soft Breakup</button>
+      </div>
+      <div class="email-card active" id="ec0">
+        <div class="email-meta"><div><span class="emf-lbl">Subject</span><span class="emf-val subj" id="eS0">—</span></div><div class="timing-chip" id="eT0">📅 —</div></div>
+        <div class="email-body-wrap"><div class="email-body" id="eB0"></div></div>
+        <div class="email-foot"><button class="foot-btn" onclick="copyEmail(0)">📋 Copy</button></div>
+      </div>
+      <div class="email-card" id="ec1">
+        <div class="email-meta"><div><span class="emf-lbl">Subject</span><span class="emf-val subj" id="eS1">—</span></div><div class="timing-chip" id="eT1">📅 —</div></div>
+        <div class="email-body-wrap"><div class="email-body" id="eB1"></div></div>
+        <div class="email-foot"><button class="foot-btn" onclick="copyEmail(1)">📋 Copy</button></div>
+      </div>
+      <div class="email-card" id="ec2">
+        <div class="email-meta"><div><span class="emf-lbl">Subject</span><span class="emf-val subj" id="eS2">—</span></div><div class="timing-chip" id="eT2">📅 —</div></div>
+        <div class="email-body-wrap"><div class="email-body" id="eB2"></div></div>
+        <div class="email-foot"><button class="foot-btn" onclick="copyEmail(2)">📋 Copy</button></div>
+      </div>
+      <div class="email-card" id="ec3">
+        <div class="email-meta"><div><span class="emf-lbl">Subject</span><span class="emf-val subj" id="eS3">—</span></div><div class="timing-chip" id="eT3">📅 —</div></div>
+        <div class="email-body-wrap"><div class="email-body" id="eB3"></div></div>
+        <div class="email-foot"><button class="foot-btn" onclick="copyEmail(3)">📋 Copy</button></div>
+      </div>
+    </div><!-- /emailSec -->
+
+    <!-- Architecture Panel -->
+    <div class="arch-panel" id="archPanel">
+      <div class="arch-label">⚙ How the GTM Intelligence Engine Works</div>
+      <div class="arch-flow">
+        <div class="arch-step">📡 External Signals</div>
+        <div class="arch-arr">→</div>
+        <div class="arch-step">📊 Signal Scoring</div>
+        <div class="arch-arr">→</div>
+        <div class="arch-step">🔍 Insight Extraction</div>
+        <div class="arch-arr">→</div>
+        <div class="arch-step">✍ Messaging Generation</div>
+        <div class="arch-arr">→</div>
+        <div class="arch-step">🔗 CRM Activation</div>
+      </div>
+    </div>
+
+  </div><!-- /results-content -->
+
+  <!-- Saved Runs Drawer -->
+  <div class="runs-drawer" id="runsDrawer">
+    <div class="runs-drawer-header">
+      <div class="runs-drawer-title">🗂 Saved Runs <span class="runs-count" id="runsCount"></span></div>
+      <button class="runs-drawer-close" onclick="toggleRunsDrawer()">✕</button>
+    </div>
+    <div class="runs-list" id="runsList">
+      <div class="runs-empty">No saved runs yet.</div>
+    </div>
+  </div>
+  <div class="runs-overlay" id="runsOverlay" onclick="toggleRunsDrawer()"></div>
+
+</div><!-- /resultsView -->
+
+<!-- 1-Pager Modal -->
+<div class="pager-overlay" id="pagerOverlay" onclick="closePagerIfOutside(event)">
+  <div class="pager-modal" id="pagerModal">
+    <div class="pager-topbar">
+      <span class="pager-topbar-title">Campaign Intelligence Brief · SAP APAC Digital Hub</span>
+      <div class="pager-topbar-actions">
+        <button class="pager-print-btn" onclick="downloadOnePager()">⬇ Download 1-Pager</button>
+        <button class="pager-close-btn" onclick="closePager()">✕</button>
+      </div>
+    </div>
+    <div class="pager-body" id="pagerBody"></div>
+  </div>
+</div>
+
+<!-- Run Naming Modal -->
+<div class="rn-overlay" id="rnOverlay">
+  <div class="rn-modal">
+    <div class="rn-modal-title">Name this run</div>
+    <div class="rn-modal-sub">This will appear in Saved Runs so your team can find it quickly.</div>
+    <input class="rn-input" id="rnInput" type="text" placeholder="e.g. Mahindra Logistics · Manufacturing · India">
+    <div class="rn-actions">
+      <button class="rn-skip" onclick="submitRunName(false)">Skip</button>
+      <button class="rn-save" onclick="submitRunName(true)">Save Run →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════ SCRIPT ═══════════════════════════ -->
+<script>
+// ─── VERIFIED SAP INDIA CUSTOMER REFERENCES ──────────────────────────
+// Source: sap.com/india/about/customer-stories + SAP India News Center
+// All outcomes are publicly confirmed by SAP press releases or official case studies.
+// ─── VERIFIED SAP CUSTOMER REFERENCES ────────────────────────────────
+// INTEGRITY RULE: Only references published on sap.com or news.sap.com
+// are permitted here. Do not add any reference without a confirmed URL.
+// Gaps are marked below — add stories as they are confirmed from SAP.com.
+//
+// INDIA: 3 verified ✅
+// SEA:   1 verified ✅ (Olam Agri — migration announced, outcomes pending)
+// ANZ:   0 verified — add from sap.com/anz customer stories
+const SAP_REFS = [
+
+  // ── INDIA ─────────────────────────────────────────────────────────
+  // Source: Customer_References.xlsx — verified references only. Do not add entries without a source URL or direct confirmation.
+  {
+    company:  'Purba Bharati Gas',
+    industry: 'Oil, Gas and Energy',
+    product:  'S/4HANA Cloud Public Edition',
+    segment:  'midmarket',
+    market:   'india',
+    outcome:  '100% paperless automation and more than 50% reduction in operations time',
+    detail:   'Purba Bharati Gas achieved 100% paperless automation and reduced operations time by more than 50% after moving to SAP S/4HANA Cloud Public Edition. The shift eliminated manual paper-based processes and compressed the time taken across core operational workflows.',
+    persona:  ['CFO / Finance Head','COO / Operations Head','CEO / MD / Founder'],
+    source:   'sap.com/india customer stories',
+    url:      'https://www.sap.com/india/about/customer-stories.html?pdf-asset=c072e290-077f-0010-bca6-c68f7e60039b&page=2',
+  },
+  {
+    company:  'Nippon Steel Engineering India',
+    industry: 'Manufacturing',
+    product:  'S/4HANA Cloud Public Edition',
+    segment:  'midmarket',
+    market:   'india',
+    outcome:  '70% faster financial report preparation and 60% improvement in budget and cash flow forecasting accuracy',
+    detail:   'Nippon Steel Engineering India cut financial report preparation time by 70% and improved budget and cash flow forecasting accuracy by 60% on SAP S/4HANA Cloud Public Edition. Finance teams gained real-time visibility across entities, reducing manual consolidation work.',
+    persona:  ['CFO / Finance Head','CEO / MD / Founder','CTO / IT Director'],
+    source:   'sap.com/india customer stories',
+    url:      'https://www.sap.com/india/about/customer-stories.html?pdf-asset=b6600d62-367f-0010-bca6-c68f7e60039b&page=2',
+  },
+  {
+    company:  'JSW Minerals',
+    industry: 'Mining',
+    product:  'S/4HANA Cloud Public Edition',
+    segment:  'midmarket',
+    market:   'india',
+    outcome:  '53% reduction in financial closing time with faster rollout of new business capabilities',
+    detail:   'JSW Minerals reduced financial closing time by 53% and gained the ability to quickly roll out new functionality to pursue growth opportunities. Moving to SAP S/4HANA Cloud Public Edition gave the business agility to expand without legacy system constraints.',
+    persona:  ['CFO / Finance Head','CEO / MD / Founder','COO / Operations Head'],
+    source:   'sap.com/india customer stories',
+    url:      'https://www.sap.com/india/about/customer-stories.html?video=d6f4fc3c-fe7e-0010-bca6-c68f7e60039b',
+  },
+  {
+    company:  'Pune Polymers',
+    industry: 'Manufacturing',
+    product:  'S/4HANA Cloud Public Edition',
+    segment:  'midmarket',
+    market:   'india',
+    outcome:  'Scaled from single-client vendor to multi-sector manufacturer producing 250,000+ components daily with real-time visibility across all functions',
+    detail:   'Pune Polymers migrated from SAP Business One to SAP Cloud ERP, scaling into a multi-sector manufacturer producing over 250,000 components daily. The move delivered real-time visibility, standardised processes, and tighter operational control. SAP BTP extensions enabled new business use cases without disrupting core operations.',
+    persona:  ['CEO / MD / Founder','COO / Operations Head','VP / Head of Supply Chain'],
+    source:   'sap.com/india customer stories',
+    url:      null,
+  },
+    // ── SEA ───────────────────────────────────────────────────────────
+  {
+    company:  'Olam Agri',
+    industry: 'FMCG / Food & Agri',
+    product:  'S/4HANA',
+    segment:  'enterprise',
+    market:   'sea',
+    outcome:  'Moving to RISE with SAP on AWS to streamline global supply chain operations and accelerate AI adoption across 60+ countries',
+    detail:   'Olam Agri, headquartered in Singapore, is migrating to RISE with SAP S/4HANA Cloud Private Edition on AWS. The move is designed to unify operations across a complex global agri-food supply chain, accelerate AI adoption using SAP Joule, and improve sustainability tracking.',
+    persona:  ['CEO / MD / Founder','COO / Operations Head','CTO / IT Director'],
+    source:   'news.sap.com/sea / September 2024',
+    url:      'https://news.sap.com/sea/2024/09/olam-agri-accelerates-ai-journey-with-rise-with-sap-on-aws/',
+  },
+
+  // ── SEA GAP: Add verified stories from sap.com/sea customer stories
+  {
+    company:  'Pharmaniaga',
+    industry: 'Pharma / Life Sciences',
+    product:  'S/4HANA',
+    segment:  'enterprise',
+    market:   'sea',
+    outcome:  'Standardised manufacturing operations across all plants, targeting full integration of production orders, quality management, delivery and product costing on one platform',
+    detail:   'Pharmaniaga, Malaysia\'s largest pharmaceutical company with operations across 38 sites in Malaysia, Indonesia and Vietnam, went live with SAP S/4HANA across its manufacturing plants to standardise operations and support its goal of becoming a full-fledged integrated healthcare solutions provider.',
+    persona:  ['COO / Operations Head','CTO / IT Director','CEO / MD / Founder'],
+    source:   'news.sap.com/sea / November 2017',
+    url:      'https://news.sap.com/sea/2017/11/pharmaniaga-sets-foundation-for-future-growth-by-implementing-s4hana-for-its-manufacturing-plants/',
+  },
+
+  // ── PROFESSIONAL SERVICES GAP: Add verified stories from sap.com when available
+  // ── ANZ GAP: Add verified stories from sap.com/anz customer stories
+];
+
+// Helper: pick best verified customer reference for current config
+function pickCustomerRef(segKey, market, personas, pitchProduct, industries){
+  const scored = SAP_REFS.map(r => {
+    let score = 0;
+    if(r.market === market) score += 4;
+    if(r.segment === segKey) score += 2;
+    if(personas.some(p => r.persona.includes(p))) score += 2;
+    if(industries && industries.some(ind => r.industry.toLowerCase().includes(ind.split('/')[0].trim().toLowerCase()))) score += 3;
+    if(pitchProduct && r.product && pitchProduct.includes(r.product.replace('S/4HANA','').trim())) score += 1;
+    return { ref: r, score };
+  });
+  scored.sort((a,b) => b.score - a.score);
+  const best = scored[0];
+  // Warn if best match is low confidence (market match = 4 pts minimum; below 6 means no industry or segment match)
+  const refWarning = document.getElementById('refWarning');
+  if(refWarning){
+    if(best.score < 6){
+      refWarning.textContent = `⚠ No exact reference match for this configuration. Using ${best.ref.company} (${best.ref.industry}) as closest available. Add a verified reference for this industry to improve Email 2.`;
+      refWarning.style.display = 'block';
+    } else {
+      refWarning.style.display = 'none';
+    }
+  }
+  return best?.ref || SAP_REFS[0];
+}
+
+// ─── DATA ────────────────────────────────────────────────────────────
+const MARKETS = {
+  india: {
+    label:'India', flag:'🇮🇳', tz:'IST',
+    midmarket:{
+      detail:'Revenue ₹500 Cr–₹5,000 Cr. Hubs: Mumbai, Bengaluru, Pune, Hyderabad. Compliance: GST e-Invoicing (IRP/GSTN), GSTR-1/3B auto-filing, TDS/TCS reconciliation, MCA21, Companies Act 2013. Common integrations: Tally, local PSU banks, Zoho.',
+      revBand:'₹500 Cr – ₹5,000 Cr',
+    },
+    enterprise:{
+      detail:'Revenue ₹5,000 Cr+. BSE/NSE-listed or large private groups. Compliance: SEBI LODR, Ind AS, ICAI, SAP Central Finance consolidation, NCLT filings. Migration journeys from SAP ECC.',
+      revBand:'₹5,000 Cr+',
+    },
+    sources:{
+      midmarket :['G2 Reviews','Capterra','TrustRadius','Reddit r/SAP & r/ERP','SAP Community Forums','LinkedIn Discussions','Economic Times Tech','NASSCOM Insights'],
+      enterprise:['Gartner Peer Insights','G2 Reviews','TrustRadius','IDC Analyst Reports','LinkedIn Discussions','SAP Community Forums','Economic Times Corporate','Business Standard'],
+    },
+  },
+  sea:{
+    label:'Southeast Asia', flag:'🌏', tz:'SGT',
+    midmarket:{
+      detail:'Revenue USD 50M–500M. Key markets: Singapore, Malaysia, Thailand, Indonesia, Vietnam. Compliance: GST (SG), SST (MY), VAT (TH/VN/ID), PDPA (TH), PDPC (SG). Multi-currency, multi-entity, cross-border payments essential.',
+      revBand:'USD 50M – 500M',
+    },
+    enterprise:{
+      detail:'Revenue USD 500M+. Regional HQs in Singapore. Compliance: MAS Technology Risk Mgmt, OJK (ID), BNM (MY). IFRS consolidation, intercompany eliminations, transfer pricing documentation.',
+      revBand:'USD 500M+',
+    },
+    sources:{
+      midmarket :['G2 Reviews','Reddit r/SAP & r/ERP','SAP Community Forums','Capterra','LinkedIn Discussions'],
+      enterprise:['Gartner Peer Insights','IDC Analyst Reports','G2 Reviews','LinkedIn Discussions','SAP Community Forums'],
+    },
+  },
+  anz:{
+    label:'ANZ', flag:'🇦🇺', tz:'AEDT',
+    midmarket:{
+      detail:'Revenue AUD 100M–1B. Key sectors: resources, manufacturing, agri, retail. Compliance: Single Touch Payroll Phase 2, BAS/GST quarterly, PAYG withholding, NZ IRD, Fair Work Act. Strong cloud-first posture.',
+      revBand:'AUD 100M – 1B',
+    },
+    enterprise:{
+      detail:'Revenue AUD 1B+. ASX-listed or large private. Compliance: APRA CPS 234, AASB/IFRS, external audit requirements, ATO reporting. Migrations from legacy SAP ECC or Oracle.',
+      revBand:'AUD 1B+',
+    },
+    sources:{
+      midmarket :['G2 Reviews','Reddit r/SAP & r/ERP','Capterra','SAP Community Forums','LinkedIn Discussions'],
+      enterprise:['Gartner Peer Insights','IDC Analyst Reports','G2 Reviews','SAP Community Forums','LinkedIn Discussions'],
+    },
+  },
+};
+
+const SRC_ICONS = {
+  'G2 Reviews':'⭐','Reddit r/SAP & r/ERP':'💬','SAP Community Forums':'🧩',
+  'LinkedIn Discussions':'🔗','Capterra':'📋','Gartner Peer Insights':'📊',
+  'IDC Analyst Reports':'📑',
+};
+
+// ─── REVENUE RANGES PER MARKET ───────────────────────────────────────
+const REVENUE_RANGES = {
+  india: [
+    { label:'Below ₹100 Cr',   value:'below ₹100 Cr',  icon:'🌱', desc:'Early-stage businesses moving off spreadsheets to their first real ERP.' },
+    { label:'₹100 – 149 Cr',   value:'₹100-149 Cr',    icon:'📊', desc:'Early-scale businesses building their financial foundation.' },
+    { label:'₹150 – 299 Cr',   value:'₹150-299 Cr',    icon:'🏗',  desc:'Growing operations with increasing reporting complexity.' },
+    { label:'₹300 – 499 Cr',   value:'₹300-499 Cr',    icon:'🚀', desc:'Established businesses outgrowing current systems.' },
+    { label:'₹500 – 1,000 Cr', value:'₹500-1000 Cr',   icon:'💼', desc:'Scaled operations needing enterprise-grade visibility.' },
+    { label:'₹1,000 Cr+',      value:'₹1000 Cr+',      icon:'🏆', desc:'Large organisations managing multi-entity complexity.' },
+  ],
+  sea: [
+    { label:'Below USD 10M',   value:'below USD 10M',   icon:'🌱', desc:'Early-stage businesses moving off spreadsheets to their first real ERP.' },
+    { label:'USD 10 – 30M',    value:'USD 10-30M',      icon:'📊', desc:'Early-scale businesses building their financial foundation.' },
+    { label:'USD 30 – 75M',    value:'USD 30-75M',      icon:'🏗',  desc:'Growing operations with increasing reporting complexity.' },
+    { label:'USD 75 – 150M',   value:'USD 75-150M',     icon:'🚀', desc:'Established businesses outgrowing current systems.' },
+    { label:'USD 150 – 300M',  value:'USD 150-300M',    icon:'💼', desc:'Scaled operations needing enterprise-grade visibility.' },
+    { label:'USD 300M+',       value:'USD 300M+',       icon:'🏆', desc:'Large organisations managing multi-entity complexity.' },
+  ],
+  anz: [
+    { label:'Below AUD 15M',   value:'below AUD 15M',   icon:'🌱', desc:'Early-stage businesses moving off spreadsheets to their first real ERP.' },
+    { label:'AUD 15 – 50M',    value:'AUD 15-50M',      icon:'📊', desc:'Early-scale businesses building their financial foundation.' },
+    { label:'AUD 50 – 150M',   value:'AUD 50-150M',     icon:'🏗',  desc:'Growing operations with increasing reporting complexity.' },
+    { label:'AUD 150 – 300M',  value:'AUD 150-300M',    icon:'🚀', desc:'Established businesses outgrowing current systems.' },
+    { label:'AUD 300 – 600M',  value:'AUD 300-600M',    icon:'💼', desc:'Scaled operations needing enterprise-grade visibility.' },
+    { label:'AUD 600M+',       value:'AUD 600M+',       icon:'🏆', desc:'Large organisations managing multi-entity complexity.' },
+  ],
+};
+
+// ─── STATE ───────────────────────────────────────────────────────────
+let S = { currentProduct:null, pitchProduct:null, accountName:'', accountDomain:'', senderName:'', senderTitle:'', buyingStage:null, pipelineStage:null, industries:[], segment:null, market:null, revenues:[], personas:[], selectedSources:[] };
+let pagerData = null; // populated after pipeline run
+let curStep = 1;
+let emailStore = [{},{},{}];
+let running = false;
+
+// ─── ADD: AQI SCHEMA ──────────────────────────────────────────────────
+// Frontend-computed only. Model never infers these values.
+let AQI = {
+  structuralScore:      null,  // e.g. firmographic fit (0-40)
+  technicalScore:       null,  // e.g. current system exposure (0-30)
+  timingScore:          null,  // e.g. trigger signal recency (0-30)
+  aqiScore:             null,  // structuralScore + technicalScore + timingScore
+  aqiBand:              null,  // 'High' | 'Medium' | 'Low'
+  riskScore:            null,  // derived strictly from aqiBand — never model-inferred
+  signalTimestamp:      null,  // ISO string — when signals were captured
+  signalFreshnessFactor:null,  // 0–1, decays over time per signal half-life
+};
+
+// AQI thresholds — adjust in Phase 2 when signal data matures
+const AQI_THRESHOLD_H = 70;
+const AQI_THRESHOLD_M = 40;
+
+// Compute AQI deterministically from component scores
+function computeAQI(structural, technical, timing, signalTimestamp){
+  if(structural===null || technical===null || timing===null) return null;
+  const score = structural + technical + timing;
+  const band  = score >= AQI_THRESHOLD_H ? 'High' : score >= AQI_THRESHOLD_M ? 'Medium' : 'Low';
+  const risk  = band === 'High' ? 'High' : band === 'Medium' ? 'Medium' : 'Low';
+  // Signal freshness: full weight if < 90 days, linear decay to 0 at 365 days
+  let freshness = 1;
+  if(signalTimestamp){
+    const ageDays = (Date.now() - new Date(signalTimestamp).getTime()) / 86400000;
+    freshness = ageDays < 90 ? 1 : ageDays > 365 ? 0 : 1 - ((ageDays - 90) / 275);
+  }
+  AQI = { structuralScore:structural, technicalScore:technical, timingScore:timing,
+    aqiScore:score, aqiBand:band, riskScore:risk,
+    signalTimestamp: signalTimestamp || new Date().toISOString(),
+    signalFreshnessFactor: Math.round(freshness * 100) / 100 };
+  return AQI;
+}
+
+// ─── ADD: TRIGGER METADATA ────────────────────────────────────────────
+// Populated when a trigger is selected (model-assisted in v21, deterministic in Phase 3)
+let selectedTriggerMeta = {
+  triggerId:         null,
+  triggerName:       null,
+  baseWeight:        1.0,
+  effectiveWeight:   1.0,
+  marketPenetration: 0,     // triggerSentCount / totalSegmentAccounts
+  lastUpdated:       null,
+  updateReason:      '',
+};
+
+// ADD: Novelty penalty — effectiveWeight decays as market penetration rises
+function computeEffectiveWeight(baseWeight, performanceMultiplier, marketPenetration){
+  const mp = (marketPenetration === null || marketPenetration === undefined) ? 0 : marketPenetration;
+  return Math.round(baseWeight * (performanceMultiplier || 1.0) * (1 - mp) * 1000) / 1000;
+}
+
+// ─── ADD: SEQUENCE POSITION TELEMETRY ────────────────────────────────
+// Internal structure only — no UI required
+// Populated per run; persisted into triggerPerformance on run save
+let runTelemetry = {
+  runId:           null,  // set at pipeline start
+  triggerId:       null,
+  sentTimestamp:   null,
+  email1Reply:     false,
+  email2Reply:     false,
+  email3Reply:     false,
+  meetingBooked:   false,
+};
+
+// Aggregate trigger performance across runs (keyed by triggerId)
+// Loaded from storage on init, updated on each run save
+let triggerPerformance = {};
+
+function initTriggerPerformance(triggerId){
+  if(!triggerId) return;
+  if(!triggerPerformance[triggerId]){
+    triggerPerformance[triggerId] = {
+      email1Replies: 0,
+      email2Replies: 0,
+      email3Replies: 0,
+      meetingsBooked: 0,
+      totalSent: 0,
+    };
+  }
+}
+
+function recordTriggerSend(triggerId){
+  initTriggerPerformance(triggerId);
+  if(triggerId) triggerPerformance[triggerId].totalSent++;
+}
+
+// ─── ADD: GOVERNANCE AUDIT TRAIL ─────────────────────────────────────
+// Manual weight change log — no automatic updates yet
+let triggerWeightLog = [];
+
+function logTriggerWeightChange(triggerId, previousWeight, newWeight, reason, updatedBy){
+  if(!triggerId) return;
+  const entry = {
+    triggerId,
+    previousWeight,
+    newWeight,
+    market:    S.market   || '',
+    segment:   S.segment  || '',
+    reason:    reason     || '',
+    updatedBy: updatedBy  || '',
+    timestamp: new Date().toISOString(),
+  };
+  triggerWeightLog.push(entry);
+  console.info('[TriggerWeightLog]', entry); // audit trail visible in console
+  // Update selectedTriggerMeta if this is the current trigger
+  if(triggerId === selectedTriggerMeta.triggerId){
+    selectedTriggerMeta.effectiveWeight = computeEffectiveWeight(
+      newWeight, 1.0, selectedTriggerMeta.marketPenetration
+    );
+    selectedTriggerMeta.lastUpdated  = entry.timestamp;
+    selectedTriggerMeta.updateReason = reason;
+  }
+  return entry;
+}
+
+// ─── WIZARD NAVIGATION ───────────────────────────────────────────────
+function showScreen(n){
+  document.querySelectorAll('.wiz-screen').forEach((s,i)=>s.classList.toggle('active',i===n-1));
+  document.querySelectorAll('.ws').forEach((w,i)=>{
+    w.classList.remove('active','done');
+    if(i+1 < n) w.classList.add('done');
+    if(i+1 === n) w.classList.add('active');
+  });
+  curStep = n;
+  if(n===5) buildRevenueGrid();
+  if(n===7) buildSourceSelect();
+  if(n===8) buildRunSummary();
+}
+
+function goNext(fromStep){
+  if(fromStep===1 && (!S.currentProduct || !S.pitchProduct || !S.buyingStage || !S.pipelineStage)) return;
+  if(fromStep===2 && S.industries.length===0) return;
+  if(fromStep===3 && !S.segment) return;
+  if(fromStep===4 && !S.market) return;
+  if(fromStep===5 && S.revenues.length===0) return;
+  if(fromStep===6 && S.personas.length===0) return;
+  if(fromStep===7 && S.selectedSources.length===0) return;
+  showScreen(fromStep+1);
+}
+
+function goBack(fromStep){ showScreen(fromStep-1); }
+
+function jumpTo(n){
+  const ws = document.getElementById('ws'+n);
+  if(ws && (ws.classList.contains('done') || ws.classList.contains('active'))) showScreen(n);
+}
+
+// ─── SELECTION HANDLERS ───────────────────────────────────────────────
+function selCurrentProduct(el, val){
+  document.querySelectorAll('#currentProductGrid .choice-card').forEach(c=>c.classList.remove('selected'));
+  el.classList.add('selected'); S.currentProduct = val; checkNext1();
+}
+function selPitchProduct(el, val){
+  document.querySelectorAll('#pitchProductGrid .choice-card').forEach(c=>c.classList.remove('selected'));
+  el.classList.add('selected'); S.pitchProduct = val; checkNext1();
+}
+function checkNext1(){
+  const btn = document.getElementById('next1');
+  if(S.currentProduct && S.pitchProduct && S.buyingStage && S.pipelineStage)
+    btn.classList.add('ready');
+  else
+    btn.classList.remove('ready');
+}
+
+function toggleIndustry(el, val){
+  const idx = S.industries.indexOf(val);
+  if(idx > -1){ S.industries.splice(idx,1); el.classList.remove('selected'); }
+  else { S.industries.push(val); el.classList.add('selected'); }
+  const btn = document.getElementById('next2');
+  if(S.industries.length > 0) btn.classList.add('ready');
+  else btn.classList.remove('ready');
+}
+
+function selSegment(el, val){
+  document.querySelectorAll('#screen3 .choice-card').forEach(c=>c.classList.remove('selected'));
+  el.classList.add('selected'); S.segment = val;
+  document.getElementById('next3').classList.add('ready');
+}
+
+function selMarket(el, val){
+  document.querySelectorAll('#screen4 .choice-card').forEach(c=>c.classList.remove('selected'));
+  el.classList.add('selected'); S.market = val; S.revenues = [];
+  document.getElementById('next4').classList.add('ready');
+}
+
+function toggleRevenue(el, val){
+  const idx = S.revenues.indexOf(val);
+  if(idx > -1){ S.revenues.splice(idx,1); el.classList.remove('selected'); }
+  else { S.revenues.push(val); el.classList.add('selected'); }
+  const btn = document.getElementById('next5');
+  if(S.revenues.length > 0) btn.classList.add('ready');
+  else btn.classList.remove('ready');
+}
+
+function selectPersona(el, val){
+  // Single-select — deselect all others first
+  document.querySelectorAll('#screen6 .choice-card').forEach(c => c.classList.remove('selected'));
+  S.personas = [val];
+  el.classList.add('selected');
+  const btn = document.getElementById('next6');
+  if(S.personas.length > 0) btn.classList.add('ready');
+  else btn.classList.remove('ready');
+}
+
+// ─── REVENUE GRID (multi-select) ──────────────────────────────────────
+function buildRevenueGrid(){
+  if(!S.market) return;
+  const ranges = REVENUE_RANGES[S.market];
+  const grid = document.getElementById('revenueGrid');
+  grid.innerHTML='';
+  ranges.forEach(r=>{
+    const btn = document.createElement('button');
+    btn.className='choice-card' + (S.revenues.includes(r.value)?' selected':'');
+    btn.onclick=()=>toggleRevenue(btn, r.value);
+    btn.innerHTML=`<div class="cc-check">✓</div><span class="cc-icon">${r.icon}</span><div class="cc-label">${r.label}</div><div class="cc-desc">${r.desc}</div>`;
+    grid.appendChild(btn);
+  });
+  if(S.revenues.length > 0) document.getElementById('next5').classList.add('ready');
+}
+
+// ─── SOURCE MULTI-SELECT ─────────────────────────────────────────────
+function buildSourceSelect(){
+  if(!S.market || !S.segment) return;
+  const allSrcs = MARKETS[S.market].sources[S.segment];
+  // Pre-select all by default if nothing chosen yet
+  if(S.selectedSources.length === 0) S.selectedSources = [...allSrcs];
+  const grid = document.getElementById('sourceSelectGrid');
+  grid.innerHTML = '';
+  allSrcs.forEach(src => {
+    const isSelected = S.selectedSources.includes(src);
+    const btn = document.createElement('button');
+    btn.className = 'choice-card' + (isSelected ? ' selected' : '');
+    btn.innerHTML = `<div class="cc-check">✓</div><span class="cc-icon">${SRC_ICONS[src]||'📌'}</span><div class="cc-label">${src}</div>`;
+    btn.onclick = () => {
+      const idx = S.selectedSources.indexOf(src);
+      if(idx > -1){ S.selectedSources.splice(idx,1); btn.classList.remove('selected'); }
+      else { S.selectedSources.push(src); btn.classList.add('selected'); }
+      const n7 = document.getElementById('next7');
+      if(S.selectedSources.length > 0) n7.classList.add('ready');
+      else n7.classList.remove('ready');
+    };
+    grid.appendChild(btn);
+  });
+  const n7 = document.getElementById('next7');
+  if(S.selectedSources.length > 0) n7.classList.add('ready');
+}
+
+// ─── RUN SUMMARY PILLS ────────────────────────────────────────────────
+function buildRunSummary(){
+  const m = MARKETS[S.market];
+  const revLabel = S.revenues.length===1 ? S.revenues[0] : S.revenues.length+' bands';
+  const personaLabel = S.personas[0] || '';
+  const industryLabel = S.industries.length===1 ? S.industries[0] : S.industries.length+' industries';
+  const stageLabel = {cold:'❄ Cold',warm:'🌤 Warm',reengage:'🔄 Re-engage'}[S.buyingStage]||S.buyingStage;
+  const isGF = S.currentProduct === 'Unknown / Non-SAP';
+  const pills = [
+    { icon: isGF?'❓':'🔵', label: isGF ? 'Unknown / Non-SAP' : S.currentProduct.replace('SAP Business One ','B1 ').replace('S/4HANA ','S/4 ') },
+    { icon:'🎯', label: 'Pitch: '+S.pitchProduct.replace('SAP Business One ','B1 ').replace('S/4HANA ','S/4 ') },
+    { icon:'🏭', label: industryLabel },
+    { icon: S.segment==='midmarket'?'📈':'🏛', label: S.segment==='midmarket'?'Mid-Market':'Enterprise' },
+    { icon: m.flag, label: m.label },
+    { icon:'💰', label: revLabel },
+    { icon:'👤', label: personaLabel },
+    { icon:'📊', label: stageLabel },
+  ];
+  if(S.senderName) pills.push({ icon:'✍', label: S.senderName });
+  const wrap = document.getElementById('runSummaryPills');
+  wrap.innerHTML='';
+  pills.forEach(p=>{
+    const div = document.createElement('div');
+    div.className='rsp'; div.style.cursor='default';
+    div.innerHTML=`<span class="rsp-icon">${p.icon}</span>${p.label}`;
+    wrap.appendChild(div);
+  });
+}
+
+// ─── SWITCH TO RESULTS ────────────────────────────────────────────────
+function showResults(){
+  document.getElementById('wizardView').classList.remove('active');
+  document.getElementById('resultsView').classList.add('active');
+  document.getElementById('exportAllBtn').style.display='block';
+  document.getElementById('onePagerBtn').style.display='block';
+  document.getElementById('savedRunsBtn').style.display='block';
+  buildSummaryBar();
+}
+
+function buildSummaryBar(){
+  const m = MARKETS[S.market];
+  const revLabel = S.revenues.length===1 ? S.revenues[0] : S.revenues.join(', ');
+  const personaLabel = S.personas[0] || '';
+  const industryLabel = S.industries.length===1 ? S.industries[0] : S.industries.join(', ');
+  const isGF2 = S.currentProduct === 'Unknown / Non-SAP';
+  const chips = [
+    { icon: isGF2?'❓':'🔵', label: S.currentProduct },
+    { icon:'🎯', label: S.pitchProduct },
+    { icon:'🏭', label: industryLabel },
+    { icon: m.flag, label: m.label },
+    { icon:'💰', label: revLabel },
+    { icon:'👤', label: personaLabel },
+  ];
+  const wrap = document.getElementById('summaryChips');
+  wrap.innerHTML='';
+  chips.forEach(c=>{
+    const el = document.createElement('div');
+    el.className='sb-chip';
+    el.innerHTML=`<span class="chip-icon">${c.icon}</span>${c.label}`;
+    wrap.appendChild(el);
+  });
+}
+
+function reconfigure(){
+  S = { currentProduct:null, pitchProduct:null, accountName:'', accountDomain:'', senderName:'', senderTitle:'', buyingStage:null, pipelineStage:null, industries:[], segment:null, market:null, revenues:[], personas:[], selectedSources:[] };
+  pagerData = null;
+  // MODIFY: reset AQI and trigger meta on reconfigure
+  AQI = { structuralScore:null, technicalScore:null, timingScore:null, aqiScore:null, aqiBand:null, riskScore:null, signalTimestamp:null, signalFreshnessFactor:null };
+  selectedTriggerMeta = { triggerId:null, triggerName:null, baseWeight:1.0, effectiveWeight:1.0, marketPenetration:0, lastUpdated:null, updateReason:'' };
+  runTelemetry = { runId:null, triggerId:null, sentTimestamp:null, email1Reply:false, email2Reply:false, email3Reply:false, meetingBooked:false };
+  document.querySelectorAll('.choice-card').forEach(c=>c.classList.remove('selected'));
+  ['next1','next2','next3','next4','next5','next6','next7'].forEach(id=>{
+    const el=document.getElementById(id); if(el) el.classList.remove('ready');
+  });
+  ['accountName','accountDomain','senderName','senderTitle'].forEach(id=>{
+    const el=document.getElementById(id); if(el) el.value='';
+  });
+  const bs=document.getElementById('buyingStage'); if(bs) bs.value='';
+  const ps=document.getElementById('pipelineStage'); if(ps) ps.value='';
+  document.getElementById('resultsView').classList.remove('active');
+  document.getElementById('wizardView').classList.add('active');
+  document.getElementById('exportAllBtn').style.display='none';
+  document.getElementById('onePagerBtn').style.display='none';
+  document.getElementById('savedRunsBtn').style.display='none';
+  // Reset new sections
+  ['signalDiscovery','readinessBlock','crmIndicator','gtmStrategy','campaignPillars','archPanel'].forEach(id=>{
+    const el=document.getElementById(id);
+    if(el){el.classList.remove('show');if(id==='signalDiscovery')el.style.display='none';}
+  });
+  showScreen(1);
+}
+
+// ─── PIPELINE STEPS ───────────────────────────────────────────────────
+function setPT(n,state){
+  const el=document.getElementById('pt'+n);
+  el.className='pt-step '+state;
+}
+
+// ─── API ─────────────────────────────────────────────────────────────
+async function claude(prompt, sys, attempt=0){
+  const r = await fetch('https://api.anthropic.com/v1/messages',{
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({
+      model:'claude-sonnet-4-20250514',
+      max_tokens:3000,
+      system: sys||'You are a precise B2B GTM analyst. Respond ONLY in valid JSON. No markdown. No preamble. No extra text.',
+      messages:[{role:'user',content:prompt}],
+    }),
+  });
+
+  // Retry on overload (529) or server errors (500, 503) — up to 4 attempts
+  if((r.status===529||r.status===500||r.status===503) && attempt < 4){
+    const wait = [4000,8000,16000,30000][attempt];
+    const bar = document.getElementById('errBar');
+    if(bar){
+      bar.textContent = `⏳ API busy, retrying in ${wait/1000}s… (attempt ${attempt+1} of 4)`;
+      bar.style.display = 'block';
+      bar.style.background = 'rgba(234,179,8,.12)';
+      bar.style.color = '#92400e';
+      bar.style.borderColor = 'rgba(234,179,8,.3)';
+    }
+    await new Promise(res=>setTimeout(res,wait));
+    if(bar){ bar.style.display='none'; bar.style.background=''; bar.style.color=''; bar.style.borderColor=''; }
+    return claude(prompt, sys, attempt+1);
+  }
+
+  if(!r.ok){
+    const e = await r.json().catch(()=>({}));
+    throw new Error(e?.error?.message||'API error '+r.status);
+  }
+  const d = await r.json();
+  return d.content[0].text;
+}
+
+function parseJ(raw){return JSON.parse(raw.replace(/```json|```/g,'').trim());}
+
+// ─── TYPEWRITER ───────────────────────────────────────────────────────
+async function typeWrite(el,text,ms=8){
+  el.textContent='';
+  const cur=document.createElement('span');cur.className='caret';el.appendChild(cur);
+  for(let i=0;i<text.length;i++){
+    el.insertBefore(document.createTextNode(text[i]),cur);
+    await new Promise(r=>setTimeout(r,ms));
+  }
+  cur.remove();
+}
+
+// Token-aware typewriter — renders {{tokens}} as pills during animation
+async function typeWriteTokens(el, text, ms=7){
+  el.innerHTML='';
+  const cur=document.createElement('span'); cur.className='caret'; el.appendChild(cur);
+  // Split into chars and token chunks
+  const chunks = [];
+  let remaining = text;
+  while(remaining.length > 0){
+    const m = remaining.match(/^(\{\{[^}]+\}\})/);
+    if(m){ chunks.push({ type:'token', val:m[1] }); remaining=remaining.slice(m[1].length); }
+    else { chunks.push({ type:'char', val:remaining[0] }); remaining=remaining.slice(1); }
+  }
+  for(const chunk of chunks){
+    if(chunk.type==='token'){
+      const pill=document.createElement('span'); pill.className='ot-token'; pill.textContent=chunk.val;
+      el.insertBefore(pill, cur);
+      await new Promise(r=>setTimeout(r, ms*3));
+    } else if(chunk.val==='\n'){
+      el.insertBefore(document.createElement('br'), cur);
+      await new Promise(r=>setTimeout(r, ms));
+    } else {
+      el.insertBefore(document.createTextNode(chunk.val), cur);
+      await new Promise(r=>setTimeout(r, ms));
+    }
+  }
+  cur.remove();
+}
+
+
+// ─── SIGNAL DISCOVERY ANIMATION ───────────────────────────────────────
+const SD_SOURCES = [
+  {icon:'📰', name:'Google News'},
+  {icon:'💼', name:'LinkedIn Hiring'},
+  {icon:'💰', name:'Crunchbase Funding'},
+  {icon:'💬', name:'Reddit Discussions'},
+  {icon:'🚀', name:'Product Launches'},
+];
+const SD_FLOWS = ['Signal Sources','Signal Extraction','Insight Clustering','Campaign Strategy'];
+
+async function animateSignalDiscovery(){
+  const sd = document.getElementById('signalDiscovery');
+  const srcWrap = document.getElementById('sdSources');
+  sd.style.display='block';
+  setTimeout(()=>sd.classList.add('show'),50);
+
+  // Build source chips
+  srcWrap.innerHTML = SD_SOURCES.map((s,i)=>
+    `<div class="sd-src" id="sdSrc${i}"><div class="sd-src-dot"></div>${s.icon} ${s.name}</div>`
+  ).join('');
+
+  // Animate flow steps
+  for(let i=0;i<SD_FLOWS.length;i++){
+    if(i>0) document.getElementById('sdFlow'+(i-1)).className='sd-step done';
+    document.getElementById('sdFlow'+i).className='sd-step active';
+    await new Promise(r=>setTimeout(r,600));
+  }
+
+  // Activate sources one by one
+  for(let i=0;i<SD_SOURCES.length;i++){
+    document.getElementById('sdSrc'+i).className='sd-src active';
+    await new Promise(r=>setTimeout(r,320));
+    document.getElementById('sdSrc'+i).className='sd-src done';
+  }
+
+  // Mark all flows done
+  SD_FLOWS.forEach((_,i)=>document.getElementById('sdFlow'+i).className='sd-step done');
+}
+
+// ─── SALES READINESS SCORE ─────────────────────────────────────────────
+function computeReadiness(insights, srcs){
+  const pain = insights.filter(i=>i.type==='pain'||i.sentiment<55);
+  const highFreq = pain.filter(p=>p.frequency==='High').length;
+  // Signal Strength (0-40): based on high-frequency signals
+  const sigStrength = Math.min(40, Math.round((highFreq / Math.max(pain.length,1)) * 40 + (srcs.length/5)*8));
+  // ICP Fit (0-35): from diversity of signals and sources
+  const icpFit = Math.min(35, Math.round((insights.length/8)*25 + (srcs.length>=4?10:5)));
+  // Intent Indicators (0-25): from sentiment range
+  const avgSent = insights.reduce((s,i)=>s+(i.sentiment||50),0)/Math.max(insights.length,1);
+  const intent = Math.min(25, Math.round(((100-avgSent)/100)*25));
+  const total = Math.min(100, sigStrength + icpFit + intent);
+  const band = total>=80 ? 'High Priority' : total>=60 ? 'Active Prospect' : 'Monitor';
+  const col  = total>=80 ? '#059669' : total>=60 ? '#D97706' : '#8A94A6';
+  const desc = total>=80
+    ? 'Strong signal density and ICP fit. Prioritise immediate outreach — this account shows high intent indicators.'
+    : total>=60
+    ? 'Solid ICP fit with moderate signal strength. Include in active sequence and monitor engagement.'
+    : 'Early-stage signals. Nurture with educational content and revisit in 30 days.';
+  return {total, band, col, sigStrength, icpFit, intent, desc};
+}
+
+function renderReadiness(rs){
+  const block = document.getElementById('readinessBlock');
+  const pct = rs.total+'%';
+  document.getElementById('readinessCard').innerHTML=`
+    <div class="rs-dial" style="--rs-col:${rs.col};--rs-pct:${pct};">
+      <div class="rs-inner">
+        <div class="rs-score" style="color:${rs.col};">${rs.total}</div>
+        <div class="rs-max">/100</div>
+      </div>
+    </div>
+    <div class="rs-info">
+      <div class="rs-band" style="color:${rs.col};">${rs.band}</div>
+      <div class="rs-desc">${rs.desc}</div>
+      <div class="rs-bars">
+        <div class="rs-bar-row"><div class="rs-bar-lbl">Signal Strength</div><div class="rs-bar-track"><div class="rs-bar-fill" style="background:${rs.col};width:0" data-w="${rs.sigStrength/40*100}"></div></div><span style="font-family:monospace;font-size:10px;color:var(--text3);min-width:28px;text-align:right;">${rs.sigStrength}/40</span></div>
+        <div class="rs-bar-row"><div class="rs-bar-lbl">ICP Fit</div><div class="rs-bar-track"><div class="rs-bar-fill" style="background:${rs.col};width:0" data-w="${rs.icpFit/35*100}"></div></div><span style="font-family:monospace;font-size:10px;color:var(--text3);min-width:28px;text-align:right;">${rs.icpFit}/35</span></div>
+        <div class="rs-bar-row"><div class="rs-bar-lbl">Intent Indicators</div><div class="rs-bar-track"><div class="rs-bar-fill" style="background:${rs.col};width:0" data-w="${rs.intent/25*100}"></div></div><span style="font-family:monospace;font-size:10px;color:var(--text3);min-width:28px;text-align:right;">${rs.intent}/25</span></div>
+      </div>
+    </div>`;
+  block.classList.add('show');
+  setTimeout(()=>{
+    block.querySelectorAll('.rs-bar-fill').forEach(el=>el.style.width=el.dataset.w+'%');
+  },200);
+  document.getElementById('sv4').textContent = rs.total;
+}
+
+// ─── CRM SYNC ──────────────────────────────────────────────────────────
+function renderCRM(accountName, rs){
+  const ind = document.getElementById('crmIndicator');
+  const actions = [
+    {icon:'✅', text:`Opportunity Created${accountName?' — '+accountName:''}`},
+    {icon:'👤', text:'Lead Owner Assigned to PBM'},
+    {icon:'📧', text:`${rs.total>=80?'High Priority':'Active'} Outreach Sequence Attached`},
+    {icon:'📅', text:'QBR Slot Suggested — next 14 days'},
+  ];
+  document.getElementById('crmActions').innerHTML = actions.map(a=>
+    `<div class="crm-action">${a.icon} ${a.text}</div>`
+  ).join('');
+  ind.classList.add('show');
+}
+
+// ─── GTM STRATEGY BRIEF ────────────────────────────────────────────────
+function renderGTMStrategy(insights, personas, segment, industries, rs){
+  const pain = insights.filter(i=>i.type==='pain'||i.sentiment<55);
+  const topPainTheme = pain[0]?.theme || 'Operational fragmentation';
+  const cells = [
+    {lbl:'Target Segment', val:segment==='enterprise'?'Enterprise':'Mid-Market', sub:industries.join(', ')},
+    {lbl:'Primary Pain Point', val:topPainTheme, sub:pain[0]?.quote?.slice(0,80)+'…' || ''},
+    {lbl:'Economic Impact', val:rs.total>=80?'High — immediate revenue risk':'Moderate — operational drag', sub:'Based on signal density and frequency'},
+    {lbl:'Messaging Hook', val:pain[0]?`"${pain[0].theme}"`:'"Operational visibility gap"', sub:'Lead with this in Email 1'},
+    {lbl:'Recommended Persona', val:personas[0]||'—', sub:personas.length>1?'+ '+personas.slice(1).join(', '):'Primary decision-maker'},
+    {lbl:'Sales Priority', val:rs.band, sub:`Readiness score: ${rs.total}/100`},
+  ];
+  const grid = document.getElementById('gtmGrid');
+  grid.innerHTML = cells.map((cell,i)=>`
+    <div class="gtm-cell" id="gtmCell${i}">
+      <div class="gtm-cell-lbl">${cell.lbl}</div>
+      <div class="gtm-cell-val">${cell.val}</div>
+      ${cell.sub?`<div class="gtm-cell-sub">${cell.sub}</div>`:''}
+    </div>`).join('');
+  document.getElementById('gtmStrategy').classList.add('show');
+  cells.forEach((_,i)=>setTimeout(()=>document.getElementById('gtmCell'+i).classList.add('show'),i*80));
+}
+
+// ─── CAMPAIGN MESSAGING PILLARS ────────────────────────────────────────
+function renderCampaignPillars(insights, industries){
+  const pain = insights.filter(i=>i.type==='pain'||i.sentiment<55);
+  const pillars = [
+    {
+      cls:'pillar-pain', badge:'Pain-Driven Narrative',
+      title: pain[0]?.theme || 'Operational Drag',
+      impact:`${pain.filter(p=>p.frequency==='High').length} high-frequency signals detected across ${industries.join(' and ')} accounts`,
+      angle: pain[0]?.quote?.slice(0,100) || 'Business processes fragmented across systems, creating visibility gaps and manual overhead.',
+    },
+    {
+      cls:'pillar-ops', badge:'Operational Outcome',
+      title:'Reduce cycle time. Eliminate manual reconciliation.',
+      impact:'Finance teams reclaim 30–40% of close cycle time when moving to unified operations',
+      angle:'Lead with the hours lost. Connect every feature back to days saved, headcount freed, or risk removed.',
+    },
+    {
+      cls:'pillar-strat', badge:'Strategic Transformation',
+      title:'Build the foundation your next phase of growth demands.',
+      impact:'Leaders in your sector are already standardising — the window to move first is closing',
+      angle:'Frame the conversation as a growth decision, not a technology decision. One foundation, infinite scale.',
+    },
+  ];
+  document.getElementById('pillarsGrid').innerHTML = pillars.map((p,i)=>`
+    <div class="pillar-card ${p.cls}" id="pillar${i}">
+      <div class="pillar-badge">${p.badge}</div>
+      <div class="pillar-title">${p.title}</div>
+      <div class="pillar-impact">${p.impact}</div>
+      <div class="pillar-angle">${p.angle}</div>
+    </div>`).join('');
+  document.getElementById('campaignPillars').classList.add('show');
+  pillars.forEach((_,i)=>setTimeout(()=>document.getElementById('pillar'+i).classList.add('show'),i*120));
+}
+
+// ─── START PIPELINE ───────────────────────────────────────────────────
+// ─── PHASE 1: NORMALIZATION + DETERMINISTIC LOGIC ────────────────────
+
+// ADD: normalize helper — all comparisons use this
+function normalize(value){
+  return (value||'').toString().trim().toLowerCase();
+}
+
+// ADD: deterministic displacement message — frontend decides, model receives as fixed string
+function computeDisplacement(currentProduct){
+  const n = normalize(currentProduct);
+  if(n.includes('business one') || n.includes('b1'))
+    return 'Scale ceiling and reporting rigidity are limiting growth visibility. Companies running B1 typically reach a point where multi-entity consolidation, real-time inventory, and compliance reporting become manual workarounds rather than system capabilities.';
+  if(n.includes('private'))
+    return 'High TCO and upgrade rigidity are reducing agility. Heavily customised private cloud deployments create long upgrade cycles, expensive change requests, and growing technical debt that slows down the business.';
+  // greenfield / unknown / non-SAP
+  return 'Fragmented systems are creating visibility and integration gaps. Without a unified platform, finance, operations and supply chain run on disconnected tools, producing inconsistent data, manual consolidation, and delayed decisions.';
+}
+
+// ADD: deterministic objection mapping — frontend selects, model addresses without rigid phrasing
+function computeObjection(pipelineStage, persona){
+  const PERSONA_OBJECTIONS = {
+    'CFO / Finance Head': {
+      d_evaluate: { type: 2, label: 'Implementation cost vs ROI',       instruction: 'Address total cost of ownership and ROI timeline. The CFO needs the financial case, not the capability case. Quantify the cost of staying on the current system.' },
+      c_select:   { type: 1, label: 'Budget approval risk',             instruction: 'Address the internal approval process. A CFO building a business case needs ammunition for the board. Frame investment against the cost of inaction.' },
+    },
+    'CTO / IT Director': {
+      d_evaluate: { type: 2, label: 'Migration complexity',             instruction: 'Address implementation risk, data migration, and customisation dependencies directly. Acknowledge the complexity and explain what makes this migration different.' },
+      c_select:   { type: 1, label: 'Integration and cutover risk',     instruction: 'Address the cutover plan and integration approach. The CTO needs to know the business stays live during transition.' },
+    },
+    'CEO / MD / Founder': {
+      d_evaluate: { type: 2, label: 'Business disruption during change', instruction: 'Address the risk of operational disruption. Frame the conversation around continuity and speed to value, not the system change itself.' },
+      c_select:   { type: 1, label: 'Strategic priority conflict',      instruction: 'Address competing priorities. Frame this as an enabler of the existing strategic priorities, not a competing demand on leadership attention.' },
+    },
+    'COO / Operations Head': {
+      d_evaluate: { type: 2, label: 'Operational disruption',           instruction: 'Address concerns about disrupting day-to-day operations during implementation. The COO needs to know the business keeps running at full throughput.' },
+      c_select:   { type: 1, label: 'Team change management',           instruction: 'Address the people side of the transition. Acknowledge team resistance and explain the enablement approach.' },
+    },
+    'VP / Head of Supply Chain': {
+      d_evaluate: { type: 2, label: 'Data integrity during migration',  instruction: 'Address inventory accuracy risk during migration. A Supply Chain head cannot afford stock discrepancies during cutover. Explain how data integrity is maintained throughout.' },
+      c_select:   { type: 1, label: 'Supplier and 3PL integration',     instruction: 'Address the complexity of reconnecting supplier and logistics integrations post-migration. The Supply Chain head needs the ecosystem to stay connected.' },
+    },
+  };
+  const personaOverride = PERSONA_OBJECTIONS[persona];
+  if(personaOverride && personaOverride[normalize(pipelineStage)]) return personaOverride[normalize(pipelineStage)];
+  const STAGE_DEFAULTS = {
+    no_opportunity: { type: 3, label: 'Operational disruption',  instruction: 'Keep it light. Address concerns about disruption only if raised — they have no active buying process yet.' },
+    f_recognise:    { type: 3, label: 'Operational disruption',  instruction: 'Address concerns about disrupting day-to-day operations, particularly in high-throughput environments.' },
+    e_consider:     { type: 3, label: 'Operational disruption',  instruction: 'Address concerns about disrupting day-to-day operations, particularly in high-throughput environments.' },
+    d_evaluate:     { type: 2, label: 'Migration complexity',    instruction: 'Address implementation risk, data migration, and business continuity during transition.' },
+    c_select:       { type: 1, label: 'Cost and ROI scrutiny',   instruction: 'Address total cost of ownership, ROI timeline, and how the investment compares to the cost of staying on the current system.' },
+  };
+  return STAGE_DEFAULTS[normalize(pipelineStage)] || { type: 3, label: 'Operational disruption', instruction: 'Address concerns about disrupting day-to-day operations during implementation.' };
+}
+// ADD: pipeline stage label map for prompt context
+const PIPELINE_STAGE_LABELS = {
+  no_opportunity: 'No Opportunity: account not yet in CRM. Pure cold prospecting. No recognised need, no engagement. Build credibility and create curiosity.',
+  f_recognise:    'F - Recognise: earliest stage. Just become aware a problem exists. No active buying process.',
+  e_consider:  'E - Consider: exploring whether to act. Open to learning and building a view.',
+  d_evaluate:  'D - Evaluate: actively comparing options and vendors. Needs to justify a shortlist.',
+  c_select:    'C - Select: building the internal business case. Needs to de-risk the decision.',
+};
+// ADD: safe JSON parse with fallback
+function safeParseJSON(raw){
+  const clean = (raw||'').replace(/```json|```/g,'').trim();
+  // Attempt 1: parse full object
+  try{
+    const parsed = JSON.parse(clean);
+    if(typeof parsed === 'object' && parsed !== null) return parsed;
+  }catch(e){}
+  // Attempt 2: extract JSON object via regex (handles trailing truncation)
+  try{
+    const match = clean.match(/\{[\s\S]*\}/);
+    if(match){
+      const parsed = JSON.parse(match[0]);
+      if(typeof parsed === 'object' && parsed !== null){
+        console.warn('safeParseJSON: used regex extraction fallback');
+        return parsed;
+      }
+    }
+  }catch(e){}
+  // Attempt 3: if model returned a plain array (old contract), wrap it
+  try{
+    const match = clean.match(/\[[\s\S]*\]/);
+    if(match){
+      const arr = JSON.parse(match[0]);
+      if(Array.isArray(arr)){
+        console.warn('safeParseJSON: wrapped legacy array response');
+        return { emails: arr };
+      }
+    }
+  }catch(e){}
+  console.error('safeParseJSON: all parse attempts failed.\nRaw response:', raw);
+  return null;
+}
+
+async function startPipeline(){
+  if(running) return;
+  document.getElementById('mainRunBtn').disabled=true;
+  running=true;
+  showResults();
+
+  // Reset results
+  document.getElementById('errBar').style.display='none';
+  document.getElementById('insightsSec').classList.remove('show');
+  document.getElementById('emailSec').classList.remove('show');
+  document.getElementById('statsRow').classList.remove('show');
+  document.getElementById('resultsIdle').style.display='flex';
+  ['sv0','sv1','sv3','sv4'].forEach(id=>document.getElementById(id).textContent='—');
+  [1,2,3,4].forEach(n=>setPT(n,''));
+  // Reset new sections
+  ['signalDiscovery','readinessBlock','crmIndicator','gtmStrategy','campaignPillars','archPanel'].forEach(id=>{
+    const el=document.getElementById(id);
+    if(el){el.classList.remove('show');if(id==='signalDiscovery')el.style.display='none';}
+  });
+
+  // MODIFY: initialise run telemetry — riskScore strictly from AQI, never model-inferred
+  const runId = `run_${Date.now()}`;
+  runTelemetry = {
+    runId,
+    triggerId:     selectedTriggerMeta.triggerId || null,
+    sentTimestamp: new Date().toISOString(),
+    email1Reply:   false,
+    email2Reply:   false,
+    email3Reply:   false,
+    meetingBooked: false,
+  };
+  // riskScore: null unless AQI has been computed with valid component scores
+  const computedRiskScore = AQI.riskScore || null;
+  const computedAQIBand   = AQI.aqiBand   || null;
+
+  const mkt          = MARKETS[S.market];
+  const segKey       = S.segment;
+  const srcs = S.selectedSources.length > 0 ? S.selectedSources : MARKETS[S.market].sources[S.segment];
+  const segLbl       = segKey==='midmarket'?'Mid-Market':'Enterprise';
+  const revLabel     = S.revenues.length===1 ? S.revenues[0] : S.revenues.join(' or ');
+  const currentP     = S.currentProduct;
+  const pitchP       = S.pitchProduct;
+  const isGreenfield = normalize(currentP) === normalize('Unknown / Non-SAP');
+  const isMigration  = !isGreenfield && normalize(currentP) !== normalize(pitchP);
+  const personaList  = S.personas.join(', ');
+  const industryList = S.industries.join(', ');
+  const hasAccount   = !!(S.accountName);
+  const accountCtx   = hasAccount
+    ? `Target account: ${S.accountName}${S.accountDomain?' ('+S.accountDomain+')':''}. Make all insights feel specific to a company like ${S.accountName}.`
+    : '';
+  const senderSign   = S.senderName
+    ? `${S.senderName}${S.senderTitle ? '\n'+S.senderTitle : ''}\nSAP APAC Digital Hub`
+    : `SAP APAC Digital Hub Team`;
+
+  // PHASE 1: deterministic computed values — passed into prompts as fixed strings
+  const displacementMessage = computeDisplacement(currentP);
+  const objection           = computeObjection(S.pipelineStage, personaList);
+  const pipelineStageFull   = PIPELINE_STAGE_LABELS[normalize(S.pipelineStage)] || S.pipelineStage;
+
+  // Persona-specific commercial angle — frontend decides, model executes
+  const PERSONA_CTX = {
+    'CFO / Finance Head': {
+      angle:    'Financial control, close cycle compression, audit readiness, cost of carry, and the risk of fragmented data across entities.',
+      hook:     'Lead with close cycle time, manual reconciliation cost, or compliance exposure. The CFO measures pain in days lost and audit risk.',
+      cta:      'Frame the conversation as a financial review, not a product demo. "Understand the cost structure" not "see a demo".',
+      avoid:    'Do not lead with technology. Do not mention features. The CFO does not care about the system — they care about the number.',
+    },
+    'CTO / IT Director': {
+      angle:    'Technical debt, integration complexity, upgrade cycles, total cost of ownership, and the risk of maintaining customised legacy systems.',
+      hook:     'Lead with upgrade friction, integration sprawl, or the cost of keeping customised on-prem systems current. The CTO measures pain in engineering hours and vendor dependency.',
+      cta:      'Frame the conversation as an architecture review. "Map the integration surface" or "assess upgrade path complexity".',
+      avoid:    'Do not use business outcome language only — the CTO needs to understand the technical case. Acknowledge the migration complexity upfront.',
+    },
+    'CEO / MD / Founder': {
+      angle:    'Growth ceiling, competitive positioning, visibility across the business, and whether the current foundation can support the next phase of scale.',
+      hook:     'Lead with scale ceiling or competitive gap. The CEO measures pain in growth blocked and decisions made on stale data.',
+      cta:      'Frame the conversation as a growth conversation, not a system conversation. "How peers in your sector are building for scale" not "ERP upgrade".',
+      avoid:    'Do not go deep on features or technical detail. One sharp commercial observation, one proof point, one question.',
+    },
+    'COO / Operations Head': {
+      angle:    'Process fragmentation, cross-functional visibility, manual handoffs between teams, and operational throughput across plants or locations.',
+      hook:     'Lead with the cost of disconnected operations — teams running on different data, manual handoffs, no single view of what is happening across the business.',
+      cta:      'Frame the conversation as an operational efficiency review. "Map where the handoffs break down" or "benchmark your close cycle against peers".',
+      avoid:    'Do not lead with finance metrics. The COO cares about what happens between the numbers, not the numbers themselves.',
+    },
+    'VP / Head of Supply Chain': {
+      angle:    'Inventory accuracy, fulfilment speed, demand forecasting reliability, and the cost of manual reconciliation across plants, warehouses, and logistics partners.',
+      hook:     'Lead with inventory exposure or fulfilment gap. The Supply Chain head measures pain in stock write-offs, missed SLAs, and days of manual reconciliation.',
+      cta:      'Frame the conversation as a supply chain visibility assessment. "Understand where the reconciliation breaks down" not "see a demo".',
+      avoid:    'Do not lead with finance or IT language. Every sentence must connect to physical goods, movement, or fulfilment.',
+    },
+  };
+  const personaCtx = PERSONA_CTX[personaList] || {
+    angle: 'Business outcomes: time saved, cost reduced, risk removed, growth enabled.',
+    hook:  'Lead with the most relevant pain point from the signals above.',
+    cta:   'Frame the conversation as a review or assessment, not a product demo.',
+    avoid: 'Do not lead with features or technology.',
+  };
+
+  const stageCtx = [
+    {
+      cold:     'Cold outreach — they have never engaged with SAP. Build credibility from scratch. Do not reference any previous contact.',
+      warm:     'Warm outreach — they have previously engaged (event, download, referral). Acknowledge the shared context briefly in Email 1 to create continuity.',
+      reengage: 'Re-engagement — they had prior conversations with SAP that went cold. They know who we are. Do NOT treat this as a first contact. Reference that you have spoken before and frame this as picking up where you left off. Urgency = what has changed since they last engaged that makes now the right time to reconnect.',
+    }[S.buyingStage] || '',
+    `Pipeline stage: ${pipelineStageFull}. Calibrate urgency and depth accordingly. No Opportunity and F need maximum credibility and curiosity building. D needs differentiation and comparison confidence. C needs to resolve hesitation and de-risk the final decision.`,
+  ].filter(Boolean).join('\n');
+
+  const email1Instruction = S.buyingStage === 'reengage'
+    ? `EMAIL 1 — Step 1, send Day 1, ${mkt.tz} Tuesday 9:00am — ${segKey==='enterprise'?'130-150':'110-130'} words:
+Purpose: Re-open the conversation without being awkward about the gap.
+- Open: Hi {{prospect.first_name}}, then ONE line acknowledging you have spoken before — not apologetic, just direct ("We last spoke a while back about...").
+- Middle: One sharp observation — something has changed in the ${industryList} market since they went quiet that makes this relevant again. Make it feel like a reason to reconnect, not a chase.
+- FOMO: One line on what their peers have done in the time since.
+- Close: One direct, low-pressure question. Not "do you have time?" — something that invites a genuine reply.
+- P.S. line: A specific deadline or market change that creates urgency. Mandatory.`
+    : `EMAIL 1 — Step 1, send Day 1, ${mkt.tz} Tuesday 9:00am — ${segKey==='enterprise'?'160-175':'140-155'} words:
+Purpose: Pattern interrupt. Make them think "how did they know that?"
+- Open: Hi {{prospect.first_name}}, then ONE sharp observation from the pain points above, written as something you noticed — not something you are selling.
+- Middle: One line on what their ${industryList} competitors are doing right now (FOMO).
+- Close: One direct question that invites a reply. Not "do you have 30 minutes?" — something specific to their world.
+- P.S. line: A second urgency hook using a different angle — a stat, a deadline, or a competitor move. Mandatory.`;
+
+  try{
+    // SIGNAL DISCOVERY PHASE (visual animation before API call)
+    document.getElementById('resultsIdle').style.display='none';
+    await animateSignalDiscovery();
+
+    // STEP 1 ──────────────────────────────────────────────────────────
+    setPT(1,'running');
+
+    const p1 = isGreenfield
+      ? `You are a senior B2B GTM intelligence analyst at SAP APAC Digital Hub.
+
+Generate realistic buyer feedback from ${mkt.label} ${segLbl} companies in the ${industryList} sector(s) who are running fragmented, legacy, or non-SAP ERP systems, including Oracle, Microsoft Dynamics, legacy on-prem systems, or a combination of spreadsheets and disconnected tools.
+
+Target audience: ${personaList}
+Sources to simulate: ${srcs.join(', ')}
+Source guidance — simulate the right voice per source type:
+- G2 / Capterra / TrustRadius: direct user reviews, frustrated or satisfied, specific operational complaints
+- Reddit / SAP Community: candid peer discussion, implementation war stories, workaround frustrations
+- LinkedIn Discussions: professional framing, business impact language, leadership-level observations
+- Economic Times / Business Standard: sector-level pressure, regulatory change, competitive moves in the industry
+- NASSCOM / Gartner / IDC: analyst framing, market trend language, benchmark comparisons
+${accountCtx}
+
+CONTENT RULES:
+- Plain business language only. No product names, acronyms, or vendor references.
+- Themes must be universal ERP and operational pain — the kind felt by any ${industryList} business that lacks a unified system. E.g. "Finance team spending two weeks on month-end close", "No single view of inventory across locations", "Compliance reporting done manually in spreadsheets".
+- Quotes must sound like how ${personaList} speak in a board meeting — about time lost, costs, risk, growth blocked.
+- Do NOT reference any specific ERP vendor or product.
+
+Return a JSON array of EXACTLY 8 objects: 5 pain points (type:"pain"), 3 positives about what they want to achieve (type:"aspiration" — frame as what good looks like, not praise of a product).
+Each object:
+{
+  "source": "<one of: ${srcs.join(' | ')}>",
+  "theme": "<business problem or aspiration, max 8 words, plain English>",
+  "quote": "<1-2 sentences as ${personaList} would say it. Business impact only: time, money, risk, growth.>",
+  "sentiment": <integer 0-100; pain:15-45, aspiration:65-80>,
+  "frequency": "<High|Medium|Low>",
+  "type": "<pain|aspiration>"
+}
+Return ONLY the JSON array. Zero other text.`
+
+      : `You are a senior B2B GTM intelligence analyst at SAP APAC Digital Hub.
+
+Generate realistic buyer feedback specifically about "${currentP}" from ${mkt.label} ${segLbl} companies in the ${industryList} sector(s).
+
+Target audience: ${personaList}
+Sources to simulate: ${srcs.join(', ')}
+Source guidance — simulate the right voice per source type:
+- G2 / Capterra / TrustRadius: direct user reviews, specific product complaints or praise
+- Reddit / SAP Community: candid peer discussion, implementation war stories, upgrade frustrations
+- LinkedIn Discussions: professional framing, business impact language, leadership observations
+- Economic Times / Business Standard: sector pressure, regulatory change, competitive moves
+- NASSCOM / Gartner / IDC: analyst framing, market trend language, benchmark comparisons
+${accountCtx}
+
+CONTENT RULES:
+- Plain business language only. No acronyms, system names, or regulatory codes.
+- Themes must be BUSINESS PROBLEMS or WINS specific to ${industryList} companies using ${currentP}. E.g. for manufacturing: "Month-end close taking 3 extra days" or "Inventory reconciliation across 4 plants done manually". Not technical failures.
+- Quotes must sound like how ${personaList} speak in a board meeting — about time lost, costs, risk, growth blocked.
+- All feedback must be specific to ${currentP} experience in the ${industryList} sector.
+
+Return a JSON array of EXACTLY 8 objects: 5 pain points (type:"pain"), 3 positives (type:"praise").
+Each object:
+{
+  "source": "<one of: ${srcs.join(' | ')}>",
+  "theme": "<business problem or win, max 8 words, plain English>",
+  "quote": "<1-2 sentences as ${personaList} would say it. Business impact only: time, money, risk, growth.>",
+  "sentiment": <integer 0-100; pain:15-45, praise:68-88>,
+  "frequency": "<High|Medium|Low>",
+  "type": "<pain|praise>"
+}
+Return ONLY the JSON array. Zero other text.`;
+
+    const raw1=await claude(p1);
+    const insights=safeParseJSON(raw1);
+    if(!insights || !Array.isArray(insights) || insights.length < 5){
+      throw new Error('Feedback Mining failed. The API returned an unexpected response. Please retry.');
+    }
+    setPT(1,'done');
+
+    // Render insights + stats
+    document.getElementById('resultsIdle').style.display='none';
+    renderInsights(insights, srcs, personaList);
+    const pain = isGreenfield
+      ? insights.filter(i => i.type==='pain' || i.type==='aspiration' || i.sentiment<65)
+      : insights.filter(i => i.type==='pain' || i.sentiment<55);
+    const highPain=pain.filter(p=>p.frequency==='High').length;
+    document.getElementById('sv0').textContent=insights.length;
+    document.getElementById('sv1').textContent=highPain;
+    document.getElementById('statsRow').classList.add('show');
+
+    // #1 Talking Point — highest frequency pain
+    const topPain = pain.sort((a,b)=>{
+      const freq={'High':3,'Medium':2,'Low':1};
+      return (freq[b.frequency]||0)-(freq[a.frequency]||0) || a.sentiment-b.sentiment;
+    })[0];
+    if(topPain){
+      document.getElementById('topInsightText').textContent=topPain.theme;
+      document.getElementById('topInsightSub').textContent=topPain.quote;
+      const tib=document.getElementById('topInsightBlock');
+      tib.style.display='block';
+      setTimeout(()=>tib.classList.add('show'),100);
+    }
+    document.getElementById('statsRow').classList.add('show');
+
+    // Render Sales Readiness Score
+    const rs = computeReadiness(insights, srcs);
+    renderReadiness(rs);
+
+    // Render CRM Sync
+    renderCRM(S.accountName, rs);
+
+    // STEP 2 ──────────────────────────────────────────────────────────
+    setPT(2,'running');
+    await new Promise(r=>setTimeout(r,500));
+    renderThemes(pain);
+
+    // GTM Strategy Brief
+    renderGTMStrategy(insights, S.personas, segKey, S.industries, rs);
+
+    // Campaign Messaging Pillars
+    renderCampaignPillars(insights, S.industries);
+
+    setPT(2,'done');
+
+    // STEP 3 ──────────────────────────────────────────────────────────
+    setPT(3,'running');
+    await new Promise(r=>setTimeout(r,400));
+    setPT(3,'done');
+
+    // STEP 4 ──────────────────────────────────────────────────────────
+    setPT(4,'running');
+    document.getElementById('emailSec').classList.add('show');
+
+    // Pick best real customer reference for this config
+    const ref = pickCustomerRef(segKey, S.market, S.personas, pitchP, S.industries);
+
+    const fomoContext = S.market==='india'
+      ? `the pace at which Indian ${industryList} companies are moving. Competitors who delay modernisation are already losing ground on cost, speed and compliance readiness`
+      : S.market==='anz'
+      ? `the pressure ANZ ${industryList} businesses face to reduce operational complexity and meet tightening audit and reporting standards`
+      : `the speed at which leading ${industryList} companies across Southeast Asia are standardising operations to scale across borders`;
+
+    const playContext = isGreenfield
+      ? `Greenfield play: this account's current ERP stack is unknown or non-SAP. Do NOT reference what they are currently on. Frame pain points as universal operational problems any ${industryList} business at this scale would recognise. Position the pitch as the right foundation, not a migration.
+System weakness context (use this framing, do not reinterpret it): ${displacementMessage}`
+      : isMigration
+      ? `Migration play: they are on ${currentP}, you are positioning ${pitchP}. Pain points = reason to move. Frame urgency around competitors who have already migrated.
+System weakness context (use this framing, do not reinterpret it): ${displacementMessage}`
+      : `Expansion play: they are on ${currentP}, deepening commitment to ${pitchP}. Pain points = unlocked value they are leaving on the table.
+System weakness context (use this framing, do not reinterpret it): ${displacementMessage}`;
+
+    const accountLine = hasAccount
+      ? `Target account: ${S.accountName}${S.accountDomain?' ('+S.accountDomain+')':''}. Use {{account.name}} Outreach token in subject lines and body where it adds impact. Write the email body as if it is specifically for ${S.accountName}.`
+      : `No specific account. Use {{account.name}} token generically where a company name would add personalisation.`;
+
+    const p3=`You are Head of APAC Digital Hub at SAP writing a cold outreach email sequence for Outreach.io.
+
+These emails will be loaded directly into Outreach.io sequences and sent by a named sales rep. They must be written and formatted to work as Outreach.io sequence steps.
+
+SENDER: ${senderSign}
+TARGET: ${personaList} at ${mkt.label} ${segLbl} companies in the ${industryList} sector
+STAGE: ${stageCtx}
+PERSONA ANGLE — this is deterministic, follow it exactly:
+- Commercial angle: ${personaCtx.angle}
+- Email 1 hook: ${personaCtx.hook}
+- CTA framing: ${personaCtx.cta}
+- Avoid: ${personaCtx.avoid}
+${accountLine}
+${playContext}
+
+Buyer pain points from their ${currentP} experience in ${industryList}:
+${pain.slice(0,4).map(p=>`- ${p.theme}: "${p.quote}"`).join('\n')}
+
+REAL SAP CUSTOMER PROOF POINT (use in Email 2 by name):
+Company: ${ref.company} (${ref.industry})
+Outcome: ${ref.outcome}
+Context: ${ref.detail}
+
+OUTREACH.IO FORMATTING RULES, non-negotiable:
+- Use Outreach tokens exactly as written: {{prospect.first_name}}, {{account.name}}, {{sender.first_name}}
+- Every email must start with: Hi {{prospect.first_name}},
+- Every email must end with the sender block:
+  Best,
+  ${S.senderName ? S.senderName : '{{sender.first_name}}'}
+  ${S.senderTitle ? S.senderTitle : '{{sender.title}}'}
+  SAP APAC Digital Hub
+  {{sender.phone}}
+- Do NOT use em dashes anywhere. Not in subject lines, not in body copy, not in the P.S. Commas or full stops only.
+- Do NOT mention revenue figures, company size or financial metrics.
+- Do NOT mention SAP product names or module names in the body.
+- Do NOT name any competitor companies. Ever. Not even as examples.
+- Do NOT attribute any technology choice or platform to any named company unless they are the verified SAP customer reference provided below. You do not know what technology any other company uses.
+- When referencing what peers or competitors are doing, use generic language only: "leaders in your space", "peers in ${industryList}", "companies your size in ${mkt.label}", "others in your sector". Never name them.
+- Do NOT invent time-based urgency. Do NOT reference Q1, Q2, Q3, Q4, specific months, fiscal year-end, or any calendar deadline unless explicitly provided. Urgency must come from market movement and competitive pressure only.
+- Every sentence must carry commercial weight. Remove any sentence that does not add value, create urgency, or advance the argument. No filler. No pleasantries beyond the opening line.
+- Banned words and phrases: transformation, innovation, seamless, unlock, leverage, excited, thrilled, delighted, passionate, journey, ecosystem, synergy, holistic, best-in-class, world-class, cutting-edge, game-changer, empower, enable, scalable, robust, streamline. Use commercial language instead: margin exposure, consolidation, audit risk, cost structure, visibility gap, upgrade friction, scale ceiling, fragmentation, operational drag, close cycle, reconciliation delay.
+- Every claim must be commercially grounded. If you cannot connect it to time, money, risk, or growth: cut it.
+- Short sentences. One idea per paragraph. Active voice only.
+
+FOMO AND URGENCY — required in every email:
+- Reference what peers and leaders in the ${industryList} sector are doing, using generic language only, no company names.
+- Tie urgency to ${fomoContext}.
+- Make inaction feel costly, not just inconvenient.
+
+${email1Instruction}
+
+EMAIL 2, Step 2, send Day 3, ${mkt.tz} Thursday 8:30am, ${segLbl==='Enterprise'?'140-160':'120-140'} words:
+Purpose: Problem deep dive. Go deeper on the pain identified in Email 1.
+- Open: Hi {{prospect.first_name}}, then a one-line bridge from Email 1's theme — build on it, don't repeat it.
+- Middle: Break down the cost of the problem in concrete operational terms for {{account.name}}. Use {{role}} framing. Reference what {{industry}} peers are doing to address this pain.
+- Objection: Naturally acknowledge and address the following concern in 1-2 sentences. Do NOT use a formulaic opener, weave it into the flow naturally: ${objection.label}. ${objection.instruction}
+- CTA: One specific, low-friction question that invites a reply. Not "do you have time?" — something about their specific situation.
+
+EMAIL 3, Step 3, send Day 7, ${mkt.tz} Tuesday 9:00am, ${segLbl==='Enterprise'?'130-150':'110-130'} words:
+Purpose: Case study reference. Make the proof point land.
+- Open: Hi {{prospect.first_name}}, then a one-line observation that bridges to the proof point.
+- Middle: Name ${ref.company} directly. One sentence on their outcome: ${ref.outcome}. Connect it to {{account.name}}'s situation in one sentence. Reference {{role}} at {{company}} as the decision-maker profile.
+- One FOMO line: what companies that delayed this decision discovered after 6 months.
+- CTA: "I have 2 slots available this week. [Book a 20-minute call here: {{sender.meeting_link}}]" Use the exact Outreach token {{sender.meeting_link}}.
+
+EMAIL 4, Step 4, send Day 12, ${mkt.tz} Wednesday 7:45am, ${segLbl==='Enterprise'?'70-85':'60-75'} words:
+Purpose: Soft breakup. Low pressure. Leave the door open.
+- Open: Hi {{prospect.first_name}}, [one-line acknowledgement they are busy. Genuine, not passive-aggressive.]
+- One line: the single most important reason now matters more than later for {{company}} in {{industry}}. Tied to ${fomoContext}.
+- Soft close: "I'll step back — but if {{industry}} operations visibility becomes a priority, I'm one reply away."
+- Optional P.S.: One stat or peer reference that plants a seed without demanding action.
+
+SUBJECT LINE RULES (for all 3):
+- Under 44 characters including tokens
+- No ALL CAPS, exclamation marks, or question marks
+- Use {{prospect.first_name}}, {{account.name}}, {{role}}, {{company}}, or {{industry}} where they add impact. Use {{company}} and {{industry}} as generic personalization tokens throughout body copy.
+- Create curiosity or FOMO without being clickbait
+- Each subject must use a different format: Email 1 = observation/statement, Email 2 = social proof reference, Email 3 = urgency/deadline
+- Example formats: "{{account.name}} and the close cycle problem", "What ${ref.company} did last quarter", "Last note, {{prospect.first_name}}"
+
+Return a JSON object with exactly this structure. No other keys, no markdown, no commentary:
+{
+  "topTalkingPoint": "<one sentence: the single sharpest commercial observation anchored to the top pain theme>",
+  "displacementAngle": "<one sentence: the structural exposure of their current system, using the displacement framing provided above>",
+  "onePagerSummary": "<2-3 sentences: executive summary of this campaign for internal tracking: who is being targeted, what commercial problem anchors the outreach, and what the sequence is designed to achieve>",
+  "emails": [
+    { "step": 1, "subject": "<subject>", "timing": "<Day 1 - Tuesday, 9:00 AM ${mkt.tz}>", "body": "<full body with \\n line breaks>" },
+    { "step": 2, "subject": "<subject>", "timing": "<Day 3 - Thursday, 8:30 AM ${mkt.tz}>", "body": "<full body>" },
+    { "step": 3, "subject": "<subject>", "timing": "<Day 7 - Tuesday, 9:00 AM ${mkt.tz}>", "body": "<full body>" },
+    { "step": 4, "subject": "<subject>", "timing": "<Day 12 - Wednesday, 7:45 AM ${mkt.tz}>", "body": "<full body>" }
+  ]
+}
+${selectedTriggerMeta.triggerId ? `TRIGGER_ID for this run: ${selectedTriggerMeta.triggerId}. Do not echo this in any field. Audit reference only.` : ''}
+${computedRiskScore ? `RISK LEVEL (frontend-computed from AQI, do not modify): ${computedRiskScore}
+Lead Email 1 angle: ${computedRiskScore==='High'?'financial exposure and margin risk':computedRiskScore==='Medium'?'operational inefficiency and visibility gaps':'exploratory hypothesis about what is possible'}` : 'RISK LEVEL: not computed. Do not infer or fabricate a risk level. Use operational efficiency framing for Email 1.'}
+Valid JSON only. No markdown. No extra keys.`;
+
+    let result = null;
+    for(let attempt3 = 0; attempt3 < 2; attempt3++){
+      if(attempt3 > 0){
+        setPT(3,'running');
+        document.getElementById('errBar').textContent='⏳ Sequence build retrying...';
+        document.getElementById('errBar').style.display='block';
+        await new Promise(r=>setTimeout(r,3000));
+        document.getElementById('errBar').style.display='none';
+      }
+      const raw3 = await claude(p3);
+      result = safeParseJSON(raw3);
+      if(result && Array.isArray(result.emails) && result.emails.length >= 4) break;
+      result = null;
+    }
+    if(!result){
+      throw new Error('Sequence Build failed after 2 attempts. Please retry.');
+    }
+    // Extract emails array from new contract
+    const emails = result.emails.map(e => ({
+      subject: e.subject || '',
+      timing:  e.timing  || '',
+      body:    e.body    || '',
+    }));
+    emailStore = emails;
+
+    // ADD: record trigger send for telemetry
+    recordTriggerSend(selectedTriggerMeta.triggerId);
+
+    // ADD: assemble metadata client-side — never from model output
+    const runMetadata = {
+      triggerId:     selectedTriggerMeta.triggerId || null,
+      triggerName:   selectedTriggerMeta.triggerName || null,
+      effectiveWeight: selectedTriggerMeta.effectiveWeight,
+      marketPenetration: selectedTriggerMeta.marketPenetration,
+      aqiBand:       computedAQIBand,
+      riskScore:     computedRiskScore,
+      pipelineStage: S.pipelineStage,
+      buyingStage:   S.buyingStage,
+      runId,
+      generatedAt:   new Date().toISOString(),
+    };
+
+    for(let i=0;i<4;i++){
+      const subjEl = document.getElementById('eS'+i);
+      subjEl.innerHTML = '';
+      if(emails[i]?.subject){
+        const parts = emails[i].subject.split(/(\{\{[^}]+\}\})/g);
+        parts.forEach(p => {
+          if(p.match(/^\{\{[^}]+\}\}$/)){
+            const pill = document.createElement('span');
+            pill.className='ot-token'; pill.textContent=p;
+            subjEl.appendChild(pill);
+          } else if(p) subjEl.appendChild(document.createTextNode(p));
+        });
+      } else { subjEl.textContent='—'; }
+      document.getElementById('eT'+i).textContent='📅 '+(emails[i]?.timing||'—');
+    }
+
+    // Typewrite email 1 with token pills, render 2+3+4 instantly
+    await typeWriteTokens(document.getElementById('eB0'), emails[0]?.body||'', 7);
+    renderEmailBody(document.getElementById('eB1'), emails[1]?.body||'');
+    renderEmailBody(document.getElementById('eB2'), emails[2]?.body||'');
+    renderEmailBody(document.getElementById('eB3'), emails[3]?.body||'');
+
+    // Show customer reference badge
+    const badge = document.getElementById('refBadge');
+    const badgeName = document.getElementById('refBadgeName');
+    if(badge && badgeName){
+      badgeName.textContent = ref.company + ' · ' + ref.industry;
+      badge.style.display = 'flex';
+    }
+
+    setPT(4,'done');
+    document.getElementById('sv3').textContent='4';
+    document.getElementById('archPanel').classList.add('show');
+
+    // Capture pagerData for 1-pager generation
+    pagerData = {
+      config: {
+        currentProduct:   S.currentProduct,
+        pitchProduct:     S.pitchProduct,
+        industries:       [...S.industries],
+        segment:          segKey,
+        segmentLabel:     segLbl,
+        market:           mkt.label,
+        marketFlag:       mkt.flag,
+        revenues:         [...S.revenues],
+        personas:         [...S.personas],
+        buyingStage:      S.buyingStage,
+        pipelineStage:    S.pipelineStage,
+        pipelineStageFull,
+        accountName:      S.accountName,
+        accountDomain:    S.accountDomain,
+        senderName:       S.senderName,
+        senderTitle:      S.senderTitle,
+        sources:          srcs,
+        displacementMessage,
+        objection,
+      },
+      // Model-returned strategic fields
+      topTalkingPoint:   result.topTalkingPoint   || null,
+      displacementAngle: result.displacementAngle || null,
+      onePagerSummary:   result.onePagerSummary   || null,
+      // Legacy fields for backward compat
+      topPain:   topPain || null,
+      insights:  insights.slice(0, 5),
+      ref,
+      emails,
+      emailCount: emails.length,
+      // Client-assembled metadata — never from model
+      metadata:  runMetadata,
+      runDate:   new Date().toLocaleDateString('en-IN',{day:'numeric',month:'long',year:'numeric'}),
+    };
+
+    // Save run — show polished modal instead of browser prompt
+    const defaultName = [S.accountName, S.industries[0], mkt.label].filter(Boolean).join(' · ') || 'Unnamed run';
+    const runName = await showRunNameModal(defaultName);
+    pagerData.runName = runName;
+    await saveRun(emails, topPain, runName);
+
+  }catch(err){
+    document.getElementById('errBar').textContent='⚠ '+(err.message||'Something went wrong. Please retry.');
+    document.getElementById('errBar').style.display='block';
+    document.getElementById('resultsIdle').style.display='none';
+    [1,2,3].forEach(n=>setPT(n,''));
+  }
+
+  running=false;
+  document.getElementById('mainRunBtn').disabled=false;
+  document.getElementById('rerunBtn').disabled=false;
+}
+
+async function rerunPipeline(){
+  if(running) return;
+  document.getElementById('rerunBtn').disabled=true;
+  // Reset and re-run without going back to wizard
+  document.getElementById('insightsSec').classList.remove('show');
+  document.getElementById('emailSec').classList.remove('show');
+  document.getElementById('statsRow').classList.remove('show');
+  document.getElementById('errBar').style.display='none';
+  document.getElementById('resultsIdle').style.display='flex';
+  const tib=document.getElementById('topInsightBlock');
+  tib.style.display='none'; tib.classList.remove('show');
+  [1,2,3,4].forEach(n=>setPT(n,''));
+  // Reset new sections on rerun
+  ['signalDiscovery','readinessBlock','crmIndicator','gtmStrategy','campaignPillars','archPanel'].forEach(id=>{const el=document.getElementById(id);if(el){el.classList.remove('show');if(id==='signalDiscovery')el.style.display='none';}});
+  document.getElementById('mainRunBtn').disabled=true;
+  await startPipeline();
+}
+
+// ─── 1-PAGER MODAL ───────────────────────────────────────────────────
+
+function closePager(){ document.getElementById('pagerOverlay').classList.remove('show'); }
+function closePagerIfOutside(e){ if(e.target===document.getElementById('pagerOverlay')) closePager(); }
+
+function generateOnePager(){
+  if(!pagerData){ alert('Run the pipeline first to generate a 1-pager.'); return; }
+  const d = pagerData;
+  const c = d.config;
+
+  const campaignName    = d.runName || [c.accountName, c.industries?.[0], c.market].filter(Boolean).join(' · ') || 'Campaign Intelligence Brief';
+  const stageLabel      = {cold:'Cold Outreach',warm:'Warm Outreach',reengage:'Re-Engage'}[c.buyingStage] || c.buyingStage || '—';
+  const pipelineLabel   = {no_opportunity:'No Opportunity',f_recognise:'F - Recognise',e_consider:'E - Consider',d_evaluate:'D - Evaluate',c_select:'C - Select'}[c.pipelineStage] || c.pipelineStage || '—';
+  const isGF            = normalize(c.currentProduct||'') === normalize('Unknown / Non-SAP');
+  const talkingPoint    = d.topTalkingPoint || d.topPain?.theme || null;
+  const talkingQuote    = d.topPain?.quote  || null;
+  const displacement    = d.displacementAngle || c.displacementMessage || null;
+  const execSummary     = d.onePagerSummary  || null;
+  const metaAQI         = d.metadata?.aqiBand   || null;
+  const metaRisk        = d.metadata?.riskScore  || null;
+  const metaRunId       = d.metadata?.runId      || null;
+
+  // Top 3 signals by frequency then severity
+  const topSignals = (d.insights||[])
+    .filter(i => i.type==='pain' || i.type==='aspiration' || i.sentiment < 65)
+    .sort((a,b)=>{ const f={'High':3,'Medium':2,'Low':1}; return (f[b.frequency]||0)-(f[a.frequency]||0)||(a.sentiment||50)-(b.sentiment||50); })
+    .slice(0,3);
+
+  const signalHTML = topSignals.map(s => `
+    <div class="pb-signal ${(s.frequency||'').toLowerCase()}">
+      <div class="pb-signal-theme">${x(s.theme)}</div>
+      <div class="pb-signal-quote">"${x(s.quote)}"</div>
+    </div>`).join('');
+
+  const seqHTML = (d.emails||[]).slice(0,4).map((e,i) => `
+    <div class="pb-seq-row">
+      <div class="pb-seq-num">EMAIL ${i+1}<span>Day ${[1,5,12][i]}</span></div>
+      <div class="pb-seq-content">
+        <div class="pb-seq-subject">${x(e.subject||'—')}</div>
+        <div class="pb-seq-desc">${i===0?'Pattern interrupt, commercial observation':''}${i===1?'Social proof + objection address':''}${i===2?'Commercial consequence — final close':''}</div>
+      </div>
+    </div>`).join('');
+
+  const configRows = [
+    ['Current Stack', isGF ? 'Unknown / Non-SAP' : c.currentProduct],
+    ['Pitching',      c.pitchProduct],
+    ['Industry',      (c.industries||[]).join(', ')],
+    ['Personas',      (c.personas||[]).join(', ')],
+    ['Revenue',       (c.revenues||[]).join(', ')],
+    ['Buying Stage',  stageLabel],
+    ['Pipeline',      pipelineLabel],
+    ['Objection',     c.objection?.label || '—'],
+    metaAQI  ? ['AQI Band', metaAQI]  : null,
+    metaRisk ? ['Risk',     metaRisk] : null,
+  ].filter(Boolean).map(([k,v]) => `
+    <div class="pb-config-row">
+      <div class="pb-config-key">${x(k)}</div>
+      <div class="pb-config-val">${x(v||'—')}</div>
+    </div>`).join('');
+
+  document.getElementById('pagerBody').innerHTML = `
+    <div class="pb-header">
+      <div>
+        <div class="pb-campaign-label">SAP APAC Digital Hub · Campaign Intelligence Brief</div>
+        <div class="pb-campaign-name">${x(campaignName)}</div>
+        <div class="pb-campaign-meta">
+          ${x(d.runDate||'')}${c.senderName ? ' &nbsp;·&nbsp; ' + x(c.senderName) : ''}${c.senderTitle ? ' &nbsp;·&nbsp; ' + x(c.senderTitle) : ''}
+          ${c.accountName ? '<br>Sample Account: <strong style="color:rgba(255,255,255,.65)">' + x(c.accountName) + '</strong>' : ''}
+        </div>
+      </div>
+      <div class="pb-badges">
+        <span class="pb-badge market">${x(c.marketFlag||'')} ${x(c.market||'')}</span>
+        <span class="pb-badge segment">${x(c.segmentLabel||'')}</span>
+        <span class="pb-badge stage">${x(pipelineLabel)}</span>
+      </div>
+    </div>
+
+    ${talkingPoint ? `
+    <div class="pb-anchor">
+      <div class="pb-anchor-eyebrow">#1 Talking Point</div>
+      <div class="pb-anchor-content">
+        <div class="pb-anchor-theme">${x(talkingPoint)}</div>
+        ${talkingQuote ? `<div class="pb-anchor-sub">"${x(talkingQuote)}"</div>` : ''}
+        ${displacement ? `<div class="pb-displacement"><strong>Displacement angle:</strong> ${x(displacement)}</div>` : ''}
+      </div>
+    </div>` : ''}
+
+    <div class="pb-content">
+      <div class="pb-col">
+        <div class="pb-section">
+          <div class="pb-section-title">Campaign Configuration</div>
+          <div class="pb-config-list">${configRows}</div>
+          <div style="margin-top:8px;font-size:9px;color:#9ca3af"><strong style="color:#6b7280">Sources:</strong> ${x((c.sources||[]).join(' · '))}</div>
+        </div>
+
+        ${topSignals.length ? `
+        <div class="pb-section">
+          <div class="pb-section-title">Top Buyer Signals</div>
+          <div class="pb-signals">${signalHTML}</div>
+        </div>` : ''}
+      </div>
+
+      <div class="pb-col">
+        <div class="pb-section">
+          <div class="pb-section-title">Outreach Sequence</div>
+          <div class="pb-sequence">${seqHTML}</div>
+          ${d.ref ? `
+          <div class="pb-proof">
+            <div class="pb-proof-label">📎 Proof Point, Email 2</div>
+            <div class="pb-proof-text"><strong>${x(d.ref.company)}</strong> (${x(d.ref.industry)}) · ${x(d.ref.outcome)}.</div>
+          </div>` : ''}
+        </div>
+      </div>
+    </div>
+
+    ${execSummary ? `
+    <div class="pb-summary">
+      <div class="pb-summary-label">Campaign Summary</div>
+      <div class="pb-summary-text">${x(execSummary)}</div>
+    </div>` : ''}
+
+    <div class="pb-footer">
+      <span class="pb-footer-left">SAP APAC Digital Hub · Outreach Intelligence Platform · Internal use only</span>
+      <span class="pb-footer-right">${metaRunId ? 'Run: ' + x(metaRunId) : ''}</span>
+    </div>`;
+
+  document.getElementById('pagerOverlay').classList.add('show');
+}
+
+// ─── 1-PAGER DOWNLOAD ────────────────────────────────────────────────
+async function exportAll(){
+  if(!emailStore[0]?.subject){ alert('Run the pipeline first.'); return; }
+
+  const btn = document.getElementById('exportAllBtn');
+  btn.textContent = '⏳ Generating…';
+  btn.disabled = true;
+
+  try {
+    const exportData = {
+      runName:  pagerData?.runName || 'SAP Outreach Sequence',
+      runDate:  pagerData?.runDate || new Date().toLocaleDateString('en-IN',{day:'numeric',month:'long',year:'numeric'}),
+      config:   pagerData?.config  || {},
+      emails:   emailStore,
+    };
+
+    const prompt = `You are a file generation assistant. Generate a Word document (.docx) as a base64-encoded string for the following email sequence data.
+
+DATA:
+${JSON.stringify(exportData, null, 2)}
+
+INSTRUCTIONS:
+Use the docx npm package (already installed) to generate a professional Word document.
+The document must contain:
+1. A header with the run name, date, sender info and sample account
+2. A campaign configuration table (2 columns: label | value) covering current stack, pitch product, market, segment, industry, personas, revenue band, buying stage, pipeline stage
+3. All 3 emails, each with: a coloured header bar (blue), subject row, timing row, full body with line breaks preserved
+4. A footer line: "SAP APAC Digital Hub · Internal use only"
+
+Use Arial font throughout. Use #0066FF as the primary colour for headings.
+A4 page size, 2cm margins.
+
+Write a complete Node.js script, execute it, and return ONLY the base64 string of the resulting .docx file.
+Return format: {"base64": "<base64string>", "filename": "<runname>.docx"}
+No markdown. No explanation. Just valid JSON.`;
+
+    const response = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 4000,
+        messages: [{ role: 'user', content: prompt }],
+      }),
+    });
+
+    const data = await response.json();
+    const text = (data.content?.[0]?.text || '').trim();
+
+    // Try to parse base64 response
+    let parsed;
+    try { parsed = JSON.parse(text.replace(/```json|```/g,'').trim()); } catch(e) { parsed = null; }
+
+    if(parsed?.base64){
+      const binary = atob(parsed.base64);
+      const bytes = new Uint8Array(binary.length);
+      for(let i=0;i<binary.length;i++) bytes[i]=binary.charCodeAt(i);
+      const blob = new Blob([bytes], { type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = (parsed.filename || 'sequence.docx');
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    } else {
+      // Fallback: plain text export
+      const sep = '─'.repeat(60);
+      const txt = emailStore.map((e,i) =>
+        `${sep}\nEMAIL ${i+1} — ${e.timing||''}\nSubject: ${e.subject}\n${sep}\n\n${e.body}`
+      ).join('\n\n');
+      const blob = new Blob([txt], { type: 'text/plain' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'sequence.txt';
+      document.body.appendChild(a); a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }
+  } catch(err) {
+    console.error('Export error:', err);
+    alert('Export failed — please try again.');
+  } finally {
+    btn.textContent = '📋 Export';
+    btn.disabled = false;
+  }
+}
+
+// ─── 1-PAGER PRINT ───────────────────────────────────────────────────
+// Injects modal content into a new window so only the 1-pager prints
+function downloadOnePager(){
+  const body = document.getElementById('pagerBody');
+  if(!body || !body.innerHTML.trim()){ alert('Generate the 1-pager first.'); return; }
+
+  const title    = pagerData?.runName || 'Campaign Intelligence Brief';
+  const filename = (title.replace(/[^a-z0-9]/gi,'_').toLowerCase() || '1pager') + '.html';
+
+  // Collect all pager-* CSS from the page to inline it
+  const styles = Array.from(document.styleSheets).flatMap(s => {
+    try{ return Array.from(s.cssRules).map(r => r.cssText); } catch(e){ return []; }
+  }).filter(r => r.includes('pb-') || r.includes('pager-body') || r.includes('@import') || r.includes('Plus Jakarta')).join('\n');
+
+  const html = `<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>${title.replace(/</g,'&lt;')}</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Plus Jakarta Sans',Arial,sans-serif;background:#eef0f5;padding:32px 16px 48px;}
+.page{background:#fff;max-width:820px;margin:0 auto;box-shadow:0 8px 40px rgba(0,0,0,.15);overflow:hidden;}
+.dl-topbar{background:#0A0A1E;padding:10px 20px;display:flex;align-items:center;justify-content:space-between;}
+.dl-topbar-title{color:rgba(255,255,255,.35);font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;}
+.dl-print-btn{background:#0066FF;color:#fff;border:none;border-radius:5px;padding:6px 16px;font-family:inherit;font-size:11px;font-weight:700;cursor:pointer;}
+.dl-print-btn:hover{opacity:.85;}
+${styles}
+@media print{
+  body{background:#fff;padding:0;}
+  .page{box-shadow:none;}
+  .dl-topbar{display:none;}
+  *{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important;}
+}
+</style>
+</head>
+<body>
+<div class="page">
+  <div class="dl-topbar">
+    <span class="dl-topbar-title">SAP APAC Digital Hub · Campaign Intelligence Brief</span>
+    <button class="dl-print-btn" onclick="window.print()">🖨 Print / Save PDF</button>
+  </div>
+  <div class="pager-body">${body.innerHTML}</div>
+</div>
+</body>
+</html>`;
+
+  const blob = new Blob([html], { type:'text/html;charset=utf-8' });
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement('a');
+  a.href = url; a.download = filename;
+  document.body.appendChild(a); a.click();
+  document.body.removeChild(a);
+  setTimeout(() => URL.revokeObjectURL(url), 2000);
+}
+
+async function saveRun(emails, topPain, runName){
+  const MAX_RUNS = 20;
+  if(!runName) return; // user chose not to save
+  try{
+    const m = MARKETS[S.market];
+    const run = {
+      id:     'run-' + Date.now(),
+      ts:     new Date().toISOString(),
+      name:   runName || 'Unnamed run',
+      account: S.accountName || null,
+      domain:  S.accountDomain || null,
+      sender:  S.senderName || null,
+      stage:   S.buyingStage || 'cold',
+      config: {
+        currentProduct: S.currentProduct,
+        pitchProduct:   S.pitchProduct,
+        industries:     [...S.industries],
+        segment:        S.segment,
+        market:         m.label,
+        marketFlag:     m.flag,
+        revenues:       [...S.revenues],
+        personas:       [...S.personas],
+      },
+      topPain: topPain ? { theme: topPain.theme, quote: topPain.quote } : null,
+      emails:  emails.map(e=>({ subject:e.subject, timing:e.timing, body:e.body })),
+    };
+
+    let existing = [];
+    try {
+      const res = await window.storage.get(RUNS_KEY, true);
+      if(res) existing = JSON.parse(res.value);
+    } catch(e){}
+
+    existing.unshift(run);
+    if(existing.length > MAX_RUNS) existing = existing.slice(0, MAX_RUNS);
+    await window.storage.set(RUNS_KEY, JSON.stringify(existing), true);
+    renderRunsCount(existing.length);
+  } catch(e){
+    console.warn('Save run failed:', e);
+  }
+}
+
+async function loadRuns(){
+  try{
+    const res = await window.storage.get(RUNS_KEY, true);
+    if(!res) return [];
+    return JSON.parse(res.value);
+  } catch(e){ return []; }
+}
+
+async function deleteRun(id, e){
+  e.stopPropagation();
+  try{
+    let runs = await loadRuns();
+    runs = runs.filter(r=>r.id!==id);
+    await window.storage.set(RUNS_KEY, JSON.stringify(runs), true);
+    renderRunsCount(runs.length);
+    await renderRunsDrawer();
+  } catch(e){ console.warn('Delete run failed:', e); }
+}
+
+function renderRunsCount(count){
+  const el = document.getElementById('runsCount');
+  if(el) el.textContent = count;
+}
+
+function fmt(iso){
+  const d = new Date(iso);
+  return d.toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'})
+    + ' ' + d.toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'});
+}
+
+async function renderRunsDrawer(){
+  const list = document.getElementById('runsList');
+  list.innerHTML = '<div class="runs-empty" style="color:var(--text3);font-size:13px;padding:20px 0">Loading...</div>';
+  const runs = await loadRuns();
+  renderRunsCount(runs.length);
+
+  if(!runs.length){
+    list.innerHTML = '<div class="runs-empty">No saved runs yet. Complete a pipeline run to save it here.</div>';
+    return;
+  }
+
+  list.innerHTML = '';
+  runs.forEach(run=>{
+    const c = run.config;
+    const isMig = c.currentProduct !== c.pitchProduct;
+    const item = document.createElement('div');
+    item.className = 'run-item';
+    item.dataset.id = run.id;
+
+    const chips = [
+      c.marketFlag + ' ' + c.market,
+      c.segment === 'midmarket' ? 'Mid-Market' : 'Enterprise',
+      isMig ? c.currentProduct.replace('S/4HANA ','').replace('SAP ','') + ' → ' + c.pitchProduct.replace('S/4HANA ','').replace('SAP ','') : c.pitchProduct.replace('S/4HANA ','').replace('SAP ',''),
+    ].filter(Boolean);
+
+    item.innerHTML = `
+      <div class="run-item-header">
+        <div>
+          <div class="run-item-account">${run.name || run.account || '— Unnamed run —'}</div>
+          <div style="font-size:11px;color:var(--text3);margin-top:2px">${run.account ? '🏢 '+run.account+' · ' : ''}${fmt(run.ts)}</div>
+        </div>
+        <button class="run-item-del" onclick="deleteRun('${run.id}',event)">✕</button>
+      </div>
+      <div class="run-item-chips">
+        ${chips.map(ch=>`<span class="run-item-chip">${ch}</span>`).join('')}
+        ${(c.industries||[]).slice(0,2).map(i=>`<span class="run-item-chip">🏭 ${i.split('/')[0].trim()}</span>`).join('')}
+        ${c.personas.map(p=>`<span class="run-item-chip">👤 ${p.split(' / ')[0]}</span>`).join('')}
+        ${run.stage ? `<span class="run-item-chip">${{cold:'❄ Cold',warm:'🌤 Warm',reengage:'🔄 Re-engage'}[run.stage]||run.stage}</span>` : ''}
+      </div>
+      ${run.topPain ? `<div style="margin-top:8px;font-size:11px;color:var(--red);font-weight:700">⚡ ${run.topPain.theme}</div>` : ''}
+      <div class="run-item-emails">
+        ${(run.emails||[]).map((em,i)=>`
+          <div class="run-email-mini">
+            <div class="run-email-mini-subj">Email ${i+1} — ${em.subject||'—'}</div>
+            <div class="run-email-mini-body">${em.body||''}</div>
+          </div>`).join('')}
+      </div>`;
+
+    item.addEventListener('click', (e)=>{
+      if(e.target.classList.contains('run-item-del')) return;
+      item.classList.toggle('expanded');
+    });
+
+    list.appendChild(item);
+  });
+}
+
+function toggleRunsDrawer(){
+  const drawer = document.getElementById('runsDrawer');
+  const overlay = document.getElementById('runsOverlay');
+  const isOpen = drawer.classList.contains('open');
+  if(isOpen){
+    drawer.classList.remove('open');
+    overlay.classList.remove('show');
+  } else {
+    drawer.classList.add('open');
+    overlay.classList.add('show');
+    renderRunsDrawer();
+  }
+}
+
+// Init — load run count on page load
+(async()=>{
+  try{
+    const runs = await loadRuns();
+    if(runs.length) renderRunsCount(runs.length);
+  } catch(e){}
+})();
+
+
+// ─── RUN NAME MODAL ──────────────────────────────────────────────────
+let _rnResolve = null;
+
+function showRunNameModal(defaultVal){
+  return new Promise(resolve => {
+    _rnResolve = resolve;
+    const input = document.getElementById('rnInput');
+    input.value = defaultVal;
+    const overlay = document.getElementById('rnOverlay');
+    overlay.classList.add('show');
+    setTimeout(()=>{ input.focus(); input.select(); }, 220);
+    input.onkeydown = e => { if(e.key==='Enter') submitRunName(true); };
+  });
+}
+
+function submitRunName(save){
+  const overlay = document.getElementById('rnOverlay');
+  overlay.classList.remove('show');
+  const val = document.getElementById('rnInput').value.trim();
+  if(_rnResolve){
+    _rnResolve(save ? (val || 'Unnamed run') : null);
+    _rnResolve = null;
+  }
+}
+
+// ─── OUTREACH TOKEN PILL RENDERER ────────────────────────────────────
+function renderEmailBody(el, text){
+  if(!text){ el.textContent=''; return; }
+  const lines = text.split('\n');
+  el.innerHTML = '';
+  lines.forEach((line, i) => {
+    if(i > 0){
+      el.appendChild(document.createElement('br'));
+    }
+    // Split on {{tokens}} and render each part
+    const parts = line.split(/(\{\{[^}]+\}\})/g);
+    parts.forEach(part => {
+      if(part.match(/^\{\{[^}]+\}\}$/)){
+        const pill = document.createElement('span');
+        pill.className = 'ot-token';
+        pill.textContent = part;
+        el.appendChild(pill);
+      } else if(part) {
+        el.appendChild(document.createTextNode(part));
+      }
+    });
+  });
+}
+
+function renderInsights(insights, srcs, personaLabel){
+  document.getElementById('insightsMeta').textContent=`${srcs.length} sources - ${insights.length} signals - ${personaLabel}`;
+  const grid=document.getElementById('insightsGrid');
+  grid.innerHTML='';
+  insights.forEach((ins,i)=>{
+    const s=ins.sentiment??50;
+    const col=s<45?'#DC2626':s<65?'#D97706':'#059669';
+    const type=ins.type||(s<55?'pain':'praise');
+    const el=document.createElement('div');
+    el.className='ic';
+    el.innerHTML=`
+      <div class="ic-top">
+        <div class="ic-src">${x(ins.source)}</div>
+        <div class="ic-freq ${x(ins.frequency)}">${x(ins.frequency)}</div>
+      </div>
+      <div class="ic-theme">${x(ins.theme)}</div>
+      <div class="ic-quote ${type}">${x(ins.quote)}</div>
+      <div class="ic-bar-row">
+        <div class="ic-bar-track"><div class="ic-bar-fill" style="background:${col}" data-w="${s}"></div></div>
+        <div class="ic-bar-lbl">${s}/100</div>
+      </div>`;
+    grid.appendChild(el);
+    setTimeout(()=>{
+      el.classList.add('show');
+      setTimeout(()=>el.querySelector('.ic-bar-fill').style.width=s+'%',150);
+    },i*95);
+  });
+  document.getElementById('insightsSec').classList.add('show');
+}
+
+function renderThemes(pain){
+  const row=document.getElementById('themesRow');
+  row.innerHTML='';
+  pain.filter(p=>p.frequency!=='Low').forEach((p,i)=>{
+    const t=document.createElement('div');
+    t.className='theme-tag';t.textContent=p.theme;
+    row.appendChild(t);
+    setTimeout(()=>t.classList.add('show'),i*80);
+  });
+}
+
+// ─── EMAIL TABS ───────────────────────────────────────────────────────
+function swTab(n){
+  document.querySelectorAll('.etab').forEach((t,i)=>t.classList.toggle('active',i===n));
+  document.querySelectorAll('.email-card').forEach((c,i)=>c.classList.toggle('active',i===n));
+}
+
+// ─── COPY ─────────────────────────────────────────────────────────────
+function copyEmail(n){
+  const e=emailStore[n];
+  if(!e?.subject) return;
+  navigator.clipboard.writeText(`Subject: ${e.subject}\nTiming: ${e.timing||''}\n\n${e.body}`)
+    .then(()=>alert(`Email ${n+1} copied!`));
+}
+
+// ─── EXPORT SEQUENCE AS WORD DOC ─────────────────────────────────────
+
+
+// ─── UTIL ─────────────────────────────────────────────────────────────
+function x(s){if(!s)return '';return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+</script>
+</body>
+</html>

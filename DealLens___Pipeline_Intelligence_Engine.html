@@ -1,0 +1,2305 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DealLens: Pipeline Intelligence Engine</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;1,9..144,300;1,9..144,400&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --blue:#0066FF;--blue-dk:#0044CC;--blue-lt:#EBF2FF;--blue-mid:#C7DCFF;
+  --teal:#0891B2;--amber:#D97706;--amber-lt:#FFFBEB;
+  --red:#DC2626;--red-lt:#FEF2F2;--green:#059669;--green-lt:#F0FDF4;
+  --purple:#7C3AED;--purple-lt:#F5F3FF;--indigo:#4F46E5;
+  --bg:#F4F5F8;--surface:#FFFFFF;--s2:#F8F9FB;--s3:#EEF0F4;
+  --border:#E2E5EC;--border2:#C8CDDA;
+  --text:#0D1117;--text2:#4A5568;--text3:#8A94A6;--text4:#C4CAD6;
+  --sh1:0 1px 3px rgba(0,0,0,.06),0 1px 2px rgba(0,0,0,.04);
+  --sh2:0 4px 16px rgba(0,0,0,.07),0 2px 4px rgba(0,0,0,.04);
+  --sh3:0 16px 48px rgba(0,0,0,.1),0 4px 8px rgba(0,0,0,.05);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{background:var(--bg);color:var(--text);font-family:'Plus Jakarta Sans',sans-serif;-webkit-font-smoothing:antialiased;overflow:hidden;}
+
+.topbar{position:fixed;top:0;left:0;right:0;z-index:500;height:52px;background:var(--surface);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 28px;box-shadow:var(--sh1);gap:12px;}
+.tb-logo{font-size:18px;line-height:1;flex-shrink:0;}
+.tb-brand{font-size:14px;font-weight:800;letter-spacing:-.02em;color:var(--text);}
+.tb-brand span{color:var(--red);}
+.tb-div{width:1px;height:20px;background:var(--border);flex-shrink:0;}
+.tb-sub{font-size:11px;font-weight:600;color:var(--text3);}
+.tb-right{margin-left:auto;display:flex;align-items:center;gap:8px;}
+.live-badge{display:flex;align-items:center;gap:5px;padding:3px 10px;background:var(--green-lt);border:1px solid #a7f3d0;border-radius:20px;font-size:10px;font-weight:700;color:var(--green);letter-spacing:.05em;}
+.live-dot{width:5px;height:5px;border-radius:50%;background:var(--green);animation:pdot 1.8s ease-in-out infinite;}
+@keyframes pdot{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.3;transform:scale(.6)}}
+.proto-label{font-family:'JetBrains Mono',monospace;font-size:9px;font-weight:600;letter-spacing:.07em;color:var(--text4);padding:3px 9px;border:1px solid var(--border);border-radius:20px;}
+.suite-chip{font-size:9px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--text3);padding:2px 8px;background:var(--s3);border-radius:4px;}
+
+.nav-tabs{position:fixed;top:52px;left:0;right:0;z-index:400;background:var(--surface);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 28px;gap:2px;height:42px;box-shadow:var(--sh1);}
+.ntab{padding:8px 14px;background:transparent;border:none;border-bottom:2px solid transparent;margin-bottom:-1px;font-family:'Plus Jakarta Sans',sans-serif;font-size:12px;font-weight:700;color:var(--text3);cursor:pointer;transition:all .15s;display:flex;align-items:center;gap:6px;white-space:nowrap;border-radius:6px 6px 0 0;}
+.ntab:hover{color:var(--text);background:var(--s2);}
+.ntab.active{color:var(--red);border-bottom-color:var(--red);}
+.ntab-badge{padding:1px 7px;border-radius:10px;font-size:9px;font-weight:800;}
+.ntab.active .ntab-badge{background:var(--red);color:#fff;}
+.ntab:not(.active) .ntab-badge{background:var(--s3);color:var(--text3);}
+.nav-right{margin-left:auto;display:flex;align-items:center;gap:6px;}
+.nav-btn{padding:5px 13px;background:var(--surface);border:1px solid var(--border);border-radius:6px;font-family:'Plus Jakarta Sans',sans-serif;font-size:11px;font-weight:700;color:var(--text2);cursor:pointer;transition:all .15s;}
+.nav-btn:hover{border-color:var(--red);color:var(--red);background:var(--red-lt);}
+
+.view{position:fixed;top:94px;left:0;right:0;bottom:0;overflow-y:auto;display:none;background:var(--bg);}
+.view.active{display:block;}
+.view-content{padding:20px 28px 40px;}
+
+/* STAT STRIP */
+.stat-strip{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-bottom:16px;}
+.stat-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px 18px;box-shadow:var(--sh1);position:relative;overflow:hidden;}
+.stat-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;border-radius:12px 12px 0 0;}
+.c-blue::before{background:var(--blue);}
+.c-green::before{background:var(--green);}
+.c-amber::before{background:var(--amber);}
+.c-red::before{background:var(--red);}
+.c-purple::before{background:var(--purple);}
+.stat-val{font-size:26px;font-weight:800;letter-spacing:-.04em;line-height:1;margin-bottom:4px;}
+.c-blue .stat-val{color:var(--blue);}
+.c-green .stat-val{color:var(--green);}
+.c-amber .stat-val{color:var(--amber);}
+.c-red .stat-val{color:var(--red);}
+.c-purple .stat-val{color:var(--purple);}
+.stat-lbl{font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.07em;margin-bottom:2px;}
+.stat-sub{font-size:11px;color:var(--text3);}
+
+.sec-hd{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:8px;}
+.sec-title{font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--text2);display:flex;align-items:center;gap:8px;}
+.sec-title::before{content:'';display:inline-block;width:3px;height:13px;border-radius:2px;background:var(--red);}
+.export-btn{padding:6px 14px;background:var(--surface);border:1px solid var(--border);border-radius:6px;font-family:'Plus Jakarta Sans',sans-serif;font-size:11px;font-weight:700;color:var(--text2);cursor:pointer;transition:all .15s;}
+.export-btn:hover{border-color:var(--red);color:var(--red);background:var(--red-lt);}
+
+/* FILTER BAR */
+.filter-bar{display:flex;gap:8px;align-items:center;margin-bottom:14px;flex-wrap:wrap;}
+.fsel{border-radius:7px;font-size:11px;font-weight:600;cursor:pointer;outline:none;font-family:'Plus Jakarta Sans',sans-serif;padding:6px 26px 6px 10px;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%238A94A6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 8px center;border:1px solid var(--border);background-color:var(--surface);color:var(--text2);}
+.fsel:focus{border-color:var(--red);}
+.finp{border-radius:7px;font-size:11px;outline:none;font-family:'Plus Jakarta Sans',sans-serif;padding:6px 10px;border:1px solid var(--border);background:var(--surface);color:var(--text);min-width:160px;}
+.finp:focus{border-color:var(--red);}
+.ftog{padding:6px 12px;border-radius:7px;border:1px solid var(--border);font-family:'Plus Jakarta Sans',sans-serif;font-size:11px;font-weight:700;color:var(--text2);cursor:pointer;background:var(--surface);transition:all .15s;}
+.ftog:hover{border-color:var(--red);color:var(--red);background:var(--red-lt);}
+.ftog.on{border-color:var(--red);color:var(--red);background:var(--red-lt);}
+
+/* DEAL CARDS */
+.deals-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:12px;}
+.dl-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow:hidden;box-shadow:var(--sh1);transition:box-shadow .15s,border-color .15s,transform .15s;cursor:pointer;position:relative;}
+.dl-card:hover{box-shadow:var(--sh2);border-color:var(--border2);transform:translateY(-1px);}
+.dl-card.rc{border-top:3px solid var(--red);}
+.dl-card.rh{border-top:3px solid var(--amber);}
+.dl-card.rm{border-top:3px solid var(--blue);}
+.dl-card.rl{border-top:3px solid var(--green);}
+.dlc-top{padding:14px 16px 0;}
+.dlc-hd{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px;}
+.dlc-name{font-size:14px;font-weight:800;color:var(--text);letter-spacing:-.01em;}
+.dlc-meta{font-size:11px;color:var(--text3);margin-top:1px;}
+.dlc-acv{font-size:22px;font-weight:800;letter-spacing:-.03em;color:var(--blue);font-family:'JetBrains Mono',monospace;margin-bottom:8px;}
+.dlc-pills{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:10px;align-items:center;}
+.stage-pill{padding:2px 8px;border-radius:4px;font-size:10px;font-weight:700;}
+.sp-disc{background:#EBF2FF;color:#0044CC;}
+.sp-eval{background:#F5F3FF;color:#6D28D9;}
+.sp-prop{background:#FFF7ED;color:#C2410C;}
+.sp-nego{background:#FFFBEB;color:#B45309;}
+.sp-commit{background:#F0FDF4;color:#15803D;}
+.comp-pill{padding:1px 7px;border-radius:3px;font-size:9px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;}
+.cp-none{background:var(--s3);color:var(--text3);}
+.cp-mod{background:var(--amber-lt);color:var(--amber);border:1px solid rgba(215,119,6,.25);}
+.cp-high{background:var(--red-lt);color:var(--red);border:1px solid rgba(220,38,38,.25);}
+.dlc-scores{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin:0 16px 12px;}
+.dlc-score-cell{background:var(--s2);border-radius:7px;padding:8px 10px;}
+.dlc-score-lbl{font-family:'JetBrains Mono',monospace;font-size:8px;color:var(--text3);text-transform:uppercase;letter-spacing:.08em;margin-bottom:3px;}
+.dlc-score-val{font-size:20px;font-weight:800;font-family:'JetBrains Mono',monospace;line-height:1;}
+.dlc-score-band{font-size:9px;font-weight:700;margin-top:1px;}
+.dlc-foot{padding:9px 16px 12px;border-top:1px solid var(--border);background:var(--s2);display:flex;align-items:center;justify-content:space-between;}
+.dlc-owner{font-size:10px;color:var(--text3);font-weight:600;}
+.dlc-close{font-size:10px;font-weight:700;font-family:'JetBrains Mono',monospace;color:var(--text2);}
+.dur-tag{font-size:9px;font-weight:700;padding:1px 7px;border-radius:3px;}
+.dur-ok{background:var(--green-lt);color:var(--green);}
+.dur-warn{background:var(--amber-lt);color:var(--amber);}
+.dur-crit{background:var(--red-lt);color:var(--red);}
+
+/* RISK BADGE */
+.rb{display:inline-flex;align-items:center;gap:3px;padding:3px 8px;border-radius:5px;font-family:'JetBrains Mono',monospace;}
+.rb .rbn{font-size:13px;font-weight:700;line-height:1;}
+.rb .rbl{font-size:8px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;}
+.rb.rc{background:rgba(220,38,38,.1);border:1px solid rgba(220,38,38,.25);}
+.rb.rc .rbn,.rb.rc .rbl{color:var(--red);}
+.rb.rh{background:var(--amber-lt);border:1px solid rgba(215,119,6,.25);}
+.rb.rh .rbn,.rb.rh .rbl{color:var(--amber);}
+.rb.rm{background:var(--blue-lt);border:1px solid var(--blue-mid);}
+.rb.rm .rbn,.rb.rm .rbl{color:var(--blue);}
+.rb.rl{background:rgba(5,150,105,.1);border:1px solid rgba(5,150,105,.25);}
+.rb.rl .rbn,.rb.rl .rbl{color:var(--green);}
+
+/* FC BADGE */
+.fb{display:inline-flex;align-items:center;gap:3px;padding:3px 8px;border-radius:5px;font-family:'JetBrains Mono',monospace;}
+.fb .fbn{font-size:13px;font-weight:700;line-height:1;}
+.fb .fbl{font-size:8px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;}
+.fb.fs{background:rgba(5,150,105,.1);border:1px solid rgba(5,150,105,.25);}
+.fb.fs .fbn,.fb.fs .fbl{color:var(--green);}
+.fb.fb2{background:var(--blue-lt);border:1px solid var(--blue-mid);}
+.fb.fb2 .fbn,.fb.fb2 .fbl{color:var(--blue);}
+.fb.fu{background:var(--amber-lt);border:1px solid rgba(215,119,6,.25);}
+.fb.fu .fbn,.fb.fu .fbl{color:var(--amber);}
+.fb.fa{background:rgba(220,38,38,.1);border:1px solid rgba(220,38,38,.25);}
+.fb.fa .fbn,.fb.fa .fbl{color:var(--red);}
+
+/* ALERT CARDS */
+.alert-grid{display:flex;flex-direction:column;gap:10px;}
+.alc{background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow:hidden;box-shadow:var(--sh1);}
+.alc.sev-crit{border-left:4px solid var(--red);}
+.alc.sev-high{border-left:4px solid var(--amber);}
+.alc.sev-med{border-left:4px solid var(--blue);}
+.alc-hd{padding:12px 16px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border);background:var(--s2);}
+.alc-co{font-size:13px;font-weight:800;color:var(--text);}
+.alc-meta{font-size:10px;color:var(--text3);margin-top:1px;}
+.alc-sev-tag{display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:20px;font-size:10px;font-weight:700;}
+.alc-sev-tag.crit{background:rgba(220,38,38,.1);border:1px solid rgba(220,38,38,.25);color:var(--red);}
+.alc-sev-tag.high{background:var(--amber-lt);border:1px solid rgba(215,119,6,.25);color:var(--amber);}
+.alc-sev-tag.med{background:var(--blue-lt);border:1px solid var(--blue-mid);color:var(--blue);}
+.alc-body{padding:12px 16px;display:grid;grid-template-columns:1fr auto;gap:16px;align-items:start;}
+.alc-sigs{flex:1;}
+.alc-sig-ttl{font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--text3);margin-bottom:6px;}
+.alc-sig-item{display:flex;align-items:flex-start;gap:6px;font-size:11px;color:var(--text2);margin-bottom:4px;line-height:1.45;}
+.alc-sig-item.crit::before{content:'●';color:var(--red);font-size:8px;flex-shrink:0;margin-top:3px;}
+.alc-sig-item.warn::before{content:'●';color:var(--amber);font-size:8px;flex-shrink:0;margin-top:3px;}
+.alc-action-box{background:var(--s2);border:1px solid var(--border);border-radius:8px;padding:10px 12px;min-width:195px;max-width:220px;}
+.alc-action-ttl{font-family:'JetBrains Mono',monospace;font-size:8px;letter-spacing:.1em;text-transform:uppercase;color:var(--red);margin-bottom:4px;}
+.alc-action-txt{font-size:11px;color:var(--text2);line-height:1.5;}
+
+/* FORECAST */
+.fc-summary-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:16px;}
+.fc-sum-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px 18px;box-shadow:var(--sh1);position:relative;overflow:hidden;}
+.fc-sum-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;border-radius:12px 12px 0 0;}
+.fc-sum-card.c-green::before{background:var(--green);}
+.fc-sum-card.c-blue::before{background:var(--blue);}
+.fc-sum-card.c-amber::before{background:var(--amber);}
+.fc-sum-card.c-red::before{background:var(--red);}
+.fc-sum-lbl{font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.07em;margin-bottom:6px;}
+.fc-sum-val{font-size:24px;font-weight:800;letter-spacing:-.04em;font-family:'JetBrains Mono',monospace;line-height:1;margin-bottom:3px;}
+.c-green .fc-sum-val{color:var(--green);}
+.c-blue .fc-sum-val{color:var(--blue);}
+.c-amber .fc-sum-val{color:var(--amber);}
+.c-red .fc-sum-val{color:var(--red);}
+.fc-sum-sub{font-size:11px;color:var(--text3);}
+.fc-charts-row{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:16px;}
+.an-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:18px 20px;box-shadow:var(--sh1);}
+.an-title{font-size:9px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.1em;font-family:'JetBrains Mono',monospace;margin-bottom:14px;}
+.br-item{margin-bottom:9px;}
+.br-top{display:flex;justify-content:space-between;margin-bottom:3px;}
+.br-name{font-size:11px;font-weight:500;color:var(--text2);}
+.br-val{font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:600;color:var(--text);}
+.br-track{height:5px;background:var(--s3);border-radius:3px;overflow:hidden;}
+.br-fill{height:100%;border-radius:3px;}
+
+/* PIPELINE TABLE */
+.tbl-wrap{background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow:hidden;box-shadow:var(--sh1);}
+table{width:100%;border-collapse:collapse;}
+thead tr{background:var(--s2);border-bottom:1px solid var(--border);}
+th{padding:9px 12px;text-align:left;font-size:9px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.1em;font-family:'JetBrains Mono',monospace;white-space:nowrap;cursor:pointer;user-select:none;}
+th:hover{color:var(--text2);}
+.sort-asc::after{content:' ↑';}
+.sort-desc::after{content:' ↓';}
+td{padding:9px 12px;font-size:12px;color:var(--text2);border-bottom:1px solid var(--border);vertical-align:middle;}
+tr:last-child td{border-bottom:none;}
+tbody tr{transition:background .1s;cursor:pointer;}
+tbody tr:hover{background:var(--blue-lt);}
+.td-co{min-width:180px;max-width:220px;}
+.td-acv{font-family:'JetBrains Mono',monospace;font-weight:700;color:var(--blue);}
+
+/* DETAIL PANEL */
+.detail-panel{position:fixed;top:94px;right:0;bottom:0;width:390px;background:var(--surface);border-left:1px solid var(--border);box-shadow:var(--sh3);z-index:300;display:none;flex-direction:column;overflow-y:auto;}
+.detail-panel.open{display:flex;}
+.dp-hd{padding:16px 18px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:flex-start;flex-shrink:0;background:var(--surface);position:sticky;top:0;z-index:10;}
+.dp-close{width:26px;height:26px;border-radius:6px;border:1px solid var(--border);background:transparent;cursor:pointer;font-size:14px;color:var(--text3);display:flex;align-items:center;justify-content:center;transition:all .15s;}
+.dp-close:hover{border-color:var(--text2);color:var(--text);}
+.dp-name{font-size:15px;font-weight:800;color:var(--text);margin-bottom:2px;letter-spacing:-.01em;}
+.dp-sub{font-size:11px;color:var(--text3);}
+.dp-hero{padding:14px 18px;background:var(--s2);border-bottom:1px solid var(--border);}
+.dp-acv{font-size:30px;font-weight:800;letter-spacing:-.04em;color:var(--blue);font-family:'JetBrains Mono',monospace;margin-bottom:8px;}
+.dp-badges{display:flex;gap:6px;flex-wrap:wrap;}
+.dp-sec{margin-bottom:0;}
+.dp-sec-lbl{padding:6px 18px;background:var(--s2);border-top:1px solid var(--border);border-bottom:1px solid var(--border);font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--text3);}
+.dp-row{display:flex;justify-content:space-between;padding:7px 18px;border-bottom:1px solid var(--border);gap:10px;}
+.dp-rl{font-family:'JetBrains Mono',monospace;font-size:9px;font-weight:500;color:var(--text3);text-transform:uppercase;letter-spacing:.08em;flex-shrink:0;}
+.dp-rv{font-size:11px;font-weight:600;color:var(--text2);text-align:right;}
+
+/* RISK DRIVERS */
+.risk-drivers{padding:12px 18px;}
+.rd-item{margin-bottom:10px;}
+.rd-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:3px;}
+.rd-lbl{font-size:10px;color:var(--text2);font-weight:600;}
+.rd-stat{font-size:9px;font-weight:700;padding:1px 7px;border-radius:3px;}
+.rd-stat.ok{background:var(--green-lt);color:var(--green);}
+.rd-stat.warn{background:var(--amber-lt);color:var(--amber);}
+.rd-stat.bad{background:var(--red-lt);color:var(--red);}
+.rd-detail{font-size:10px;color:var(--text3);margin-bottom:3px;}
+.rd-bar-track{height:4px;background:var(--s3);border-radius:2px;overflow:hidden;}
+.rd-bar-fill{height:100%;border-radius:2px;}
+
+/* BUYING COMMITTEE */
+.bc-map{padding:12px 18px;}
+.bc-header{display:flex;align-items:center;gap:14px;margin-bottom:12px;padding:10px 12px;background:var(--s2);border-radius:8px;border:1px solid var(--border);}
+.bc-pct-val{font-size:26px;font-weight:800;font-family:'JetBrains Mono',monospace;letter-spacing:-.04em;}
+.bc-pct-lbl{font-size:10px;color:var(--text3);}
+.bc-bar-wrap{flex:1;height:6px;background:var(--s3);border-radius:3px;overflow:hidden;}
+.bc-bar-fill{height:100%;border-radius:3px;}
+.bc-roles{display:flex;flex-direction:column;gap:6px;}
+.bc-role{display:flex;align-items:center;justify-content:space-between;padding:8px 10px;border-radius:7px;border:1px solid var(--border);}
+.bc-role.found{background:var(--green-lt);border-color:rgba(5,150,105,.2);}
+.bc-role.miss{background:var(--s2);}
+.bc-role-info{flex:1;}
+.bc-role-name{font-size:11px;font-weight:700;color:var(--text);}
+.bc-role-person{font-size:10px;color:var(--text3);margin-top:1px;}
+.bc-role-tag{font-size:9px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;padding:2px 7px;border-radius:3px;}
+.bc-role-tag.id{background:rgba(5,150,105,.15);color:var(--green);}
+.bc-role-tag.ms{background:var(--s3);color:var(--text4);}
+
+/* TIMELINE */
+.timeline{padding:12px 18px;}
+.tl-item{display:flex;gap:10px;padding-bottom:14px;position:relative;}
+.tl-item:not(:last-child)::before{content:'';position:absolute;left:11px;top:22px;bottom:0;width:1px;background:var(--border);}
+.tl-dot{width:22px;height:22px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:11px;border:2px solid var(--surface);}
+.tl-dot.g{background:var(--green-lt);border-color:rgba(5,150,105,.3);}
+.tl-dot.b{background:var(--blue-lt);border-color:var(--blue-mid);}
+.tl-dot.a{background:var(--amber-lt);border-color:rgba(215,119,6,.3);}
+.tl-dot.r{background:var(--red-lt);border-color:rgba(220,38,38,.3);}
+.tl-dot.gr{background:var(--s3);border-color:var(--border);}
+.tl-event{font-size:11px;font-weight:700;color:var(--text);margin-bottom:1px;}
+.tl-detail{font-size:10px;color:var(--text3);line-height:1.45;}
+.tl-date{font-size:9px;font-weight:600;color:var(--text4);font-family:'JetBrains Mono',monospace;margin-top:2px;}
+
+/* ACTION BOX */
+.action-box{margin:10px 18px 14px;padding:13px 15px;border-radius:9px;}
+.action-box.urgent{background:rgba(220,38,38,.06);border:1px solid rgba(220,38,38,.2);}
+.action-box.important{background:var(--amber-lt);border:1px solid rgba(215,119,6,.2);}
+.action-box.normal{background:var(--blue-lt);border:1px solid var(--blue-mid);}
+.action-box-ttl{font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:.1em;text-transform:uppercase;margin-bottom:5px;}
+.action-box.urgent .action-box-ttl{color:var(--red);}
+.action-box.important .action-box-ttl{color:var(--amber);}
+.action-box.normal .action-box-ttl{color:var(--blue);}
+.action-box-icon{font-size:18px;margin-bottom:4px;}
+.action-box-lbl{font-size:12px;font-weight:800;color:var(--text);margin-bottom:4px;}
+.action-box-txt{font-size:11px;color:var(--text2);line-height:1.55;}
+
+/* CRM BOX */
+.crm-box{margin:0 18px 14px;padding:11px 13px;background:var(--green-lt);border:1px solid rgba(5,150,105,.2);border-radius:8px;}
+.crm-hd{display:flex;align-items:center;gap:6px;margin-bottom:7px;}
+.crm-dot{width:6px;height:6px;border-radius:50%;background:var(--green);animation:pdot 1.8s ease-in-out infinite;}
+.crm-label{font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--green);font-weight:700;}
+.crm-step{display:flex;align-items:center;gap:6px;font-size:10px;color:var(--text2);margin-bottom:3px;}
+
+/* ARCH */
+.arch-panel{background:linear-gradient(135deg,#0a0f1e,#0d1a3a);border-radius:12px;padding:20px 24px;margin-top:18px;border:1px solid rgba(0,102,255,.15);}
+.arch-label{font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:rgba(0,102,255,.6);margin-bottom:14px;}
+.arch-step{display:flex;align-items:flex-start;gap:12px;padding:10px 0;border-bottom:1px solid rgba(255,255,255,.05);}
+.arch-step:last-child{border-bottom:none;}
+.arch-icon{font-size:16px;flex-shrink:0;margin-top:1px;width:24px;text-align:center;}
+.arch-title{font-size:11px;font-weight:700;color:rgba(255,255,255,.75);margin-bottom:2px;}
+.arch-desc{font-size:10px;color:rgba(255,255,255,.35);line-height:1.5;}
+.arch-arr{color:rgba(0,102,255,.3);font-size:12px;padding:2px 0 2px 36px;font-family:'JetBrains Mono',monospace;}
+
+/* SD BAR */
+.sd-bar{background:linear-gradient(135deg,#0a0f1e,#0d1a3a);border-radius:10px;padding:12px 18px;margin-bottom:14px;border:1px solid rgba(0,102,255,.2);}
+.sd-label{font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:rgba(0,102,255,.65);margin-bottom:8px;}
+.sd-flow{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-bottom:8px;}
+.sd-step{font-size:10px;font-weight:700;padding:4px 11px;border-radius:5px;border:1px solid rgba(255,255,255,.08);color:rgba(255,255,255,.45);background:rgba(255,255,255,.04);}
+.sd-step.active{border-color:rgba(220,38,38,.5);background:rgba(220,38,38,.1);color:#fca5a5;}
+.sd-arr{color:rgba(255,255,255,.15);font-size:11px;}
+.sd-srcs{display:flex;flex-wrap:wrap;gap:6px;}
+.sd-src{display:flex;align-items:center;gap:5px;padding:3px 9px;border-radius:20px;font-size:10px;font-weight:700;border:1px solid rgba(220,38,38,.3);background:rgba(220,38,38,.07);color:#fca5a5;}
+
+
+/* ─── ANALYTICS FILTER (forecast bars clickable) ─── */
+.br-item{margin-bottom:9px;cursor:pointer;border-radius:6px;padding:3px 5px;transition:background .12s;}
+.br-item:hover{background:var(--blue-lt);}
+.br-item.an-active{background:var(--blue-lt);outline:1px solid var(--blue-mid);}
+.an-filter-banner{padding:7px 16px;background:var(--blue-lt);border:1px solid var(--blue-mid);border-radius:8px;font-size:10px;color:var(--blue);font-weight:600;display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;cursor:pointer;}
+.an-filter-banner:hover{background:#dbeafe;}
+.an-card-hint{font-size:8px;font-weight:400;color:var(--text3);letter-spacing:0;text-transform:none;font-family:'Plus Jakarta Sans',sans-serif;margin-left:6px;}
+
+/* ─── ALERTS BY OWNER ────────────────────────────── */
+.owner-group{margin-bottom:18px;}
+.owner-group-hd{display:flex;align-items:center;gap:8px;margin-bottom:8px;padding:6px 0;}
+.owner-group-name{font-size:12px;font-weight:800;color:var(--text);}
+.owner-group-meta{font-size:10px;color:var(--text3);}
+.owner-group-cnt{padding:2px 8px;border-radius:10px;font-size:9px;font-weight:800;font-family:'JetBrains Mono',monospace;}
+.owner-group-cnt.has-crit{background:rgba(220,38,38,.1);color:var(--red);border:1px solid rgba(220,38,38,.2);}
+.owner-group-cnt.has-high{background:var(--amber-lt);color:var(--amber);border:1px solid rgba(215,119,6,.2);}
+.owner-group-cnt.has-med{background:var(--blue-lt);color:var(--blue);border:1px solid var(--blue-mid);}
+.alert-filter-bar{display:flex;gap:6px;align-items:center;margin-bottom:14px;flex-wrap:wrap;}
+.alert-ftog{padding:5px 12px;border-radius:20px;border:1px solid var(--border);font-family:'Plus Jakarta Sans',sans-serif;font-size:11px;font-weight:700;color:var(--text2);cursor:pointer;background:var(--surface);transition:all .15s;}
+.alert-ftog:hover{border-color:var(--red);color:var(--red);background:var(--red-lt);}
+.alert-ftog.on{border-color:var(--red);color:var(--red);background:var(--red-lt);}
+.alert-ftog.owner-active{border-color:var(--blue);color:var(--blue);background:var(--blue-lt);}
+.closing-soon-tag{font-size:9px;font-weight:800;letter-spacing:.05em;padding:2px 7px;border-radius:3px;text-transform:uppercase;}
+.closing-soon-tag.urgent{background:rgba(220,38,38,.1);color:var(--red);border:1px solid rgba(220,38,38,.25);}
+.closing-soon-tag.soon{background:var(--amber-lt);color:var(--amber);border:1px solid rgba(215,119,6,.25);}
+
+/* ─── BC MISSING PERSONA ACTION ──────────────────── */
+.bc-action-prompt{margin-top:4px;padding:5px 8px;background:var(--amber-lt);border:1px solid rgba(215,119,6,.2);border-radius:5px;font-size:9px;color:var(--amber);line-height:1.45;}
+.bc-action-prompt strong{color:#92400E;}
+
+
+/* ─── SCORE LOGIC TAB ───────────────────────────────────────── */
+.sl-grid{display:flex;flex-direction:column;gap:14px;max-width:820px;}
+.sl-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow:hidden;box-shadow:var(--sh1);}
+.sl-hd{padding:14px 18px;display:flex;justify-content:space-between;align-items:flex-start;border-bottom:1px solid var(--border);background:var(--s2);gap:12px;}
+.sl-title{font-size:13px;font-weight:700;color:var(--text);}
+.sl-desc{font-size:11px;color:var(--text3);margin-top:3px;line-height:1.5;max-width:520px;}
+.sl-penalty{padding:5px 14px;border-radius:6px;font-family:'JetBrains Mono',monospace;font-size:15px;font-weight:700;flex-shrink:0;text-align:center;}
+.sl-penalty span{display:block;font-size:8px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;margin-top:2px;opacity:.7;}
+.sl-row{display:flex;align-items:center;padding:9px 18px;border-bottom:1px solid var(--border);gap:12px;}
+.sl-row:last-child{border-bottom:none;}
+.sl-tier{font-size:11px;font-weight:600;color:var(--text);flex:0 0 220px;}
+.sl-note{font-size:10px;color:var(--text3);flex:1;line-height:1.5;}
+.sl-pts{padding:2px 10px;border-radius:4px;font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;flex-shrink:0;}
+
+/* Risk band legend */
+.sl-band-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:16px;}
+.sl-band-card{border-radius:10px;padding:14px 16px;text-align:center;border:1px solid transparent;}
+.sl-band-card.low{background:rgba(5,150,105,.08);border-color:rgba(5,150,105,.2);}
+.sl-band-card.med{background:var(--blue-lt);border-color:var(--blue-mid);}
+.sl-band-card.high{background:var(--amber-lt);border-color:rgba(215,119,6,.2);}
+.sl-band-card.crit{background:rgba(220,38,38,.07);border-color:rgba(220,38,38,.2);}
+.sl-band-range{font-family:'JetBrains Mono',monospace;font-size:18px;font-weight:800;letter-spacing:-.02em;margin-bottom:4px;}
+.sl-band-card.low .sl-band-range{color:var(--green);}
+.sl-band-card.med .sl-band-range{color:var(--blue);}
+.sl-band-card.high .sl-band-range{color:var(--amber);}
+.sl-band-card.crit .sl-band-range{color:var(--red);}
+.sl-band-lbl{font-size:11px;font-weight:700;color:var(--text);}
+.sl-band-sub{font-size:10px;color:var(--text3);margin-top:2px;}
+
+/* Score simulator */
+.sim-panel{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:20px 22px;box-shadow:var(--sh1);margin-bottom:14px;}
+.sim-title{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--text2);margin-bottom:14px;display:flex;align-items:center;gap:8px;}
+.sim-title::before{content:'';display:inline-block;width:3px;height:13px;border-radius:2px;background:var(--red);}
+.sim-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px;}
+.sim-row{display:flex;flex-direction:column;gap:4px;}
+.sim-lbl{font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;}
+.sim-sel{width:100%;border-radius:7px;font-size:11px;font-weight:600;font-family:'Plus Jakarta Sans',sans-serif;padding:7px 10px;border:1px solid var(--border);background:var(--s2);color:var(--text);outline:none;cursor:pointer;}
+.sim-sel:focus{border-color:var(--red);}
+.sim-output{display:flex;align-items:center;gap:20px;padding:16px 18px;border-radius:10px;margin-top:4px;}
+.sim-score-big{font-size:48px;font-weight:800;font-family:'JetBrains Mono',monospace;letter-spacing:-.04em;line-height:1;}
+.sim-breakdown{flex:1;}
+.sim-breakdown-row{display:flex;justify-content:space-between;align-items:center;padding:3px 0;border-bottom:1px solid rgba(0,0,0,.06);font-size:11px;}
+.sim-breakdown-row:last-child{border-bottom:none;}
+.sim-bd-lbl{color:var(--text2);}
+.sim-bd-val{font-family:'JetBrains Mono',monospace;font-weight:700;}
+
+/* ─── CLOSE PROXIMITY TAG on deal cards ─────────────────── */
+.close-prox{font-size:9px;font-weight:800;letter-spacing:.05em;padding:1px 7px;border-radius:3px;text-transform:uppercase;}
+.close-prox.urgent{background:rgba(220,38,38,.1);color:var(--red);border:1px solid rgba(220,38,38,.25);}
+.close-prox.soon{background:var(--amber-lt);color:var(--amber);border:1px solid rgba(215,119,6,.25);}
+
+/* ─── TABLE SUMMARY BAR ──────────────────────────────────── */
+.tbl-summary{font-size:11px;color:var(--text2);padding:7px 14px;background:var(--s2);border:1px solid var(--border);border-radius:7px;margin-bottom:10px;display:flex;align-items:center;gap:6px;}
+.tbl-summary strong{color:var(--text);}
+.tbl-summary .ts-acv{font-family:'JetBrains Mono',monospace;font-weight:700;color:var(--blue);}
+
+/* ─── RISK SIGNAL COUNT PILL on cards ────────────────────── */
+.sig-count-pill{display:inline-flex;align-items:center;gap:4px;padding:1px 8px;border-radius:3px;font-size:9px;font-weight:800;letter-spacing:.04em;}
+.sig-count-pill.has-sigs{background:rgba(220,38,38,.1);color:var(--red);border:1px solid rgba(220,38,38,.2);}
+.sig-count-pill.clean{background:var(--green-lt);color:var(--green);border:1px solid rgba(5,150,105,.2);}
+
+
+/* ─── SCORE LOGIC LIVE EXAMPLE CARDS ─────────────── */
+.sl-ex-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:12px 14px;cursor:pointer;transition:box-shadow .15s,transform .15s;}
+.sl-ex-card:hover{box-shadow:var(--sh2);transform:translateY(-1px);}
+.sl-ex-card.rc{border-top:3px solid var(--red);}
+.sl-ex-card.rh{border-top:3px solid var(--amber);}
+.sl-ex-card.rm{border-top:3px solid var(--blue);}
+.sl-ex-card.rl{border-top:3px solid var(--green);}
+.sl-ex-co{font-size:13px;font-weight:800;color:var(--text);margin-bottom:2px;}
+.sl-ex-meta{font-size:10px;color:var(--text3);margin-bottom:8px;}
+.sl-ex-score{font-size:26px;font-weight:800;font-family:'JetBrains Mono',monospace;line-height:1;margin-bottom:2px;}
+.sl-ex-why{font-size:10px;color:var(--text3);margin-top:6px;line-height:1.5;border-top:1px solid var(--border);padding-top:6px;}
+.sl-ex-why strong{color:var(--text2);}
+
+/* ─── PIPELINE DIST CARDS ─────────────────────────── */
+.dist-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:14px 16px;text-align:center;}
+.dist-n{font-size:32px;font-weight:800;font-family:'JetBrains Mono',monospace;line-height:1;margin-bottom:4px;}
+.dist-lbl{font-size:11px;font-weight:700;margin-bottom:2px;}
+.dist-acv{font-size:10px;color:var(--text3);font-family:'JetBrains Mono',monospace;margin-bottom:8px;}
+.dist-bar-track{height:5px;background:var(--s3);border-radius:3px;overflow:hidden;}
+.dist-bar-fill{height:100%;border-radius:3px;}
+
+
+/* ─── DENSITY TOGGLE ─────────────────────────────────── */
+.density-toggle{display:flex;gap:2px;background:var(--s3);border-radius:7px;padding:2px;flex-shrink:0;}
+.dtog{padding:5px 10px;border-radius:5px;border:none;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;font-size:11px;font-weight:700;color:var(--text3);background:transparent;transition:all .15s;display:flex;align-items:center;gap:5px;white-space:nowrap;}
+.dtog.active{background:var(--surface);color:var(--text);box-shadow:var(--sh1);}
+.dtog:hover:not(.active){color:var(--text2);}
+
+/* ─── COMPACT LIST ROW ───────────────────────────────── */
+.dl-list-wrap{background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow:hidden;box-shadow:var(--sh1);}
+.dl-list-hdr{display:grid;grid-template-columns:2fr 105px 105px 85px 78px 78px 110px 120px;gap:8px;padding:8px 14px;background:var(--s2);border-bottom:1px solid var(--border);}
+.dl-list-hdr span{font-family:'JetBrains Mono',monospace;font-size:9px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.08em;}
+.dl-list-row{display:grid;grid-template-columns:2fr 105px 105px 85px 78px 78px 110px 120px;gap:8px;padding:9px 14px;border-bottom:1px solid var(--border);cursor:pointer;transition:background .1s;align-items:center;border-left:3px solid transparent;}
+.dl-list-row:last-child{border-bottom:none;}
+.dl-list-row:hover{background:var(--blue-lt);}
+.dl-list-row.rl{border-left-color:var(--green);}
+.dl-list-row.rm{border-left-color:var(--blue);}
+.dl-list-row.rh{border-left-color:var(--amber);}
+.dl-list-row.rc{border-left-color:var(--red);}
+.dlr-co{font-size:12px;font-weight:800;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.dlr-sub{font-size:10px;color:var(--text3);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.dlr-acv{font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:700;color:var(--blue);}
+.dlr-score{font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:800;line-height:1;}
+.dlr-band{font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;margin-top:1px;}
+
+/* ─── SIM DEAL CONTEXT BANNER ────────────────────────── */
+.sim-deal-ctx{display:flex;align-items:center;gap:10px;padding:9px 14px;background:var(--blue-lt);border:1px solid var(--blue-mid);border-radius:8px;margin-bottom:14px;font-size:11px;color:var(--blue);}
+.sim-deal-ctx strong{color:var(--text);font-size:12px;}
+.sim-deal-ctx .sdc-clear{margin-left:auto;cursor:pointer;font-size:10px;font-weight:700;color:var(--text3);padding:3px 8px;border-radius:5px;border:1px solid var(--border);background:var(--surface);}
+.sim-deal-ctx .sdc-clear:hover{border-color:var(--red);color:var(--red);}
+
+
+
+.dl-row-hd{padding:6px 16px;display:grid;grid-template-columns:1fr 130px 90px 100px 100px 120px 80px;gap:12px;align-items:center;font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.08em;color:var(--text3);margin-bottom:2px;}
+.deals-list{display:flex;flex-direction:column;gap:6px;}
+
+.dl-row{background:var(--surface);border:1px solid var(--border);border-left:3px solid transparent;border-radius:8px;padding:10px 16px;display:grid;grid-template-columns:1fr 130px 90px 100px 100px 120px 80px;gap:12px;align-items:center;cursor:pointer;transition:background .1s,border-color .1s;}
+.dl-row:hover{background:var(--blue-lt);border-color:var(--border2);}
+.dl-row.rc{border-left-color:var(--red);}
+.dl-row.rh{border-left-color:var(--amber);}
+.dl-row.rm{border-left-color:var(--blue);}
+.dl-row.rl{border-left-color:var(--green);}
+.dlr-name{font-size:12px;font-weight:800;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.dlr-meta{font-size:10px;color:var(--text3);margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.dlr-acv{font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:700;color:var(--blue);white-space:nowrap;}
+.dlr-col{display:flex;flex-direction:column;gap:2px;}
+.dlr-score{font-family:'JetBrains Mono',monospace;font-size:14px;font-weight:800;line-height:1;}
+.dlr-band{font-size:9px;font-weight:700;}
+.dlr-pills{display:flex;gap:4px;align-items:center;overflow:hidden;}
+.dlr-close{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text2);white-space:nowrap;}
+
+/* ─── OPPORTUNITY PHASE PILLS ───────────────────────────── */
+.phase-pill{padding:2px 8px;border-radius:4px;font-size:10px;font-weight:700;white-space:nowrap;display:inline-flex;align-items:center;gap:3px;line-height:1.3;}
+.phase-pill b{font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:800;}
+.pp-F{background:#F0F9FF;color:#0369A1;border:1px solid #BAE6FD;}
+.pp-E{background:#F0FDF4;color:#15803D;border:1px solid #BBF7D0;}
+.pp-D{background:#FFFBEB;color:#B45309;border:1px solid #FDE68A;}
+.pp-C{background:#FFF7ED;color:#C2410C;border:1px solid #FED7AA;}
+.pp-B{background:rgba(220,38,38,.08);color:#DC2626;border:1px solid rgba(220,38,38,.25);}
+.pp-A{background:rgba(5,150,105,.12);color:#059669;border:1px solid rgba(5,150,105,.3);}
+/* phase-stage misalignment warning */
+.phase-mis-tag{display:none;} /* retired , misalignment shown via pill border */
+.phase-pill.phase-mis{border-color:rgba(220,38,38,.5)!important;box-shadow:0 0 0 1px rgba(220,38,38,.2);}
+/* phase column in table */
+.td-phase{white-space:nowrap;}
+/* phase alignment matrix in score logic */
+.pa-matrix{width:100%;border-collapse:collapse;font-size:11px;margin-top:8px;}
+.pa-matrix th{padding:7px 10px;background:var(--s2);font-size:9px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.08em;border:1px solid var(--border);text-align:left;}
+.pa-matrix td{padding:7px 10px;border:1px solid var(--border);vertical-align:middle;}
+.pa-matrix tr:hover td{background:var(--blue-lt);}
+.pa-expected{display:inline-flex;align-items:center;gap:4px;}
+
+
+/* ─── CHANNEL PARTNER ───────────────────────────────────── */
+.partner-name{font-size:11px;font-weight:700;color:var(--text);white-space:nowrap;}
+.partner-type{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;padding:1px 5px;border-radius:3px;white-space:nowrap;margin-top:2px;display:inline-block;}
+.pt-direct{background:var(--s3);color:var(--text3);}
+.pt-gsi{background:#EEF2FF;color:#4338CA;}
+.pt-marketplace{background:#F0FDF4;color:#15803D;}
+.pt-reseller{background:#FFF7ED;color:#C2410C;}
+/* ─── PENALTY IMPACT PANEL ──────────────────────────────── */
+.penalty-impact-panel{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:18px 20px;box-shadow:var(--sh1);margin-bottom:16px;}
+.pip-title{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--text2);margin-bottom:14px;}
+.pip-row{display:grid;grid-template-columns:170px 1fr 55px 65px;gap:10px;align-items:center;padding:7px 0;border-bottom:1px solid var(--s3);}
+.pip-row:last-child{border-bottom:none;}
+.pip-dim{font-size:11px;font-weight:700;color:var(--text);}
+.pip-bar-track{height:6px;background:var(--s3);border-radius:3px;overflow:hidden;}
+.pip-bar-fill{height:100%;border-radius:3px;}
+.pip-pts{font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;text-align:right;}
+.pip-pct{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text3);text-align:right;}
+.pip-hdr{font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.08em;color:var(--text3);padding:0 0 8px 0;display:grid;grid-template-columns:170px 1fr 55px 65px;gap:10px;}
+
+::-webkit-scrollbar{width:5px;height:5px;}
+::-webkit-scrollbar-track{background:transparent;}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px;}
+
+/* ─── DEAL MOMENTUM ──────────────────────────────────────── */
+.momentum-box{margin:0 18px 0;padding:12px 14px;border-radius:9px;border:1px solid var(--border);}
+.momentum-box.pos{background:linear-gradient(135deg,rgba(5,150,105,.06),rgba(5,150,105,.02));border-color:rgba(5,150,105,.25);}
+.momentum-box.neg{background:linear-gradient(135deg,rgba(220,38,38,.06),rgba(220,38,38,.02));border-color:rgba(220,38,38,.25);}
+.momentum-box.neu{background:var(--s2);border-color:var(--border);}
+.momentum-hd{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;}
+.momentum-label{font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:.12em;text-transform:uppercase;font-weight:700;}
+.momentum-box.pos .momentum-label{color:var(--green);}
+.momentum-box.neg .momentum-label{color:var(--red);}
+.momentum-box.neu .momentum-label{color:var(--text3);}
+.momentum-arrow{font-size:22px;line-height:1;}
+.momentum-title{font-size:13px;font-weight:800;color:var(--text);margin-bottom:4px;}
+.momentum-signals{display:flex;flex-direction:column;gap:3px;}
+.momentum-sig{font-size:10px;color:var(--text2);display:flex;align-items:flex-start;gap:5px;line-height:1.4;}
+.momentum-sig::before{flex-shrink:0;margin-top:1px;}
+.momentum-box.pos .momentum-sig::before{content:'↑';color:var(--green);font-weight:800;}
+.momentum-box.neg .momentum-sig::before{content:'↓';color:var(--red);font-weight:800;}
+.momentum-box.neu .momentum-sig::before{content:'→';color:var(--text3);font-weight:800;}
+.momentum-days{font-size:9px;font-weight:700;padding:2px 8px;border-radius:20px;font-family:'JetBrains Mono',monospace;}
+.momentum-box.pos .momentum-days{background:rgba(5,150,105,.12);color:var(--green);}
+.momentum-box.neg .momentum-days{background:rgba(220,38,38,.1);color:var(--red);}
+.momentum-box.neu .momentum-days{background:var(--s3);color:var(--text3);}
+
+/* ─── TIMELINE ENHANCED ─────────────────────────────────── */
+.tl-rel-time{display:inline-block;font-family:'JetBrains Mono',monospace;font-size:9px;font-weight:700;padding:1px 7px;border-radius:10px;background:var(--s3);color:var(--text3);margin-bottom:3px;}
+.tl-type-tag{display:inline-block;font-size:8px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:1px 6px;border-radius:3px;margin-left:5px;vertical-align:middle;}
+.tl-type-tag.pos{background:rgba(5,150,105,.12);color:var(--green);}
+.tl-type-tag.neg{background:rgba(220,38,38,.1);color:var(--red);}
+.tl-type-tag.neu{background:var(--s3);color:var(--text3);}
+.tl-type-tag.warn{background:var(--amber-lt);color:var(--amber);}
+
+/* ─── CONFIDENCE DRIVERS ENHANCED ───────────────────────── */
+.conf-drivers{padding:10px 18px 14px;}
+.conf-split{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;}
+.conf-col{border-radius:8px;padding:10px 12px;}
+.conf-col.pos-col{background:rgba(5,150,105,.05);border:1px solid rgba(5,150,105,.2);}
+.conf-col.neg-col{background:rgba(220,38,38,.04);border:1px solid rgba(220,38,38,.2);}
+.conf-col-hd{font-family:'JetBrains Mono',monospace;font-size:8px;letter-spacing:.12em;text-transform:uppercase;font-weight:700;margin-bottom:7px;}
+.conf-col.pos-col .conf-col-hd{color:var(--green);}
+.conf-col.neg-col .conf-col-hd{color:var(--red);}
+.conf-sig-item{display:flex;align-items:flex-start;gap:5px;font-size:10px;color:var(--text2);margin-bottom:4px;line-height:1.4;}
+.conf-sig-item.pos::before{content:'✓';color:var(--green);font-weight:800;flex-shrink:0;}
+.conf-sig-item.neg::before{content:'✗';color:var(--red);font-weight:800;flex-shrink:0;}
+.conf-score-row{display:flex;justify-content:space-between;align-items:center;padding:8px 0 0;border-top:2px solid var(--border2);margin-top:2px;}
+
+/* ─── COMPARABLE DEALS ───────────────────────────────────── */
+.comp-deals{padding:12px 18px 16px;}
+.comp-pattern{border-radius:8px;padding:11px 13px;margin-bottom:8px;border:1px solid var(--border);}
+.comp-pattern.won{background:rgba(5,150,105,.05);border-color:rgba(5,150,105,.2);}
+.comp-pattern.lost{background:rgba(220,38,38,.04);border-color:rgba(220,38,38,.2);}
+.comp-pattern.mixed{background:var(--amber-lt);border-color:rgba(215,119,6,.2);}
+.comp-pattern-hd{display:flex;align-items:center;gap:7px;margin-bottom:5px;}
+.comp-pattern-icon{font-size:15px;}
+.comp-pattern-title{font-size:11px;font-weight:800;color:var(--text);}
+.comp-pattern-meta{font-size:10px;color:var(--text3);line-height:1.5;}
+.comp-stat-row{display:flex;gap:12px;margin-top:7px;flex-wrap:wrap;}
+.comp-stat{background:rgba(255,255,255,.7);border:1px solid var(--border);border-radius:6px;padding:5px 9px;text-align:center;}
+.comp-stat-val{font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:800;line-height:1;}
+.comp-stat-lbl{font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--text3);margin-top:2px;}
+.comp-pattern.won .comp-stat-val{color:var(--green);}
+.comp-pattern.lost .comp-stat-val{color:var(--red);}
+.comp-pattern.mixed .comp-stat-val{color:var(--amber);}
+.comp-insight{padding:9px 12px;background:var(--blue-lt);border:1px solid var(--blue-mid);border-radius:7px;font-size:10px;color:var(--blue);line-height:1.5;}
+.comp-insight strong{color:var(--text);}
+
+
+
+/* ─── GTM INTELLIGENCE SUITE HEADER ─────────────────────────── */
+.suite-bar{display:flex;flex-direction:column;justify-content:center;padding:0 28px;height:36px;background:linear-gradient(90deg,#0a0f1e 0%,#0d1a3a 100%);border-bottom:1px solid rgba(0,102,255,.18);flex-shrink:0;position:fixed;top:0;left:0;right:0;z-index:600;}
+.suite-bar-top{display:flex;align-items:center;gap:0;}
+.suite-name{font-family:'JetBrains Mono',monospace;font-size:9px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.45);white-space:nowrap;flex-shrink:0;}
+.suite-div{width:1px;height:12px;background:rgba(255,255,255,.12);margin:0 10px;flex-shrink:0;}
+.suite-modules{display:flex;align-items:center;gap:2px;}
+.suite-mod{font-family:'JetBrains Mono',monospace;font-size:9px;font-weight:600;letter-spacing:.06em;color:rgba(255,255,255,.3);padding:1px 7px;border-radius:3px;white-space:nowrap;transition:color .15s,background .15s;text-decoration:none;border:1px solid transparent;}
+.suite-mod:hover{color:rgba(255,255,255,.7);background:rgba(255,255,255,.06);}
+.suite-mod.active{color:#fff;background:rgba(0,102,255,.35);border-color:rgba(0,102,255,.4);}
+.suite-mod-sep{font-size:9px;color:rgba(255,255,255,.15);padding:0 1px;}
+.suite-descriptor{font-size:8px;font-weight:500;color:rgba(255,255,255,.22);letter-spacing:.04em;margin-top:1px;padding-left:1px;}
+/* Push topbar and nav-tabs down by suite-bar height */
+.topbar{top:36px!important;}
+.nav-tabs{top:88px!important;}
+.view{top:130px!important;}
+
+</style>
+</head>
+<body>
+<!-- GTM INTELLIGENCE SUITE BAR -->
+<div class="suite-bar">
+  <div class="suite-bar-top">
+    <span class="suite-name">GTM Intelligence Suite</span>
+    <div class="suite-div"></div>
+    <div class="suite-modules"><a href="SignalOps___GTM_Intelligence_Engine.html" class="suite-mod" title="Open SignalOps">SignalOps</a><span class="suite-mod-sep">·</span><a href="CampaignForge___AI_GTM_Campaign_Builder.html" class="suite-mod" title="Open CampaignForge">CampaignForge</a><span class="suite-mod-sep">·</span><a href="DealLens___Pipeline_Intelligence_Engine.html" class="suite-mod active" title="Open DealLens">DealLens</a><span class="suite-mod-sep">·</span><a href="PartnerPulse___Ecosystem_Intelligence.html" class="suite-mod" title="Open PartnerPulse">PartnerPulse</a></div>
+  </div>
+  <div class="suite-descriptor">Market signals &nbsp;→&nbsp; Campaign activation &nbsp;→&nbsp; Pipeline intelligence &nbsp;→&nbsp; Partner analytics</div>
+</div>
+  <div class="suite-div"></div>
+  <div class="suite-modules">
+    <a class="suite-mod " href="SignalOps___GTM_Intelligence_Engine.html">SignalOps</a>
+    <span class="suite-mod-sep">·</span>
+    <a class="suite-mod " href="CampaignForge___AI_GTM_Campaign_Builder.html">CampaignForge</a>
+    <span class="suite-mod-sep">·</span>
+    <a class="suite-mod active" href="DealLens___Pipeline_Intelligence_Engine.html">DealLens</a>
+    <span class="suite-mod-sep">·</span>
+    <a class="suite-mod " href="PartnerPulse___Ecosystem_Intelligence.html">PartnerPulse</a>
+  </div>
+</div>
+
+  <div class="suite-modules">
+    <span class="suite-mod ">SignalOps</span>
+    <span class="suite-mod-sep">·</span>
+    <span class="suite-mod ">CampaignForge</span>
+    <span class="suite-mod-sep">·</span>
+    <span class="suite-mod active">DealLens</span>
+    <span class="suite-mod-sep">·</span>
+    <span class="suite-mod ">PartnerPulse</span>
+  </div>
+</div>
+
+
+<!-- TOPBAR -->
+<div class="topbar">
+  <div class="tb-logo">🔍</div>
+  <div class="tb-brand">Deal<span>Lens</span></div>
+  <div class="tb-div"></div>
+  <div class="tb-sub">Pipeline Intelligence Engine</div>
+  <div class="suite-chip">GTM Suite</div>
+  <div class="tb-right">
+    <div class="live-badge"><div class="live-dot"></div>Live Pipeline Monitoring</div>
+    <div class="proto-label">Prototype · DealLens v1</div>
+  </div>
+</div>
+
+<!-- NAV TABS -->
+<div class="nav-tabs">
+  <button class="ntab active" onclick="switchTab('pipeline',this)">🗂 Pipeline <span class="ntab-badge" id="b-pipeline">24</span></button>
+  <button class="ntab" onclick="switchTab('alerts',this)">🚨 Risk Alerts <span class="ntab-badge" id="b-alerts">0</span></button>
+  <button class="ntab" onclick="switchTab('forecast',this)">📊 Forecast</button>
+  <button class="ntab" onclick="switchTab('table',this)">☰ All Deals</button>
+  <button class="ntab" onclick="switchTab('scorelogic',this)">⚖ Score Logic</button>
+  <div class="nav-right">
+    <button class="nav-btn" onclick="exportCSV()">Export CSV →</button>
+  </div>
+</div>
+
+<!-- PIPELINE VIEW -->
+<div id="view-pipeline" class="view active">
+  <div class="view-content">
+    <div class="sd-bar">
+      <div class="sd-label">⚡ DealLens Signal Detection Engine · Scanning CRM + Engagement Data</div>
+      <div class="sd-flow">
+        <span class="sd-step active">CRM Data</span><span class="sd-arr">→</span>
+        <span class="sd-step active">Risk Signal Detection</span><span class="sd-arr">→</span>
+        <span class="sd-step active">Deal Risk Scoring</span><span class="sd-arr">→</span>
+        <span class="sd-step active">Forecast Modeling</span><span class="sd-arr">→</span>
+        <span class="sd-step active">Sales Action Recs</span>
+      </div>
+      <div class="sd-srcs">
+        <span class="sd-src">✓ Salesforce CRM</span>
+        <span class="sd-src">✓ Email Engagement</span>
+        <span class="sd-src">✓ Meeting Intelligence</span>
+        <span class="sd-src">✓ Buying Committee Map</span>
+        <span class="sd-src">✓ Competitor Intel</span>
+        <span class="sd-src">✓ Budget Signals</span>
+      </div>
+    </div>
+    <div class="stat-strip" id="stat-strip"></div>
+    <div class="sec-hd">
+      <div class="sec-title">Active Pipeline · 24 Deals</div>
+    </div>
+    <div class="filter-bar">
+      <input class="finp" id="f-q" placeholder="Search company or owner..." oninput="renderPipeline()">
+      <select class="fsel" id="f-stage" onchange="renderPipeline()"><option value="All">All Stages</option><option>Discovery</option><option>Evaluation</option><option>Proposal</option><option>Negotiation</option><option>Commit</option></select>
+      <select class="fsel" id="f-sort" onchange="renderPipeline()">
+        <option value="risk">Sort: Risk Score</option>
+        <option value="acv">Sort: Deal Size</option>
+        <option value="dur">Sort: Stage Duration</option>
+        <option value="close">Sort: Close Date</option>
+      </select>
+      <button class="ftog" id="tog-crit" onclick="toggleCrit()">Critical Only</button>
+      <div style="margin-left:auto;">
+        <div class="density-toggle">
+          <button class="dtog active" id="dtog-card" onclick="setDensity('card')">⊞ Cards</button>
+          <button class="dtog" id="dtog-list" onclick="setDensity('list')">≡ List</button>
+        </div>
+      </div>
+    </div>
+    <div id="pipeline-container"></div>
+  </div>
+</div>
+
+<!-- ALERTS VIEW -->
+<div id="view-alerts" class="view">
+  <div class="view-content">
+    <div class="sec-hd">
+      <div class="sec-title">Risk Alerts · Deals Requiring Immediate Attention</div>
+    </div>
+    <div class="alert-grid" id="alert-grid"></div>
+  </div>
+</div>
+
+<!-- FORECAST VIEW -->
+<div id="view-forecast" class="view">
+  <div class="view-content">
+    <div class="sec-hd"><div class="sec-title">Pipeline Forecast · Q1–Q2 2026</div></div>
+    <div class="fc-summary-grid" id="fc-summary"></div>
+    <div class="fc-charts-row" id="fc-charts"></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;" id="fc-bottom"></div>
+    <div class="arch-panel">
+      <div class="arch-label">⚙ How DealLens Works · System Architecture</div>
+      <div class="arch-step"><div class="arch-icon">📥</div><div><div class="arch-title">Pipeline Data Ingestion</div><div class="arch-desc">CRM sync, email platform engagement scores, meeting intelligence signals, procurement activity trackers</div></div></div>
+      <div class="arch-arr">↓</div>
+      <div class="arch-step"><div class="arch-icon">🔍</div><div><div class="arch-title">Risk Signal Detection</div><div class="arch-desc">Stage duration benchmarking, buying committee gap analysis, budget confirmation tracking, competitive pressure scoring</div></div></div>
+      <div class="arch-arr">↓</div>
+      <div class="arch-step"><div class="arch-icon">🎯</div><div><div class="arch-title">Deal Risk Scoring Engine</div><div class="arch-desc">0–100 composite risk score across 6 dimensions: duration, committee coverage, engagement, budget, procurement, competitive risk</div></div></div>
+      <div class="arch-arr">↓</div>
+      <div class="arch-step"><div class="arch-icon">📊</div><div><div class="arch-title">Forecast Confidence Modeling</div><div class="arch-desc">Champion strength, committee depth, budget authority, procurement engagement, recency signals, mapped to commit categories</div></div></div>
+      <div class="arch-arr">↓</div>
+      <div class="arch-step"><div class="arch-icon">💡</div><div><div class="arch-title">Sales Action Recommendations</div><div class="arch-desc">Context-aware next best action per deal, persona-mapped outreach triggers, escalation routing to sales management</div></div></div>
+      <div class="arch-arr">↓</div>
+      <div class="arch-step"><div class="arch-icon">🔗</div><div><div class="arch-title">CRM Activation</div><div class="arch-desc">Automatic task creation, forecast category sync, sales manager notifications, deal coaching triggers in Salesforce / HubSpot</div></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- TABLE VIEW -->
+<div id="view-table" class="view">
+  <div class="view-content">
+    <div class="sec-hd">
+      <div class="sec-title">All Deals</div>
+      <button class="export-btn" onclick="exportCSV()">Export CSV →</button>
+    </div>
+    <div id="tbl-summary-bar"></div>
+    <div class="tbl-wrap"><table id="deal-table"><thead><tr>
+      <th onclick="sortTable('company')">Company</th>
+      <th onclick="sortTable('stage')">Stage</th>
+      <th onclick="sortTable('phase')">Phase</th>
+      <th onclick="sortTable('acv')">ACV</th>
+      <th onclick="sortTable('risk')">Risk Score</th>
+      <th onclick="sortTable('close')">Close Date</th>
+      <th onclick="sortTable('owner')">Owner</th>
+    </tr></thead><tbody id="tbl-body"></tbody></table></div>
+  </div>
+</div>
+
+<!-- SCORE LOGIC VIEW -->
+<div id="view-scorelogic" class="view">
+  <div class="view-content">
+    <div class="sec-hd"><div class="sec-title">Risk Score Methodology · How DealLens Calculates Deal Risk</div></div>
+
+    <!-- Methodology note -->
+    <div style="background:var(--s2);border:1px solid var(--border);border-left:3px solid var(--red);border-radius:8px;padding:14px 18px;margin-bottom:16px;">
+      <div style="font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--red);margin-bottom:6px;">Scoring Methodology Note</div>
+      <div style="font-size:11px;color:var(--text2);line-height:1.65;">
+        The penalty weights in this model are <strong>heuristic</strong>, derived from observed patterns across enterprise B2B SaaS sales cycles rather than statistical regression on closed-won/lost data.
+        The recommended validation path is to instrument conversion rates by risk band across a deal cohort of 100+ opportunities, then apply logistic regression to derive empirically-weighted coefficients.
+        A/B testing sales interventions triggered at specific risk thresholds would provide the first ground-truth dataset for calibration.
+      </div>
+    </div>
+
+    <!-- Risk Band Legend -->
+    <div class="sl-band-grid">
+      <div class="sl-band-card low"><div class="sl-band-range">80–100</div><div class="sl-band-lbl">Low Risk</div><div class="sl-band-sub">On track to close</div></div>
+      <div class="sl-band-card med"><div class="sl-band-range">60–79</div><div class="sl-band-lbl">Medium Risk</div><div class="sl-band-sub">1–2 signals flagged</div></div>
+      <div class="sl-band-card high"><div class="sl-band-range">40–59</div><div class="sl-band-lbl">High Risk</div><div class="sl-band-sub">Multiple gaps detected</div></div>
+      <div class="sl-band-card crit"><div class="sl-band-range">&lt;40</div><div class="sl-band-lbl">Critical Risk</div><div class="sl-band-sub">Deal rescue required</div></div>
+    </div>
+
+    <!-- Live Pipeline Distribution -->
+    <div class="sec-hd" style="margin-top:4px;"><div class="sec-title">Live Pipeline Distribution · Your 24 Deals by Risk Band</div></div>
+    <div id="sl-pipeline-dist" style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:16px;"></div>
+
+    <!-- Live Examples from Pipeline -->
+    <div class="sec-hd"><div class="sec-title">Live Examples From Your Pipeline</div><span style="font-size:11px;color:var(--text3);">Click any deal to open detail panel</span></div>
+    <div id="sl-live-examples" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:10px;margin-bottom:20px;"></div>
+
+    <!-- Live Penalty Impact Summary -->
+    <div class="penalty-impact-panel" id="pip-panel"></div>
+
+    <!-- Interactive Simulator -->
+    <div class="sim-deal-ctx" id="sim-ctx-banner" style="display:none;"></div>
+    <div class="sim-panel">
+      <div id="sim-context-banner"></div>
+      <div class="sim-title">🎛 Interactive Risk Score Simulator · Adjust signals to see score change in real time</div>
+      <div class="sim-grid">
+        <div class="sim-row"><label class="sim-lbl">Stage Duration vs Benchmark</label><select class="sim-sel" id="sim-dur" onchange="runSim()"><option value="0">On track or below benchmark</option><option value="15">Above benchmark (-15)</option></select></div>
+        <div class="sim-row"><label class="sim-lbl">Buying Committee Coverage</label><select class="sim-sel" id="sim-bc" onchange="runSim()"><option value="0">40% or above</option><option value="20">Below 40% (-20)</option></select></div>
+        <div class="sim-row"><label class="sim-lbl">Email Engagement</label><select class="sim-sel" id="sim-email" onchange="runSim()"><option value="0">High or Medium</option><option value="15">Low (-15)</option></select></div>
+        <div class="sim-row"><label class="sim-lbl">Budget Confirmation</label><select class="sim-sel" id="sim-budget" onchange="runSim()"><option value="0">Budget confirmed</option><option value="20">Not confirmed (-20)</option></select></div>
+        <div class="sim-row"><label class="sim-lbl">Procurement Engagement</label><select class="sim-sel" id="sim-proc" onchange="runSim()"><option value="0">Engaged or early stage</option><option value="10">Not engaged at Negotiation/Commit (-10)</option></select></div>
+        <div class="sim-row"><label class="sim-lbl">Competitive Pressure</label><select class="sim-sel" id="sim-comp" onchange="runSim()"><option value="0">None or Moderate</option><option value="15">High (-15)</option></select></div>
+        <div class="sim-row"><label class="sim-lbl">Phase-Stage Alignment</label><select class="sim-sel" id="sim-phase" onchange="runSim()"><option value="0">Phase aligned with CRM stage</option><option value="15">Phase behind CRM stage (-15)</option></select></div>
+      </div>
+      <div class="sim-output" id="sim-output"></div>
+    </div>
+
+    <!-- Phase-Stage Alignment Matrix -->
+    <div class="sec-hd" style="margin-top:4px;">
+      <div class="sec-title">Phase-Stage Alignment Matrix</div>
+      <span style="font-size:11px;color:var(--text3);">Expected buyer phase per CRM stage · Misalignment triggers -15 risk penalty</span>
+    </div>
+    <div id="sl-phase-matrix" style="margin-bottom:20px;background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow:hidden;box-shadow:var(--sh1);"></div>
+
+    <!-- Penalty Breakdown Cards -->
+    <div class="sec-hd" style="margin-top:4px;">
+      <div class="sec-title">Risk Penalty Dimensions</div>
+      <span style="font-size:11px;color:var(--text3);">Base score: 100 · Penalties subtracted · Minimum: 0 · 7 dimensions · Max total penalty: 110</span>
+    </div>
+    <div class="sl-grid" id="sl-grid"></div>
+  </div>
+</div>
+
+<!-- DETAIL PANEL -->
+<div id="detail-panel" class="detail-panel">
+  <div class="dp-hd">
+    <div>
+      <div class="dp-name" id="dp-name"></div>
+      <div class="dp-sub" id="dp-sub"></div>
+    </div>
+    <button class="dp-close" onclick="closeDetail()">✕</button>
+  </div>
+  <div class="dp-hero">
+    <div class="dp-acv" id="dp-acv"></div>
+    <div class="dp-badges" id="dp-badges"></div>
+  </div>
+  <div id="dp-body"></div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════════════════
+// DATA
+// ═══════════════════════════════════════════════════════════════
+// Phase codes: F=Recognize, E=Consider, D=Evaluate, C=Select, B=Negotiate, A=Won
+const PHASE_META = {F:"Recognize",E:"Consider",D:"Evaluate",C:"Select",B:"Negotiate",A:"Won"};
+const PHASE_ORDER = ["F","E","D","C","B","A"]; // F=earliest, A=latest
+// Expected phases per CRM stage (for misalignment detection)
+const PHASE_EXPECTED = {Discovery:["F","E"],Evaluation:["D","E"],Proposal:["C","D"],Negotiation:["B","C"],Commit:["A","B"]};
+
+const DEALS_RAW = [
+  {id:1,company:"Meridian Health Systems",industry:"Healthcare",acv:890000,stage:"Negotiation",phase:"B",dur:52,champion:true,bcCov:65,email:"high",budget:true,proc:true,comp:"moderate",lastAct:"2026-02-28",closeDate:"2026-03-31",owner:"Priya Nair",partner:"Deloitte",partnerType:"gsi"},
+  {id:2,company:"Vertex Logistics Group",industry:"Logistics",acv:1250000,stage:"Proposal",phase:"D",dur:38,champion:true,bcCov:45,email:"medium",budget:false,proc:false,comp:"high",lastAct:"2026-02-25",closeDate:"2026-03-15",owner:"James Wu",partner:"Direct",partnerType:"direct"},
+  {id:3,company:"Cascade Fintech",industry:"Fintech",acv:420000,stage:"Evaluation",phase:"E",dur:29,champion:false,bcCov:30,email:"low",budget:false,proc:false,comp:"high",lastAct:"2026-02-20",closeDate:"2026-04-30",owner:"Sofia Martinez",partner:"Direct",partnerType:"direct"},
+  {id:4,company:"Northpoint Manufacturing",industry:"Manufacturing",acv:1800000,stage:"Commit",phase:"A",dur:18,champion:true,bcCov:85,email:"high",budget:true,proc:true,comp:"none",lastAct:"2026-03-01",closeDate:"2026-03-15",owner:"Arun Sharma",partner:"AWS Marketplace",partnerType:"marketplace"},
+  {id:5,company:"BlueSky Retail Co.",industry:"Retail",acv:310000,stage:"Discovery",phase:"F",dur:12,champion:false,bcCov:25,email:"medium",budget:false,proc:false,comp:"moderate",lastAct:"2026-02-22",closeDate:"2026-06-30",owner:"Laura Chen",partner:"Direct",partnerType:"direct"},
+  {id:6,company:"Helios SaaS Platform",industry:"SaaS",acv:680000,stage:"Proposal",phase:"C",dur:44,champion:true,bcCov:70,email:"high",budget:true,proc:false,comp:"moderate",lastAct:"2026-03-02",closeDate:"2026-03-31",owner:"Marcus Webb",partner:"Accenture",partnerType:"gsi"},
+  {id:7,company:"Ironclad Fintech",industry:"Fintech",acv:2100000,stage:"Negotiation",phase:"C",dur:61,champion:true,bcCov:55,email:"medium",budget:true,proc:true,comp:"high",lastAct:"2026-02-18",closeDate:"2026-03-31",owner:"Priya Nair",partner:"Direct",partnerType:"direct"},
+  {id:8,company:"Solaris Energy Tech",industry:"Manufacturing",acv:560000,stage:"Evaluation",phase:"D",dur:35,champion:false,bcCov:35,email:"low",budget:false,proc:false,comp:"high",lastAct:"2026-02-15",closeDate:"2026-05-31",owner:"James Wu",partner:"Direct",partnerType:"direct"},
+  {id:9,company:"Tidewater Healthcare",industry:"Healthcare",acv:1100000,stage:"Proposal",phase:"C",dur:27,champion:true,bcCov:60,email:"high",budget:true,proc:false,comp:"none",lastAct:"2026-03-01",closeDate:"2026-04-15",owner:"Sofia Martinez",partner:"Azure Marketplace",partnerType:"marketplace"},
+  {id:10,company:"Pinnacle SaaS",industry:"SaaS",acv:240000,stage:"Discovery",phase:"F",dur:8,champion:false,bcCov:20,email:"medium",budget:false,proc:false,comp:"none",lastAct:"2026-02-28",closeDate:"2026-06-30",owner:"Arun Sharma",partner:"Direct",partnerType:"direct"},
+  {id:11,company:"Redwood Logistics",industry:"Logistics",acv:780000,stage:"Negotiation",phase:"B",dur:48,champion:true,bcCov:75,email:"high",budget:true,proc:true,comp:"moderate",lastAct:"2026-03-02",closeDate:"2026-03-15",owner:"Laura Chen",partner:"Infosys",partnerType:"gsi"},
+  {id:12,company:"Quantum Retail Group",industry:"Retail",acv:430000,stage:"Evaluation",phase:"E",dur:22,champion:true,bcCov:50,email:"medium",budget:false,proc:false,comp:"moderate",lastAct:"2026-02-26",closeDate:"2026-05-31",owner:"Marcus Webb",partner:"SHI International",partnerType:"reseller"},
+  {id:13,company:"Apex Manufacturing",industry:"Manufacturing",acv:2500000,stage:"Commit",phase:"A",dur:14,champion:true,bcCov:90,email:"high",budget:true,proc:true,comp:"none",lastAct:"2026-03-03",closeDate:"2026-03-15",owner:"Priya Nair",partner:"AWS Marketplace",partnerType:"marketplace"},
+  {id:14,company:"Brightwave Fintech",industry:"Fintech",acv:380000,stage:"Proposal",phase:"D",dur:55,champion:false,bcCov:25,email:"low",budget:false,proc:false,comp:"high",lastAct:"2026-02-10",closeDate:"2026-04-30",owner:"James Wu",partner:"Direct",partnerType:"direct"},
+  {id:15,company:"Harbor Health Co.",industry:"Healthcare",acv:620000,stage:"Evaluation",phase:"D",dur:31,champion:true,bcCov:55,email:"medium",budget:true,proc:false,comp:"moderate",lastAct:"2026-02-24",closeDate:"2026-05-15",owner:"Sofia Martinez",partner:"Deloitte",partnerType:"gsi"},
+  {id:16,company:"Sterling SaaS Inc.",industry:"SaaS",acv:950000,stage:"Negotiation",phase:"B",dur:40,champion:true,bcCov:80,email:"high",budget:true,proc:true,comp:"none",lastAct:"2026-03-01",closeDate:"2026-03-31",owner:"Arun Sharma",partner:"Direct",partnerType:"direct"},
+  {id:17,company:"Crossroads Retail",industry:"Retail",acv:180000,stage:"Discovery",phase:"E",dur:16,champion:false,bcCov:15,email:"low",budget:false,proc:false,comp:"high",lastAct:"2026-02-19",closeDate:"2026-07-31",owner:"Laura Chen",partner:"Direct",partnerType:"direct"},
+  {id:18,company:"Nexus Logistics",industry:"Logistics",acv:1400000,stage:"Proposal",phase:"C",dur:33,champion:true,bcCov:65,email:"high",budget:true,proc:true,comp:"moderate",lastAct:"2026-03-02",closeDate:"2026-04-15",owner:"Marcus Webb",partner:"Accenture",partnerType:"gsi"},
+  {id:19,company:"Fortis Manufacturing",industry:"Manufacturing",acv:870000,stage:"Evaluation",phase:"E",dur:26,champion:false,bcCov:40,email:"medium",budget:false,proc:false,comp:"none",lastAct:"2026-02-27",closeDate:"2026-05-31",owner:"Priya Nair",partner:"Carahsoft",partnerType:"reseller"},
+  {id:20,company:"Orbit SaaS",industry:"SaaS",acv:1600000,stage:"Negotiation",phase:"C",dur:57,champion:true,bcCov:70,email:"medium",budget:true,proc:false,comp:"high",lastAct:"2026-02-14",closeDate:"2026-03-31",owner:"James Wu",partner:"Direct",partnerType:"direct"},
+  {id:21,company:"Crestline Fintech",industry:"Fintech",acv:290000,stage:"Discovery",phase:"F",dur:10,champion:false,bcCov:20,email:"medium",budget:false,proc:false,comp:"moderate",lastAct:"2026-02-28",closeDate:"2026-07-31",owner:"Sofia Martinez",partner:"Direct",partnerType:"direct"},
+  {id:22,company:"Summit Healthcare",industry:"Healthcare",acv:1950000,stage:"Commit",phase:"B",dur:21,champion:true,bcCov:80,email:"high",budget:true,proc:true,comp:"none",lastAct:"2026-03-03",closeDate:"2026-03-15",owner:"Arun Sharma",partner:"Deloitte",partnerType:"gsi"},
+  {id:23,company:"Clearfield Retail",industry:"Retail",acv:520000,stage:"Proposal",phase:"C",dur:42,champion:true,bcCov:50,email:"medium",budget:true,proc:false,comp:"moderate",lastAct:"2026-02-23",closeDate:"2026-04-30",owner:"Laura Chen",partner:"Azure Marketplace",partnerType:"marketplace"},
+  {id:24,company:"Elevate SaaS",industry:"SaaS",acv:80000,stage:"Discovery",phase:"F",dur:7,champion:false,bcCov:15,email:"low",budget:false,proc:false,comp:"none",lastAct:"2026-03-01",closeDate:"2026-07-31",owner:"Marcus Webb",partner:"Direct",partnerType:"direct"},
+];
+
+// Benchmarks by stage
+const DUR_BENCH = {Discovery:21,Evaluation:30,Proposal:28,Negotiation:35,Commit:14};
+
+function phaseAligned(d){
+  // Returns true if phase is within expected range for the CRM stage
+  const expected = PHASE_EXPECTED[d.stage] || [];
+  return expected.includes(d.phase);
+}
+function partnerCell(d){
+  const pt = d.partnerType||'direct';
+  const cls = 'pt-'+pt;
+  const typeLabel = {direct:'Direct',gsi:'GSI',marketplace:'Marketplace',reseller:'Reseller'}[pt]||pt;
+  return `<div><div class="partner-name">${d.partner||'Direct'}</div><span class="partner-type ${cls}">${typeLabel}</span></div>`;
+}
+function partnerCell(d){
+  const pt = d.partnerType||'direct';
+  const cls = 'pt-'+pt;
+  const typeLabel = {direct:'Direct',gsi:'GSI',marketplace:'Marketplace',reseller:'Reseller'}[pt]||pt;
+  return `<div><div class="partner-name">${d.partner||'Direct'}</div><span class="partner-type ${cls}">${typeLabel}</span></div>`;
+}
+function phaseBehind(d){
+  // Returns true if phase is strictly behind the earliest expected phase
+  const expected = PHASE_EXPECTED[d.stage] || [];
+  const earliest = expected[expected.length-1]; // e.g. for Proposal, expected=[C,D], earliest=D
+  return PHASE_ORDER.indexOf(d.phase) < PHASE_ORDER.indexOf(earliest);
+}
+function calcRisk(d){
+  let s=100;
+  if(d.dur > DUR_BENCH[d.stage]) s-=15;
+  if(d.bcCov < 40) s-=20;
+  if(d.email==="low") s-=15;
+  if(!d.budget) s-=20;
+  if(!d.proc && ["Negotiation","Commit"].includes(d.stage)) s-=10;
+  if(d.comp==="high") s-=15;
+  if(phaseBehind(d)) s-=15; // phase-stage misalignment penalty
+  return Math.max(0,s);
+}
+
+function calcFC(d){
+  let s=0;
+  if(d.champion) s+=10;
+  if(d.bcCov>60) s+=15;
+  if(d.budget) s+=20;
+  if(d.proc) s+=10;
+  if(d.dur<=DUR_BENCH[d.stage]) s+=10;
+  if(d.email==="high") s+=10;
+  return Math.min(100,s);
+}
+
+const PHASE_BUYER_DESC={
+  F:"Buyer is becoming aware of the problem and exploring whether a solution exists",
+  E:"Buyer is researching options and building internal consensus to act",
+  D:"Buyer is actively evaluating vendors against defined criteria",
+  C:"Buyer has a preferred vendor and is working toward a decision",
+  B:"Buyer is in commercial discussions, terms, legal, and procurement engaged",
+  A:"Buyer has selected this vendor and the deal is closed-won",
+};
+function phasePill(d){
+  const name = PHASE_META[d.phase]||d.phase;
+  const mis = phaseBehind(d);
+  const buyerDesc = PHASE_BUYER_DESC[d.phase]||"";
+  const tooltip = d.phase+" · "+name+(mis?" · Phase behind CRM stage":"")+". "+buyerDesc;
+  return `<span class="phase-pill pp-${d.phase}${mis?' phase-mis':''}" title="${tooltip}">${d.phase} ${name}</span>`;
+}
+function riskCls(r){ return r>=80?"rl":r>=60?"rm":r>=40?"rh":"rc"; }
+function riskLbl(r){ return r>=80?"Low Risk":r>=60?"Medium Risk":r>=40?"High Risk":"Critical"; }
+function fcCls(f){ return f>=80?"fs":f>=60?"fb2":f>=40?"fu":"fa"; }
+function fcLbl(f){ return f>=80?"Strong Commit":f>=60?"Best Case":f>=40?"Uncertain":"At Risk"; }
+
+const DEALS = DEALS_RAW.map(d=>({...d, risk:calcRisk(d), fc:calcFC(d)}));
+
+// ═══════════════════════════════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════════════════════════════
+const ST = {activeTab:"pipeline", critOnly:false, detailId:null, sortCol:"risk", sortDir:"asc", anFilter:null, alertOwner:null, alertClosingOnly:false, density:"card", simDealId:null};
+
+// ═══════════════════════════════════════════════════════════════
+// RENDER STATS
+// ═══════════════════════════════════════════════════════════════
+function renderStats(){
+  const totalPipe = DEALS.reduce((s,d)=>s+d.acv,0);
+  const commitDeals = DEALS.filter(d=>d.stage==="Commit");
+  const commit = commitDeals.reduce((s,d)=>s+d.acv,0);
+  const atRisk = DEALS.filter(d=>d.risk<40).reduce((s,d)=>s+d.acv,0);
+  const avgRisk = Math.round(DEALS.reduce((s,d)=>s+d.risk,0)/DEALS.length);
+  const crit = DEALS.filter(d=>d.risk<40).length;
+  document.getElementById("stat-strip").innerHTML=`
+    <div class="stat-card c-blue"><div class="stat-lbl">Total Pipeline</div><div class="stat-val">$${(totalPipe/1e6).toFixed(1)}M</div><div class="stat-sub">24 active opportunities</div></div>
+    <div class="stat-card c-green"><div class="stat-lbl">Commit Forecast</div><div class="stat-val">$${(commit/1e6).toFixed(1)}M</div><div class="stat-sub">${commitDeals.length} deals in Commit stage</div></div>
+    <div class="stat-card c-amber"><div class="stat-lbl">Avg Risk Score</div><div class="stat-val">${avgRisk}</div><div class="stat-sub">Across all 24 deals</div></div>
+    <div class="stat-card c-red"><div class="stat-lbl">At-Risk Pipeline</div><div class="stat-val">$${(atRisk/1e6).toFixed(1)}M</div><div class="stat-sub">${crit} deals in Critical band</div></div>
+    <div class="stat-card c-purple"><div class="stat-lbl">Deals Needing Action</div><div class="stat-val">${DEALS.filter(d=>d.risk<60).length}</div><div class="stat-sub">Medium–Critical risk deals</div></div>
+  `;
+}
+
+// ═══════════════════════════════════════════════════════════════
+// RENDER DEAL CARDS
+// ═══════════════════════════════════════════════════════════════
+function fmtACV(v){ return v>=1e6?"$"+(v/1e6).toFixed(2)+"M":"$"+(v/1e3).toFixed(0)+"K"; }
+function stageCls(s){ return {Discovery:"sp-disc",Evaluation:"sp-eval",Proposal:"sp-prop",Negotiation:"sp-nego",Commit:"sp-commit"}[s]||""; }
+function durTag(d){
+  const b=DUR_BENCH[d.stage];
+  if(d.dur<=b) return `<span class="dur-tag dur-ok">${d.dur}d on track</span>`;
+  if(d.dur<=b*1.5) return `<span class="dur-tag dur-warn">${d.dur}d (+${d.dur-b}d)</span>`;
+  return `<span class="dur-tag dur-crit">${d.dur}d STALLED</span>`;
+}
+function compPill(c){ return {none:`<span class="comp-pill cp-none">No Comp</span>`,moderate:`<span class="comp-pill cp-mod">Comp: Moderate</span>`,high:`<span class="comp-pill cp-high">Comp: High</span>`}[c]; }
+function riskBadge(r){ const c=riskCls(r),l=riskLbl(r); return `<div class="rb ${c}"><span class="rbn">${r}</span><span class="rbl">${l}</span></div>`; }
+function fcBadge(f){ const c=fcCls(f),l=fcLbl(f); return `<div class="fb ${c}"><span class="fbn">${f}</span><span class="fbl">${l}</span></div>`; }
+function daysSince(s){ return Math.floor((new Date()-new Date(s))/(1000*60*60*24)); }
+
+function getFiltered(){
+  const fq=(document.getElementById("f-q")||{value:""}).value.toLowerCase();
+  const fs=(document.getElementById("f-stage")||{value:"All"}).value;
+  const sort=(document.getElementById("f-sort")||{value:"risk"}).value;
+  let arr=DEALS.filter(d=>{
+    if(ST.critOnly && d.risk>=40) return false;
+    if(fs!=="All" && d.stage!==fs) return false;
+    if(fq && !d.company.toLowerCase().includes(fq) && !d.owner.toLowerCase().includes(fq)) return false;
+    return true;
+  });
+  const sortFns={risk:(a,b)=>a.risk-b.risk,acv:(a,b)=>b.acv-a.acv,dur:(a,b)=>b.dur-a.dur,close:(a,b)=>new Date(a.closeDate)-new Date(b.closeDate)};
+  return arr.sort(sortFns[sort]||sortFns.risk);
+}
+
+function renderPipeline(){
+  const arr=getFiltered();
+  const el=document.getElementById("pipeline-container");
+  if(ST.density==="list"){
+    el.className="deals-list";
+    const listHeader = `<div class="dl-row-hd">
+      <div>Company</div>
+      <div>Phase</div>
+      <div>Risk</div>
+      <div>Close Date</div>
+      <div>Channel Partner</div>
+      <div>AE</div>
+      <div>ACV</div>
+    </div>`;
+    el.innerHTML=listHeader+arr.map(d=>{
+      const rCol=d.risk<40?"var(--red)":d.risk<60?"var(--amber)":d.risk<80?"var(--blue)":"var(--green)";
+      const fCol=d.fc>=80?"var(--green)":d.fc>=60?"var(--blue)":d.fc>=40?"var(--amber)":"var(--red)";
+      return`<div class="dl-row ${riskCls(d.risk)}" onclick="openDetail(${d.id})">
+        <div>
+          <div class="dlr-name">${d.company}</div>
+          <div style="display:flex;gap:4px;margin-top:3px;flex-wrap:wrap;">
+            ${d.champion?'<span style="font-size:9px;font-weight:700;background:#F5F3FF;color:#6D28D9;padding:1px 6px;border-radius:3px;white-space:nowrap;">Champion ✓</span>':""}
+            ${riskSigCount(d)}
+          </div>
+        </div>
+        <div>${phasePill(d)}</div>
+        <div class="dlr-col">
+          <div class="dlr-score" style="color:${rCol};">${d.risk}</div>
+          <div class="dlr-band" style="color:${rCol};">${riskLbl(d.risk)}</div>
+        </div>
+        <div class="dlr-close">${d.closeDate}</div>
+        <div>${partnerCell(d)}</div>
+        <div style="font-size:11px;color:var(--text2);font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${d.owner}</div>
+        <div class="dlr-acv">${fmtACV(d.acv)}</div>
+      </div>`;
+    }).join("");
+  } else {
+    el.className="deals-grid";
+    el.innerHTML=arr.map(d=>`
+      <div class="dl-card ${riskCls(d.risk)}" onclick="openDetail(${d.id})">
+        <div class="dlc-top">
+          <div class="dlc-hd">
+            <div><div class="dlc-name">${d.company}</div><div class="dlc-meta">${d.industry}</div></div>
+            <div>${compPill(d.comp)}</div>
+          </div>
+          <div class="dlc-acv">${fmtACV(d.acv)}</div>
+          <div class="dlc-pills">
+            <span class="stage-pill ${stageCls(d.stage)}">${d.stage}</span>
+            ${phasePill(d)}
+            ${d.champion?'<span style="font-size:9px;font-weight:700;background:#F5F3FF;color:#6D28D9;padding:1px 7px;border-radius:3px;">Champion ✓</span>':""}
+            ${riskSigCount(d)}
+          </div>
+        </div>
+        <div class="dlc-scores">
+          <div class="dlc-score-cell">
+            <div class="dlc-score-lbl">Deal Risk</div>
+            <div class="dlc-score-val" style="color:${d.risk<40?"var(--red)":d.risk<60?"var(--amber)":d.risk<80?"var(--blue)":"var(--green)"};">${d.risk}</div>
+            <div class="dlc-score-band" style="color:${d.risk<40?"var(--red)":d.risk<60?"var(--amber)":d.risk<80?"var(--blue)":"var(--green)"};">${riskLbl(d.risk)}</div>
+          </div>
+          <div class="dlc-score-cell">
+            <div class="dlc-score-lbl">Forecast</div>
+            <div class="dlc-score-val" style="color:${d.fc>=80?"var(--green)":d.fc>=60?"var(--blue)":d.fc>=40?"var(--amber)":"var(--red)"};">${d.fc}</div>
+            <div class="dlc-score-band" style="color:${d.fc>=80?"var(--green)":d.fc>=60?"var(--blue)":d.fc>=40?"var(--amber)":"var(--red)"};">${fcLbl(d.fc)}</div>
+          </div>
+        </div>
+        <div class="dlc-foot">
+          <span class="dlc-owner">👤 ${d.owner}</span>
+          <span class="dlc-close">Close: ${d.closeDate}</span>
+        </div>
+      </div>`).join("");
+  }
+}
+
+function setDensity(mode){
+  ST.density=mode;
+  const btnGrid=document.getElementById("dtog-card")||document.getElementById("dt-grid");
+  const btnList=document.getElementById("dtog-list")||document.getElementById("dt-list");
+  if(btnGrid) btnGrid.classList.toggle("active", mode==="card"||mode==="grid");
+  if(btnList) btnList.classList.toggle("active", mode==="list");
+  renderPipeline();
+}
+
+// ═══════════════════════════════════════════════════════════════
+// RENDER ALERTS
+// ═══════════════════════════════════════════════════════════════
+function getAlerts(){
+  const alerts=[];
+  DEALS.forEach(d=>{
+    const sigs=[];
+    let sev="med";
+    if(d.dur>DUR_BENCH[d.stage]) sigs.push({cls:"crit",txt:`Stage duration ${d.dur}d (benchmark: ${DUR_BENCH[d.stage]}d): deal stalling`});
+    if(d.bcCov<40) sigs.push({cls:"crit",txt:`Buying committee coverage only ${d.bcCov}%, key personas unmapped`});
+    if(!d.budget) sigs.push({cls:"warn",txt:"Budget not confirmed, at risk of losing forecast category"});
+    if(d.email==="low") sigs.push({cls:"warn",txt:"Email engagement low, champion may be disengaged"});
+    if(!d.proc && ["Negotiation","Commit"].includes(d.stage)) sigs.push({cls:"crit",txt:`Procurement not engaged at ${d.stage} stage, deal at legal/procurement risk`});
+    if(d.comp==="high") sigs.push({cls:"crit",txt:"High competitive pressure detected, active displacement risk"});
+    if(phaseBehind(d)) sigs.push({cls:"warn",txt:`Opportunity phase ${d.phase} (${PHASE_META[d.phase]}) is behind expected for ${d.stage} stage, buyer not progressing at CRM pace`});
+    if(sigs.length===0) return;
+    if(d.risk<40) sev="crit";
+    else if(d.risk<60) sev="high";
+    alerts.push({d,sigs,sev});
+  });
+  alerts.sort((a,b)=>a.d.risk-b.d.risk);
+  return alerts;
+}
+
+function getAction(d){
+  if(d.risk<40){
+    if(d.comp==="high") return "Counter competitive positioning with executive sponsor escalation. Request mutual action plan sign-off within 48 hours.";
+    if(!d.budget) return "Reconfirm budget authority with economic buyer. Schedule CFO alignment call before end of week.";
+    if(d.bcCov<40) return "Identify and map missing buying committee personas. Engage champion to broker introductions within 5 business days.";
+    return "Escalate to Sales Manager for deal rescue. Initiate executive sponsor briefing and identify blocking issues.";
+  }
+  if(!d.budget) return "Schedule budget confirmation call with economic buyer. Prepare ROI business case for CFO sign-off.";
+  if(d.comp==="high") return "Deploy competitive battle card. Arrange executive briefing and secure case study from comparable win.";
+  if(d.bcCov<60) return "Run buying committee mapping session with champion. Identify procurement and security contacts.";
+  if(!d.proc && ["Negotiation","Commit"].includes(d.stage)) return "Schedule procurement alignment call this week. Engage legal team to accelerate contract review.";
+  return "Schedule executive alignment meeting and reinforce mutual close plan timelines.";
+}
+
+function closingTag(d) {
+  const days = Math.floor((new Date(d.closeDate)-new Date())/(1000*60*60*24));
+  if (days<=14) return `<span class="closing-soon-tag urgent">Closes in ${days}d</span>`;
+  if (days<=30) return `<span class="closing-soon-tag soon">Closes in ${days}d</span>`;
+  return "";
+}
+
+function renderAlerts(){
+  const allAlerts=getAlerts();
+  document.getElementById("b-alerts").textContent=allAlerts.length;
+
+  // Filter by owner if active
+  const alerts = ST.alertOwner ? allAlerts.filter(a=>a.d.owner===ST.alertOwner) : allAlerts;
+  const filtered = ST.alertClosingOnly ? alerts.filter(a=>{
+    const days=Math.floor((new Date(a.d.closeDate)-new Date())/(1000*60*60*24));
+    return days<=30;
+  }) : alerts;
+
+  // Owner list for filter bar
+  const owners=[...new Set(allAlerts.map(a=>a.d.owner))].sort();
+  const ownerBar = owners.map(o=>{
+    const cnt=allAlerts.filter(a=>a.d.owner===o).length;
+    const hasCrit=allAlerts.some(a=>a.d.owner===o&&a.sev==="crit");
+    const cls=ST.alertOwner===o?"owner-active":"";
+    return `<button class="alert-ftog ${cls}" onclick="toggleAlertOwner('${o}')">${o} <span style="font-family:'JetBrains Mono',monospace;font-size:9px;opacity:.7;">(${cnt})</span></button>`;
+  }).join("");
+
+  // Group by owner
+  const byOwner={};
+  filtered.forEach(a=>{
+    if(!byOwner[a.d.owner]) byOwner[a.d.owner]=[];
+    byOwner[a.d.owner].push(a);
+  });
+
+  const ownerGroups = Object.entries(byOwner).map(([owner,ownerAlerts])=>{
+    const hasCrit=ownerAlerts.some(a=>a.sev==="crit");
+    const hasHigh=ownerAlerts.some(a=>a.sev==="high");
+    const cntCls=hasCrit?"has-crit":hasHigh?"has-high":"has-med";
+    return `<div class="owner-group">
+      <div class="owner-group-hd">
+        <span style="font-size:16px;">👤</span>
+        <div>
+          <div class="owner-group-name">${owner}</div>
+          <div class="owner-group-meta">${ownerAlerts.length} deal${ownerAlerts.length!==1?"s":""} with risk signals${hasCrit?" · Critical alerts present":""}</div>
+        </div>
+        <span class="owner-group-cnt ${cntCls}">${ownerAlerts.length}</span>
+      </div>
+      ${ownerAlerts.map(a=>`
+        <div class="alc sev-${a.sev}" onclick="openDetail(${a.d.id})" style="cursor:pointer;margin-bottom:8px;">
+          <div class="alc-hd">
+            <div>
+              <div class="alc-co">${a.d.company} ${closingTag(a.d)}</div>
+              <div class="alc-meta">${a.d.industry} · ${a.d.stage} · ${fmtACV(a.d.acv)} ACV · Close: ${a.d.closeDate}</div>
+            </div>
+            <div class="alc-sev-tag ${a.sev}">${{crit:"Critical",high:"High Risk",med:"Medium Risk"}[a.sev]}</div>
+          </div>
+          <div class="alc-body">
+            <div class="alc-sigs">
+              <div class="alc-sig-ttl">Risk Signals Detected</div>
+              ${a.sigs.map(s=>`<div class="alc-sig-item ${s.cls}">${s.txt}</div>`).join("")}
+            </div>
+            <div class="alc-action-box">
+              <div class="alc-action-ttl">Suggested Action</div>
+              <div class="alc-action-txt">${getAction(a.d)}</div>
+            </div>
+          </div>
+        </div>`).join("")}
+    </div>`;
+  }).join("") || '<div style="padding:32px;text-align:center;color:var(--text3);font-size:13px;">No alerts match the current filter.</div>';
+
+  document.getElementById("alert-grid").innerHTML=`
+    <div class="alert-filter-bar">
+      <button class="alert-ftog ${ST.alertClosingOnly?"on":""}" onclick="toggleClosingOnly()">⏱ Closing This Month</button>
+      <div style="width:1px;height:20px;background:var(--border);"></div>
+      ${ownerBar}
+      ${ST.alertOwner?`<button class="alert-ftog" onclick="toggleAlertOwner(null)" style="opacity:.6;">Clear ×</button>`:""}
+    </div>
+    ${ownerGroups}
+  `;
+}
+
+function toggleAlertOwner(owner) {
+  ST.alertOwner = ST.alertOwner===owner ? null : owner;
+  renderAlerts();
+}
+function toggleClosingOnly() {
+  ST.alertClosingOnly = !ST.alertClosingOnly;
+  renderAlerts();
+}
+
+// ─── ANALYTICS FILTER ──────────────────────────────────────────
+function applyAnFilter(type, value, label, extra) {
+  if (ST.anFilter && ST.anFilter.type===type && ST.anFilter.value==value) {
+    ST.anFilter = null;
+    renderForecast();
+    renderTable();
+    renderAnBanner();
+  } else {
+    ST.anFilter = Object.assign({type, value, label}, extra||{});
+    renderForecast();
+    switchTab("table", document.querySelector('.ntab[onclick*=\'table\']'));
+    renderTable();
+    renderAnBanner();
+  }
+}
+
+function renderAnBanner() {
+  const existing = document.getElementById("an-filter-banner");
+  if (existing) existing.remove();
+  if (!ST.anFilter) return;
+  const tblWrap = document.querySelector(".tbl-wrap");
+  if (!tblWrap) return;
+  const banner = document.createElement("div");
+  banner.id = "an-filter-banner";
+  banner.className = "an-filter-banner";
+  banner.innerHTML = `<span>Forecast filter active: <strong>${ST.anFilter.label}</strong>, showing filtered deals below</span><span style="font-size:9px;font-family:'JetBrains Mono',monospace;">Click to clear ×</span>`;
+  banner.onclick = () => { ST.anFilter = null; renderTable(); banner.remove(); };
+  tblWrap.parentNode.insertBefore(banner, tblWrap);
+}
+
+
+// ═══════════════════════════════════════════════════════════════
+// RENDER FORECAST
+// ═══════════════════════════════════════════════════════════════
+function renderForecast(){
+  const total=DEALS.reduce((s,d)=>s+d.acv,0);
+  const commit=DEALS.filter(d=>d.fc>=80).reduce((s,d)=>s+d.acv,0);
+  const bestCase=DEALS.filter(d=>d.fc>=60).reduce((s,d)=>s+d.acv,0);
+  const atRisk=DEALS.filter(d=>d.fc<40).reduce((s,d)=>s+d.acv,0);
+  document.getElementById("fc-summary").innerHTML=`
+    <div class="fc-sum-card c-blue"><div class="fc-sum-lbl">Total Pipeline</div><div class="fc-sum-val">$${(total/1e6).toFixed(1)}M</div><div class="fc-sum-sub">All 24 active deals</div></div>
+    <div class="fc-sum-card c-green"><div class="fc-sum-lbl">Strong Commit</div><div class="fc-sum-val">$${(commit/1e6).toFixed(1)}M</div><div class="fc-sum-sub">${DEALS.filter(d=>d.fc>=80).length} deals · FC 80–100</div></div>
+    <div class="fc-sum-card c-amber"><div class="fc-sum-lbl">Best Case</div><div class="fc-sum-val">$${(bestCase/1e6).toFixed(1)}M</div><div class="fc-sum-sub">${DEALS.filter(d=>d.fc>=60).length} deals · FC 60+</div></div>
+    <div class="fc-sum-card c-red"><div class="fc-sum-lbl">At Risk Pipeline</div><div class="fc-sum-val">$${(atRisk/1e6).toFixed(1)}M</div><div class="fc-sum-sub">${DEALS.filter(d=>d.fc<40).length} deals · FC below 40</div></div>
+  `;
+  // Stage breakdown
+  const stages=["Discovery","Evaluation","Proposal","Negotiation","Commit"];
+  const stageCols=["#0066FF","#7C3AED","#D97706","#DC2626","#059669"];
+  const stageData=stages.map((s,i)=>{const deals=DEALS.filter(d=>d.stage===s);return{s,c:stageCols[i],val:deals.reduce((t,d)=>t+d.acv,0),cnt:deals.length};});
+  const maxStage=Math.max(...stageData.map(x=>x.val));
+  // Q breakdown
+  const qs=["2026-Q1","2026-Q2","2026-Q3"];
+  const qData=qs.map(q=>{
+    const [yr,qn]=q.split("-");const qNum=parseInt(qn[1]);
+    const deals=DEALS.filter(d=>{const m=new Date(d.closeDate).getMonth()+1;const dq=Math.ceil(m/3);return new Date(d.closeDate).getFullYear()==yr&&dq===qNum;});
+    return{q,val:deals.reduce((t,d)=>t+d.acv,0),cnt:deals.length};
+  });
+  const maxQ=Math.max(...qData.map(x=>x.val));
+  // Risk dist
+  const rDist=[{l:"Low (80-100)",min:80,c:"#059669"},{l:"Medium (60-79)",min:60,c:"#0066FF"},{l:"High (40-59)",min:40,c:"#D97706"},{l:"Critical (<40)",min:0,c:"#DC2626"}];
+  const af = ST.anFilter;
+  const isAct = (type,val) => af && af.type===type && af.value===val;
+  const isActQ = (yr,qNum) => af && af.type==="quarter" && af.yr==yr && af.qNum===qNum;
+  const isActBand = (type,min) => af && af.type===type && af.min===min;
+  const hint = '<div style="font-size:8px;color:var(--blue);font-family:\'JetBrains Mono\',monospace;margin-top:2px;opacity:.7;">Click to filter All Deals table</div>';
+  const activeHint = '<div style="font-size:8px;color:var(--blue);font-family:\'JetBrains Mono\',monospace;margin-top:2px;">Filtering All Deals ×</div>';
+
+  document.getElementById("fc-charts").innerHTML=`
+    <div class="an-card">
+      <div class="an-title">Pipeline Value by Stage <span class="an-card-hint">Click to filter</span></div>
+      ${stageData.map(x=>{
+        const active=isAct("stage",x.s);
+        return`<div class="br-item${active?" an-active":""}" onclick="applyAnFilter('stage','${x.s}','Stage: ${x.s}')">
+          <div class="br-top"><span class="br-name">${x.s}</span><span class="br-val" style="color:${x.c};">$${(x.val/1e6).toFixed(1)}M &nbsp;<span style="color:var(--text3);font-weight:400;">(${x.cnt})</span></span></div>
+          <div class="br-track"><div class="br-fill" style="width:${Math.round((x.val/maxStage)*95)}%;background:${x.c};"></div></div>
+          ${active?activeHint:hint}
+        </div>`;
+      }).join("")}
+    </div>
+    <div class="an-card">
+      <div class="an-title">Expected Close by Quarter <span class="an-card-hint">Click to filter</span></div>
+      ${qData.map(x=>{
+        const [yr,qn]=x.q.split("-"); const qNum=parseInt(qn[1]);
+        const active=isActQ(yr,qNum);
+        return`<div class="br-item${active?" an-active":""}" onclick="applyAnFilter('quarter',x.q,'Quarter: ${x.q}',{yr:${yr.split('-')[0]||2026},qNum:${qNum}})">
+          <div class="br-top"><span class="br-name">${x.q}</span><span class="br-val">$${(x.val/1e6).toFixed(1)}M &nbsp;<span style="color:var(--text3);font-weight:400;">(${x.cnt} deals)</span></span></div>
+          <div class="br-track"><div class="br-fill" style="width:${maxQ>0?Math.round((x.val/maxQ)*95):0}%;background:var(--blue);"></div></div>
+          ${active?activeHint:hint}
+        </div>`;
+      }).join("")}
+    </div>
+  `;
+  document.getElementById("fc-bottom").innerHTML=`
+    <div class="an-card">
+      <div class="an-title">Risk Score Distribution <span class="an-card-hint">Click to filter</span></div>
+      ${rDist.map(t=>{
+        const maxR=t.min===0?39:t.min===40?59:t.min===60?79:100;
+        const cnt=DEALS.filter(d=>d.risk>=t.min&&d.risk<=maxR).length;
+        const active=isActBand("riskBand",t.min);
+        return`<div class="br-item${active?" an-active":""}" onclick="applyAnFilter('riskBand','${t.min}','Risk: ${t.l}',{min:${t.min},max:${maxR}})">
+          <div class="br-top"><span class="br-name" style="color:${t.c};font-weight:600;">${t.l}</span><span class="br-val" style="color:${t.c};">${cnt} deals</span></div>
+          <div class="br-track"><div class="br-fill" style="width:${Math.round((cnt/DEALS.length)*95)}%;background:${t.c};"></div></div>
+          ${active?activeHint:hint}
+        </div>`;
+      }).join("")}
+    </div>
+    <div class="an-card">
+      <div class="an-title">By Industry · Pipeline Value <span class="an-card-hint">Click to filter</span></div>
+      ${["SaaS","Fintech","Healthcare","Manufacturing","Logistics","Retail"].map(ind=>{
+        const v=DEALS.filter(d=>d.industry===ind).reduce((s,d)=>s+d.acv,0);
+        const active=isAct("industry",ind);
+        return`<div class="br-item${active?" an-active":""}" onclick="applyAnFilter('industry','${ind}','Industry: ${ind}')">
+          <div class="br-top"><span class="br-name">${ind}</span><span class="br-val">$${(v/1e6).toFixed(1)}M</span></div>
+          <div class="br-track"><div class="br-fill" style="width:${Math.round((v/total)*95)}%;background:var(--blue);"></div></div>
+          ${active?activeHint:hint}
+        </div>`;
+      }).join("")}
+    </div>
+  `;
+}
+
+// ═══════════════════════════════════════════════════════════════
+// RENDER TABLE
+// ═══════════════════════════════════════════════════════════════
+let tblSortCol="risk",tblSortDir="asc";
+function sortTable(col){
+  if(tblSortCol===col) tblSortDir=tblSortDir==="asc"?"desc":"asc"; else{tblSortCol=col;tblSortDir="asc";}
+  renderTable();
+}
+function renderTable(){
+  const sortFns={company:(a,b)=>a.company.localeCompare(b.company),stage:(a,b)=>a.stage.localeCompare(b.stage),phase:(a,b)=>PHASE_ORDER.indexOf(a.phase)-PHASE_ORDER.indexOf(b.phase),acv:(a,b)=>b.acv-a.acv,industry:(a,b)=>a.industry.localeCompare(b.industry),dur:(a,b)=>b.dur-a.dur,risk:(a,b)=>a.risk-b.risk,fc:(a,b)=>b.fc-a.fc,comp:(a,b)=>a.comp.localeCompare(b.comp),close:(a,b)=>new Date(a.closeDate)-new Date(b.closeDate),owner:(a,b)=>a.owner.localeCompare(b.owner)};
+  let base = [...DEALS];
+  if (ST.anFilter) {
+    const af = ST.anFilter;
+    if (af.type==="stage")    base = base.filter(d=>d.stage===af.value);
+    if (af.type==="quarter")  base = base.filter(d=>{ const m=new Date(d.closeDate).getMonth()+1; const dq=Math.ceil(m/3); return new Date(d.closeDate).getFullYear()==af.yr && dq===af.qNum; });
+    if (af.type==="riskBand") base = base.filter(d=>d.risk>=af.min && d.risk<=af.max);
+    if (af.type==="industry") base = base.filter(d=>d.industry===af.value);
+    if (af.type==="fcBand")   base = base.filter(d=>d.fc>=af.min && d.fc<=af.max);
+  }
+  const sorted=base.sort(sortFns[tblSortCol]||sortFns.risk);
+  if(tblSortDir==="desc") sorted.reverse();
+  document.querySelectorAll("th").forEach(th=>{th.classList.remove("sort-asc","sort-desc");});
+  // Render summary bar
+  const sbEl=document.getElementById("tbl-summary-bar");
+  if(sbEl){
+    const totalACV=sorted.reduce((s,d)=>s+d.acv,0);
+    const filterDesc=ST.anFilter?ST.anFilter.label:"All Deals";
+    if(ST.anFilter){
+      const avgRisk=sorted.length?Math.round(sorted.reduce((s,d)=>s+d.risk,0)/sorted.length):0;
+      sbEl.innerHTML=`<div class="tbl-summary"><span>Showing <strong>${sorted.length}</strong> of <strong>${DEALS.length}</strong> deals</span><span style="color:var(--border2);">·</span><span>${filterDesc}</span><span style="color:var(--border2);">·</span><span class="ts-acv">${fmtACV(totalACV)} total ACV</span><span style="color:var(--border2);">·</span><span>Avg risk score: <strong>${avgRisk}</strong></span><span style="margin-left:auto;cursor:pointer;color:var(--text3);font-size:10px;" onclick="ST.anFilter=null;renderTable();renderAnBanner();">Clear filter ×</span></div>`;
+    } else {
+      sbEl.innerHTML=`<div class="tbl-summary">Showing all <strong>${DEALS.length}</strong> deals <span style="color:var(--border2);">·</span> <span class="ts-acv">${fmtACV(totalACV)} total pipeline</span></div>`;
+    }
+  }
+  document.getElementById("tbl-body").innerHTML=sorted.map(d=>`
+    <tr onclick="openDetail(${d.id})">
+      <td class="td-co">${d.company}<div style="font-size:10px;color:var(--text3);font-weight:400;margin-top:1px;">${d.industry} · ${d.owner}</div></td>
+      <td><span class="stage-pill ${stageCls(d.stage)}">${d.stage}</span></td>
+      <td class="td-phase">${phasePill(d)}</td>
+      <td class="td-acv">${fmtACV(d.acv)}</td>
+      <td>${riskBadge(d.risk)}</td>
+      <td style="font-family:'JetBrains Mono',monospace;font-size:11px;white-space:nowrap;">${d.closeDate}</td>
+      <td style="font-size:11px;font-weight:600;white-space:nowrap;">${d.owner}</td>
+    </tr>`).join("");
+}
+
+// ═══════════════════════════════════════════════════════════════
+// DETAIL PANEL
+// ═══════════════════════════════════════════════════════════════
+const BC_ROLES = ["Champion","Economic Buyer","Technical Evaluator","Procurement","Security"];
+
+const BC_ACTIONS = {
+  Champion: "Ask your primary contact to confirm who is the internal sponsor for this initiative. Request a brief intro meeting.",
+  "Economic Buyer": "Ask champion to broker a 15-min intro with the CFO or budget owner before advancing stage.",
+  "Technical Evaluator": "Request a technical validation session. Ask champion to identify the engineering or IT lead who will own the evaluation.",
+  Procurement: "Send champion a heads-up that procurement engagement is required before contract. Ask them to initiate the vendor setup process.",
+  Security: "Share a security questionnaire or compliance summary proactively. Ask champion to route to their CISO or InfoSec team.",
+};
+function getBCRoles(d){
+  const covered=Math.round((d.bcCov/100)*5);
+  const roles=[];
+  const names={
+    Champion:d.champion?"Confirmed via discovery call":"Not yet identified",
+    "Economic Buyer":d.budget?"CFO / VP Finance engaged":"Not confirmed",
+    "Technical Evaluator":d.bcCov>=50?"Engineering lead mapped":"Pending identification",
+    Procurement:d.proc?"Procurement team engaged":"Not yet engaged",
+    Security:d.bcCov>=70?"CISO aligned":"Security review pending",
+  };
+  BC_ROLES.forEach((r,i)=>{
+    const found=i<covered;
+    roles.push({role:r,found,person:found?names[r]:"Not identified",action:BC_ACTIONS[r]});
+  });
+  return roles;
+}
+
+function getTimeline(d){
+  const events=[];
+  const day=n=>{ const dt=new Date(d.lastAct); dt.setDate(dt.getDate()-n); return dt.toISOString().split("T")[0]; };
+  if(d.budget) events.push({cls:"g",icon:"💰",event:"Budget Confirmed",detail:"Economic buyer confirmed budget allocation for this initiative.",date:day(3)});
+  if(d.proc) events.push({cls:"b",icon:"📋",event:"Procurement Kickoff",detail:"Procurement team engaged. Legal review and vendor onboarding process initiated.",date:day(7)});
+  events.push({cls:"b",icon:"📧",event:"Champion Outreach",detail:`Email engagement: ${d.email}. Champion last responded to commercial terms discussion.`,date:day(10)});
+  if(d.dur>DUR_BENCH[d.stage]) events.push({cls:"a",icon:"⏱",event:"Stage Duration Warning",detail:`Deal has been in ${d.stage} for ${d.dur} days (benchmark: ${DUR_BENCH[d.stage]}d). Progression risk flagged.`,date:day(14)});
+  if(d.comp!=="none") events.push({cls:"r",icon:"⚔",event:"Competitive Signal Detected",detail:`${d.comp==="high"?"Strong":"Moderate"} competitive pressure. Incumbent vendor or active evaluation of alternative solutions.`,date:day(18)});
+  events.push({cls:"gr",icon:"🤝",event:"Discovery Meeting",detail:"Initial discovery call completed. Pain points documented and use case validated.",date:day(28)});
+  return events;
+}
+
+function getRecommendedAction(d){
+  if(d.risk<40){
+    const cls="urgent", icon="🚨", lbl="Urgent: Deal Rescue Required";
+    let txt=getAction(d);
+    return{cls,icon,lbl,txt};
+  }
+  if(d.risk<60){
+    const cls="important", icon="⚠", lbl="Action Required This Week";
+    return{cls,icon,lbl,txt:getAction(d)};
+  }
+  const cls="normal", icon="✅", lbl="On Track: Monitor Closely";
+  return{cls,icon,lbl,txt:d.champion?"Champion is engaged. Continue building multi-threaded relationships across the buying committee. Prepare commercial proposal.":"Identify and confirm a champion within the account before advancing stage."};
+}
+
+function loadDealIntoSim(d){
+  ST.simDealId = d.id;
+  const map = {
+    "sim-dur":    d.dur>DUR_BENCH[d.stage] ? "15" : "0",
+    "sim-bc":     d.bcCov<40 ? "20" : "0",
+    "sim-email":  d.email==="low" ? "15" : "0",
+    "sim-budget": !d.budget ? "20" : "0",
+    "sim-proc":   (!d.proc && ["Negotiation","Commit"].includes(d.stage)) ? "10" : "0",
+    "sim-comp":   d.comp==="high" ? "15" : "0",
+  };
+  Object.entries(map).forEach(([id,val])=>{
+    const el=document.getElementById(id);
+    if(el) el.value=val;
+  });
+  renderSimCtxBanner();
+  runSim();
+}
+
+function clearSimDeal(){
+  ST.simDealId=null;
+  ["sim-dur","sim-bc","sim-email","sim-budget","sim-proc","sim-comp"].forEach(id=>{
+    const el=document.getElementById(id);
+    if(el) el.value="0";
+  });
+  renderSimCtxBanner();
+  runSim();
+}
+
+function renderSimCtxBanner(){
+  const el=document.getElementById("sim-ctx-banner");
+  if(!el) return;
+  if(ST.simDealId){
+    const d=DEALS.find(x=>x.id===ST.simDealId);
+    if(d){
+      const rCol=d.risk<40?"var(--red)":d.risk<60?"var(--amber)":d.risk<80?"var(--blue)":"var(--green)";
+      el.innerHTML=`<span>🔗 Loaded from deal panel:</span>
+        <strong>${d.company}</strong>
+        <span style="color:var(--border2);">·</span>
+        <span style="font-family:'JetBrains Mono',monospace;font-weight:700;color:${rCol};">Risk ${d.risk}</span>
+        <span style="color:var(--border2);">·</span>
+        <span>${d.stage} · ${fmtACV(d.acv)}</span>
+        <button class="sdc-clear" onclick="clearSimDeal()">Clear ×</button>`;
+      el.style.display="flex";
+      return;
+    }
+  }
+  el.style.display="none";
+}
+
+function loadDealIntoSim(d){
+  // Pre-populate simulator dropdowns from deal data
+  ST.simDealId = d.id;
+  const dur  = document.getElementById("sim-dur");
+  const bc   = document.getElementById("sim-bc");
+  const email= document.getElementById("sim-email");
+  const bud  = document.getElementById("sim-budget");
+  const proc = document.getElementById("sim-proc");
+  const comp = document.getElementById("sim-comp");
+  if(dur)   dur.value   = d.dur>DUR_BENCH[d.stage] ? "15" : "0";
+  if(bc)    bc.value    = d.bcCov<40 ? "20" : "0";
+  if(email) email.value = d.email==="low" ? "15" : "0";
+  if(bud)   bud.value   = !d.budget ? "20" : "0";
+  if(proc)  proc.value  = (!d.proc && ["Negotiation","Commit"].includes(d.stage)) ? "10" : "0";
+  if(comp)  comp.value  = d.comp==="high" ? "15" : "0";
+  runSim();
+}
+
+function clearSimDeal(){
+  ST.simDealId = null;
+  ["sim-dur","sim-bc","sim-email","sim-budget","sim-proc","sim-comp"].forEach(id=>{
+    const el = document.getElementById(id);
+    if(el) el.value = "0";
+  });
+  renderSimCtxBanner();
+  runSim();
+}
+
+function renderSimCtxBanner(){
+  const el = document.getElementById("sim-ctx-banner");
+  if(!el) return;
+  if(ST.simDealId){
+    const d = DEALS.find(x=>x.id===ST.simDealId);
+    if(d){
+      const rCol = d.risk<40?"var(--red)":d.risk<60?"var(--amber)":d.risk<80?"var(--blue)":"var(--green)";
+      el.innerHTML = `<span>🔗 Simulator loaded from deal:</span> <strong>${d.company}</strong>
+        <span style="color:var(--text3);">·</span>
+        <span style="font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;color:${rCol};">Risk ${d.risk}</span>
+        <span style="color:var(--text3);">·</span>
+        <span>${d.stage} · ${fmtACV(d.acv)}</span>
+        <button class="sdc-clear" onclick="clearSimDeal()">Clear ×</button>`;
+      el.style.display = "flex";
+      return;
+    }
+  }
+  el.style.display = "none";
+}
+
+function openDetail(id){
+  ST.detailId=id;
+  const d=DEALS.find(x=>x.id===id);
+  document.getElementById("dp-name").textContent=d.company;
+  document.getElementById("dp-sub").textContent=d.industry+" · "+d.stage+" · Owner: "+d.owner;
+  document.getElementById("dp-acv").textContent=fmtACV(d.acv);
+  document.getElementById("dp-badges").innerHTML=riskBadge(d.risk)+fcBadge(d.fc)+`<span class="stage-pill ${stageCls(d.stage)}">${d.stage}</span>`+phasePill(d);
+
+  const bcRoles=getBCRoles(d);
+  const timeline=getTimeline(d);
+  const rec=getRecommendedAction(d);
+  const riskFactors=[
+    {lbl:"Stage Duration",detail:`${d.dur}d in ${d.stage} (benchmark: ${DUR_BENCH[d.stage]}d)`,pct:Math.min(100,Math.round((d.dur/DUR_BENCH[d.stage])*100)),status:d.dur<=DUR_BENCH[d.stage]?"ok":d.dur<=DUR_BENCH[d.stage]*1.5?"warn":"bad",col:d.dur<=DUR_BENCH[d.stage]?"var(--green)":d.dur<=DUR_BENCH[d.stage]*1.5?"var(--amber)":"var(--red)"},
+    {lbl:"Phase-Stage Alignment",detail:phaseBehind(d)?`Phase ${d.phase} (${PHASE_META[d.phase]}) is behind expected for ${d.stage} , buyer not progressing at CRM pace`:`Phase ${d.phase} (${PHASE_META[d.phase]}) is aligned with ${d.stage} stage`,pct:phaseBehind(d)?25:100,status:phaseBehind(d)?"bad":"ok",col:phaseBehind(d)?"var(--red)":"var(--green)"},
+    {lbl:"Buying Committee Coverage",detail:`${d.bcCov}% coverage, ${Math.round(d.bcCov/20)} of 5 personas identified`,pct:d.bcCov,status:d.bcCov>=60?"ok":d.bcCov>=40?"warn":"bad",col:d.bcCov>=60?"var(--green)":d.bcCov>=40?"var(--amber)":"var(--red)"},
+    {lbl:"Email Engagement",detail:{high:"High: champion responding promptly to all outreach",medium:"Medium: some delays, re-engagement recommended",low:"Low: champion disengaged, urgent outreach required"}[d.email],pct:{high:100,medium:55,low:20}[d.email],status:{high:"ok",medium:"warn",low:"bad"}[d.email],col:{high:"var(--green)",medium:"var(--amber)",low:"var(--red)"}[d.email]},
+    {lbl:"Budget Confirmation",detail:d.budget?"Budget confirmed by economic buyer, authority established":"Budget not confirmed, deal at risk of forecast slip",pct:d.budget?100:15,status:d.budget?"ok":"bad",col:d.budget?"var(--green)":"var(--red)"},
+    {lbl:"Procurement Engagement",detail:d.proc?"Procurement engaged, legal and vendor review in progress":"Procurement not yet engaged"+(!["Negotiation","Commit"].includes(d.stage)?` (${d.stage} stage, expected at Negotiation)`:", high risk at this stage"),pct:d.proc?100:["Negotiation","Commit"].includes(d.stage)?20:60,status:d.proc?"ok":["Negotiation","Commit"].includes(d.stage)?"bad":"warn",col:d.proc?"var(--green)":["Negotiation","Commit"].includes(d.stage)?"var(--red)":"var(--amber)"},
+    {lbl:"Competitive Pressure",detail:{none:"No competitive threats detected, sole vendor evaluation",moderate:"Moderate competition, incumbent or 1-2 alternatives in evaluation",high:"High competitive pressure, active multi-vendor evaluation, displacement risk"}[d.comp],pct:{none:100,moderate:55,high:20}[d.comp],status:{none:"ok",moderate:"warn",high:"bad"}[d.comp],col:{none:"var(--green)",moderate:"var(--amber)",high:"var(--red)"}[d.comp]},
+  ];
+
+  const fcDrivers=[
+    {lbl:"Champion Identified",got:d.champion,pts:10,icon:d.champion?"✅":"❌"},
+    {lbl:"Buying Committee >60%",got:d.bcCov>60,pts:15,icon:d.bcCov>60?"✅":"❌"},
+    {lbl:"Budget Confirmed",got:d.budget,pts:20,icon:d.budget?"✅":"❌"},
+    {lbl:"Procurement Engaged",got:d.proc,pts:10,icon:d.proc?"✅":"❌"},
+    {lbl:"Stage Duration on Track",got:d.dur<=DUR_BENCH[d.stage],pts:10,icon:d.dur<=DUR_BENCH[d.stage]?"✅":"❌"},
+    {lbl:"High Email Engagement",got:d.email==="high",pts:10,icon:d.email==="high"?"✅":"❌"},
+  ];
+
+  const phaseName = PHASE_META[d.phase]||d.phase;
+  const phaseMisAligned = phaseBehind(d);
+  const momentum = getDealMomentum(d);
+  const confDrivers = getConfidenceDrivers(d);
+  const comparable = getComparableDeals(d);
+
+  document.getElementById("dp-body").innerHTML=`
+    <!-- Deal Overview -->
+    <div class="dp-sec-lbl">Deal Overview</div>
+    ${[["ACV",fmtACV(d.acv)],["CRM Stage",d.stage],["Opportunity Phase",d.phase+" · "+phaseName+(phaseMisAligned?" (behind expected)":"")],["Stage Duration",d.dur+"d (benchmark: "+DUR_BENCH[d.stage]+"d)"],["Close Date",d.closeDate],["Last Activity",d.lastAct+" ("+daysSince(d.lastAct)+"d ago)"],["Champion",d.champion?"Identified":"Not Identified"],["Competitive",d.comp],["Account Owner",d.owner]].map(([l,v])=>`<div class="dp-row"><span class="dp-rl">${l}</span><span class="dp-rv" style="${l==='Opportunity Phase'&&phaseMisAligned?'color:var(--red);font-weight:700;':''}">${v}</span></div>`).join("")}
+
+    <!-- Deal Momentum -->
+    <div class="dp-sec-lbl">Deal Momentum</div>
+    <div style="padding:10px 18px 14px;">
+      <div class="momentum-box ${momentum.type}">
+        <div class="momentum-hd">
+          <div>
+            <div class="momentum-label">${momentum.label}</div>
+            <div class="momentum-title">${momentum.title}</div>
+          </div>
+          <div class="momentum-arrow">${momentum.arrow}</div>
+        </div>
+        <div class="momentum-signals">
+          ${momentum.posSigs.map(s=>`<div class="momentum-sig">${s}</div>`).join("")}
+          ${momentum.negSigs.map(s=>`<div class="momentum-sig" style="color:var(--text3);">${s}</div>`).join("")}
+        </div>
+        <div style="margin-top:8px;">
+          <span class="momentum-days">Last activity: ${momentum.daysSinceAct}d ago</span>
+        </div>
+      </div>
+      <div style="margin-top:8px;padding:8px 10px;background:var(--s2);border:1px solid var(--border);border-radius:6px;font-size:9px;color:var(--text3);line-height:1.6;">
+        <span style="font-family:'JetBrains Mono',monospace;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--text4);">Methodology</span>
+        &nbsp;Momentum is scored across 8 signals: email engagement, budget confirmation, procurement status, champion identification, stage velocity vs benchmark, buying committee coverage, competitive pressure, and days since last activity. Net positive signals drive &#8593;, net negative drive &#8595;. CRM event timestamps will replace modelled offsets on live integration.
+      </div>
+    </div>
+
+    <!-- Risk Analysis -->
+    <div class="dp-sec-lbl" style="display:flex;align-items:center;justify-content:space-between;">
+      <span>Risk Analysis</span>
+      <span onclick="switchTab('scorelogic',document.querySelector('.ntab[onclick*=\'scorelogic\']'))" style="font-size:9px;font-weight:700;color:var(--blue);cursor:pointer;margin-right:18px;font-family:'JetBrains Mono',monospace;letter-spacing:.05em;text-transform:uppercase;">&#9878; View in Score Simulator &#8594;</span>
+    </div>
+    <div class="risk-drivers">
+      ${riskFactors.map(rf=>`<div class="rd-item">
+        <div class="rd-top"><span class="rd-lbl">${rf.lbl}</span><span class="rd-stat ${rf.status}">${rf.status==="ok"?"On Track":rf.status==="warn"?"Watch":"At Risk"}</span></div>
+        <div class="rd-detail">${rf.detail}</div>
+        <div class="rd-bar-track"><div class="rd-bar-fill" style="width:${rf.pct}%;background:${rf.col};"></div></div>
+      </div>`).join("")}
+    </div>
+
+    <!-- Close Confidence Drivers (enhanced) -->
+    <div class="dp-sec-lbl">Close Confidence Drivers</div>
+    <div class="conf-drivers">
+      <div class="conf-split">
+        <div class="conf-col pos-col">
+          <div class="conf-col-hd">&#10003; Positive Signals</div>
+          ${confDrivers.pos.length ? confDrivers.pos.map(s=>`<div class="conf-sig-item pos">${s}</div>`).join("") : `<div style="font-size:10px;color:var(--text3);">No positive signals detected</div>`}
+        </div>
+        <div class="conf-col neg-col">
+          <div class="conf-col-hd">&#10007; Risk Signals</div>
+          ${confDrivers.neg.length ? confDrivers.neg.map(s=>`<div class="conf-sig-item neg">${s}</div>`).join("") : `<div style="font-size:10px;color:var(--green);">No risk signals — deal on track</div>`}
+        </div>
+      </div>
+      ${fcDrivers.map(f=>`<div style="display:flex;align-items:center;justify-content:space-between;padding:5px 0;border-bottom:1px solid var(--border);">
+        <span style="font-size:10px;color:var(--text2);font-weight:500;">${f.icon} ${f.lbl}</span>
+        <span style="font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:700;color:${f.got?"var(--green)":"var(--text4)"};">${f.got?"+"+f.pts:"--"}</span>
+      </div>`).join("")}
+      <div class="conf-score-row">
+        <span style="font-size:11px;font-weight:700;color:var(--text);">Forecast Score</span>
+        <span style="font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:800;color:${d.fc>=80?"var(--green)":d.fc>=60?"var(--blue)":d.fc>=40?"var(--amber)":"var(--red)"};">${d.fc} &middot; ${fcLbl(d.fc)}</span>
+      </div>
+    </div>
+
+    <!-- Buying Committee -->
+    <div class="dp-sec-lbl">Buying Committee Coverage</div>
+    <div class="bc-map">
+      <div class="bc-header">
+        <div>
+          <div class="bc-pct-val" style="color:${d.bcCov>=60?"var(--green)":d.bcCov>=40?"var(--amber)":"var(--red)"};">${d.bcCov}%</div>
+          <div class="bc-pct-lbl">Coverage</div>
+        </div>
+        <div class="bc-bar-wrap"><div class="bc-bar-fill" style="width:${d.bcCov}%;background:${d.bcCov>=60?"var(--green)":d.bcCov>=40?"var(--amber)":"var(--red)"};"></div></div>
+      </div>
+      <div class="bc-roles">
+        ${bcRoles.map(r=>`<div class="bc-role ${r.found?"found":"miss"}">
+          <div class="bc-role-info" style="flex:1;">
+            <div class="bc-role-name">${r.role}</div>
+            <div class="bc-role-person">${r.person}</div>
+            ${!r.found?`<div class="bc-action-prompt"><strong>Suggested action:</strong> ${r.action}</div>`:""}
+          </div>
+          <span class="bc-role-tag ${r.found?"id":"ms"}" style="align-self:flex-start;margin-top:2px;">${r.found?"Identified":"Missing"}</span>
+        </div>`).join("")}
+      </div>
+    </div>
+
+    <!-- Deal Timeline (enhanced with relative times) -->
+    <div class="dp-sec-lbl">Deal Timeline</div>
+    <div class="timeline">
+      ${timeline.map(ev=>`<div class="tl-item">
+        <div class="tl-dot ${ev.cls}">${ev.icon}</div>
+        <div style="flex:1;">
+          <div style="display:flex;align-items:center;gap:4px;margin-bottom:2px;">
+            <span class="tl-rel-time">${relTime(ev.daysAgo)}</span>
+            <span class="tl-type-tag ${ev.typeCls}">${ev.type}</span>
+          </div>
+          <div class="tl-event">${ev.event}</div>
+          <div class="tl-detail">${ev.detail}</div>
+        </div>
+      </div>`).join("")}
+    </div>
+
+    <!-- Comparable Deal Patterns -->
+    <div class="dp-sec-lbl">Comparable Deal Patterns</div>
+    <div class="comp-deals">
+      <div class="comp-pattern ${comparable.wonPattern.type}">
+        <div class="comp-pattern-hd">
+          <span class="comp-pattern-icon">${comparable.wonPattern.icon}</span>
+          <span class="comp-pattern-title">${comparable.wonPattern.title}</span>
+        </div>
+        <div class="comp-pattern-meta">${comparable.wonPattern.meta}</div>
+        <div class="comp-stat-row">
+          <div class="comp-stat"><div class="comp-stat-val">${comparable.wonPattern.stat1}</div><div class="comp-stat-lbl">${comparable.wonPattern.stat1lbl}</div></div>
+          <div class="comp-stat"><div class="comp-stat-val">${comparable.wonPattern.stat2}</div><div class="comp-stat-lbl">${comparable.wonPattern.stat2lbl}</div></div>
+          <div class="comp-stat"><div class="comp-stat-val">${comparable.wonPattern.stat3}</div><div class="comp-stat-lbl">${comparable.wonPattern.stat3lbl}</div></div>
+        </div>
+      </div>
+      ${comparable.riskPattern?`<div class="comp-pattern ${comparable.riskPattern.type}">
+        <div class="comp-pattern-hd">
+          <span class="comp-pattern-icon">${comparable.riskPattern.icon}</span>
+          <span class="comp-pattern-title">${comparable.riskPattern.title}</span>
+        </div>
+        <div class="comp-pattern-meta">${comparable.riskPattern.meta}</div>
+        <div class="comp-stat-row">
+          <div class="comp-stat"><div class="comp-stat-val">${comparable.riskPattern.stat1}</div><div class="comp-stat-lbl">${comparable.riskPattern.stat1lbl}</div></div>
+          <div class="comp-stat"><div class="comp-stat-val">${comparable.riskPattern.stat2}</div><div class="comp-stat-lbl">${comparable.riskPattern.stat2lbl}</div></div>
+        </div>
+      </div>`:""}
+      <div style="margin-bottom:6px;padding:7px 10px;background:rgba(79,70,229,.06);border:1px solid rgba(79,70,229,.18);border-radius:6px;font-size:10px;color:var(--indigo);line-height:1.5;">
+        <strong style="font-family:'JetBrains Mono',monospace;font-size:8px;letter-spacing:.1em;text-transform:uppercase;color:var(--indigo);opacity:.8;">Seller prompt</strong><br>
+        ${comparable.sellerPrompt}
+      </div>
+      <div class="comp-insight"><strong>DealLens insight:</strong> ${comparable.insight}</div>
+    </div>
+
+    <!-- Recommended Action -->
+    <div class="dp-sec-lbl">Recommended Next Action</div>
+    <div class="action-box ${rec.cls}">
+      <div class="action-box-ttl">Recommended Action</div>
+      <div class="action-box-icon">${rec.icon}</div>
+      <div class="action-box-lbl">${rec.lbl}</div>
+      <div class="action-box-txt">${rec.txt}</div>
+    </div>
+
+    <!-- CRM -->
+    <div class="dp-sec-lbl">CRM Activation</div>
+    <div class="crm-box">
+      <div class="crm-hd"><div class="crm-dot"></div><div class="crm-label">CRM Sync Enabled &middot; Salesforce</div></div>
+      <div class="crm-step">&#10003; Task created for ${d.owner}, action required within 48h</div>
+      <div class="crm-step">&#10003; Forecast category updated to: ${fcLbl(d.fc)}</div>
+      <div class="crm-step">&#10003; Deal risk score synced: ${d.risk}/100</div>
+      <div class="crm-step">&#10003; Sales manager notified via Slack</div>
+      ${d.risk<60?`<div class="crm-step">&#9888; Deal flagged for weekly pipeline review</div>`:""}
+    </div>
+  `;
+  document.getElementById("detail-panel").classList.add("open");
+  // Pre-populate simulator with this deal's risk signals
+  loadDealIntoSim(d);
+}
+
+function closeDetail(){ST.detailId=null;document.getElementById("detail-panel").classList.remove("open");}
+
+// ═══════════════════════════════════════════════════════════════
+// CONTROLS
+// ═══════════════════════════════════════════════════════════════
+function toggleCrit(){
+  ST.critOnly=!ST.critOnly;
+  const b=document.getElementById("tog-crit");
+  b.classList.toggle("on",ST.critOnly);
+  b.textContent=ST.critOnly?"Showing Critical":"Critical Only";
+  renderPipeline();
+}
+
+function switchTab(tab,btn){
+  document.querySelectorAll(".view").forEach(v=>v.classList.remove("active"));
+  document.querySelectorAll(".ntab").forEach(b=>b.classList.remove("active"));
+  document.getElementById("view-"+tab).classList.add("active");
+  if(btn) btn.classList.add("active");
+  ST.activeTab=tab;
+  if(tab==="alerts") renderAlerts();
+  if(tab==="forecast") renderForecast();
+  if(tab==="table") renderTable();
+  if(tab==="scorelogic") renderScoreLogic();
+}
+
+function exportCSV(){
+  const h=["Company","Industry","ACV","Stage","Duration (days)","Risk Score","Risk Band","Forecast Score","Forecast Band","Champion","BC Coverage (%)","Email Engagement","Budget Confirmed","Procurement Engaged","Competitive Pressure","Close Date","Owner"];
+  const rows=DEALS.map(d=>[d.company,d.industry,d.acv,d.stage,d.dur,d.risk,riskLbl(d.risk),d.fc,fcLbl(d.fc),d.champion?"Yes":"No",d.bcCov,d.email,d.budget?"Yes":"No",d.proc?"Yes":"No",d.comp,d.closeDate,d.owner]);
+  const csv=[h,...rows].map(r=>r.map(v=>`"${String(v).replace(/"/g,'""')}"`).join(",")).join("\n");
+  const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([csv],{type:"text/csv"}));a.download="deallens-pipeline.csv";a.click();
+}
+
+// ═══════════════════════════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════════════════════════
+renderStats();
+renderPipeline();
+// Initialise alert badge from the same getAlerts() logic the tab uses
+document.getElementById("b-alerts").textContent=getAlerts().length;
+
+// ══════════════════════════════════════════════════════════════
+// SCORE LOGIC TAB
+// ══════════════════════════════════════════════════════════════
+const RISK_DIMS = [
+  {
+    label:"1. Stage Duration",
+    penalty:15,
+    color:"#DC2626",
+    desc:"Each deal stage has a benchmark duration based on typical enterprise SaaS sales cycles. Deals that exceed the benchmark without progressing indicate stalling , the buyer may be disengaged, facing internal blockers, or evaluating alternatives.",
+    rows:[
+      {tier:"On track or below benchmark",note:"Positive signal , deal is progressing at expected velocity",pts:"No penalty"},
+      {tier:"Above stage benchmark",note:`Discovery >21d, Evaluation >30d, Proposal >28d, Negotiation >35d, Commit >14d`,pts:"-15"},
+    ]
+  },
+  {
+    label:"2. Buying Committee Coverage",
+    penalty:20,
+    color:"#7C3AED",
+    desc:"Enterprise deals stall when key decision-makers are unmapped. Coverage below 40% means critical personas: Economic Buyer, Procurement, or Technical Evaluator, are missing from the relationship map and can veto or delay the deal without warning.",
+    rows:[
+      {tier:"Coverage 40% or above",note:"Minimum viable coverage , at least 2 of 5 personas identified",pts:"No penalty"},
+      {tier:"Coverage below 40%",note:"Critical gap , deal is single-threaded or champion-only",pts:"-20"},
+    ]
+  },
+  {
+    label:"3. Email Engagement Level",
+    penalty:15,
+    color:"#0891B2",
+    desc:"Email engagement is a leading indicator of champion health and deal momentum. Low engagement means outreach is going unanswered , the champion may have lost internal support, changed priority, or begun evaluating a competitor silently.",
+    rows:[
+      {tier:"High engagement",note:"Champion responding promptly, deal momentum strong",pts:"No penalty"},
+      {tier:"Medium engagement",note:"Some delays , monitor, consider re-engagement trigger",pts:"No penalty"},
+      {tier:"Low engagement",note:"Champion disengaged , urgent outreach or escalation required",pts:"-15"},
+    ]
+  },
+  {
+    label:"4. Budget Confirmation",
+    penalty:20,
+    color:"#D97706",
+    desc:"Unconfirmed budget is the single highest-risk signal for late-stage deals. If an economic buyer has not confirmed budget allocation, the deal cannot progress to procurement or contract review , and is at high risk of being deferred or cancelled.",
+    rows:[
+      {tier:"Budget confirmed",note:"Economic buyer has confirmed allocation , deal can proceed",pts:"No penalty"},
+      {tier:"Budget not confirmed",note:"High risk at any stage, critical risk at Proposal and beyond",pts:"-20"},
+    ]
+  },
+  {
+    label:"5. Procurement Engagement",
+    penalty:10,
+    color:"#059669",
+    desc:"Procurement engagement is only penalised during late-stage deals (Negotiation and Commit). At these stages, an unengaged procurement team creates a hidden blocker , legal review, security questionnaires, and vendor onboarding can add 4–8 weeks to an expected close.",
+    rows:[
+      {tier:"Procurement engaged (any stage)",note:"Vendor setup initiated , no timeline risk",pts:"No penalty"},
+      {tier:"Not engaged at early stages",note:"Expected , procurement typically joins at Negotiation",pts:"No penalty"},
+      {tier:"Not engaged at Negotiation or Commit",note:"Late-stage gap , procurement can extend close timeline significantly",pts:"-10"},
+    ]
+  },
+  {
+    label:"6. Competitive Pressure",
+    penalty:15,
+    color:"#4F46E5",
+    desc:"High competitive pressure signals an active multi-vendor evaluation or a displacement attempt by an incumbent. These deals require different sales motions , executive sponsorship, differentiation proof points, and tight mutual action plans to prevent loss.",
+    rows:[
+      {tier:"No competitive pressure",note:"Sole-source evaluation , deal velocity advantage",pts:"No penalty"},
+      {tier:"Moderate competitive pressure",note:"1–2 alternatives in evaluation , monitor and differentiate",pts:"No penalty"},
+      {tier:"High competitive pressure",note:"Active displacement risk , executive intervention required",pts:"-15"},
+    ]
+  },
+  {
+    label:"7. Phase-Stage Alignment",
+    penalty:15,
+    color:"#0891B2",
+    desc:"Opportunity phase tracks the buyer's progression through their decision process (F=Recognize, E=Consider, D=Evaluate, C=Select, B=Negotiate, A=Won). When the buyer's phase is behind where the CRM stage implies they should be, the rep is advancing the deal on paper while the buyer has not kept pace, a leading indicator of late-stage stalls, surprise losses, and forecast slippage.",
+    rows:[
+      {tier:"Phase aligned with CRM stage",note:"Buyer progression matches seller CRM stage, deal momentum is real",pts:"No penalty"},
+      {tier:"Phase behind CRM stage",note:"Buyer is one or more phases behind expected, deal may stall or revert at close",pts:"-15"},
+    ]
+  },
+];
+
+// Phase-Stage Alignment Matrix
+const PHASE_MATRIX = [
+  {stage:"Discovery",   codes:"F / E", names:"Recognize / Consider"},
+  {stage:"Evaluation",  codes:"D / E", names:"Evaluate / Consider"},
+  {stage:"Proposal",    codes:"C / D", names:"Select / Evaluate"},
+  {stage:"Negotiation", codes:"B / C", names:"Negotiate / Select"},
+  {stage:"Commit",      codes:"A / B", names:"Won / Negotiate"},
+];
+
+const FC_DIMS = [
+  {label:"Champion Identified",signal:"champion === true",pts:"+10",color:"#059669"},
+  {label:"Buying Committee >60%",signal:"bcCov > 60%",pts:"+15",color:"#059669"},
+  {label:"Budget Confirmed",signal:"budget === true",pts:"+20",color:"#059669"},
+  {label:"Procurement Engaged",signal:"proc === true",pts:"+10",color:"#059669"},
+  {label:"Stage Duration on Track",signal:"dur <= benchmark",pts:"+10",color:"#059669"},
+  {label:"High Email Engagement",signal:"email === high",pts:"+10",color:"#059669"},
+];
+
+function clearSimDeal(){
+  ST.simDeal = null;
+  // Reset all dropdowns to default (0 = no penalty)
+  ["sim-dur","sim-bc","sim-email","sim-budget","sim-proc","sim-comp"].forEach(id=>{
+    const el=document.getElementById(id);
+    if(el) el.value="0";
+  });
+  const bannerEl=document.getElementById("sim-context-banner");
+  if(bannerEl) bannerEl.innerHTML="";
+  runSim();
+}
+
+function renderScoreLogic(){
+  // Context banner + simulator pre-population from active deal
+  const bannerEl = document.getElementById("sim-context-banner");
+  if(bannerEl){
+    if(ST.simDeal){
+      const sd = DEALS.find(x=>x.id===ST.simDeal);
+      if(sd){
+        const durPenalty   = sd.dur > DUR_BENCH[sd.stage] ? "15" : "0";
+        const bcPenalty    = sd.bcCov < 40 ? "20" : "0";
+        const emailPenalty = sd.email === "low" ? "15" : "0";
+        const budgetPenalty= !sd.budget ? "20" : "0";
+        const procPenalty  = (!sd.proc && ["Negotiation","Commit"].includes(sd.stage)) ? "10" : "0";
+        const compPenalty  = sd.comp === "high" ? "15" : "0";
+        setTimeout(()=>{
+          const set=(id,val)=>{const el=document.getElementById(id);if(el)el.value=val;};
+          set("sim-dur",    durPenalty);
+          set("sim-bc",     bcPenalty);
+          set("sim-email",  emailPenalty);
+          set("sim-budget", budgetPenalty);
+          set("sim-proc",   procPenalty);
+          set("sim-comp",   compPenalty);
+          set("sim-phase",  phaseBehind(sd)?"15":"0");
+          runSim();
+        },0);
+        bannerEl.innerHTML=`<div class="sim-context-banner">
+          <div>
+            <div class="sim-context-lbl">Pre-populated from active deal</div>
+            <div class="sim-context-deal">${sd.company}</div>
+            <div class="sim-context-sub">${sd.industry} · ${sd.stage} · ${fmtACV(sd.acv)} ACV · Risk Score: ${sd.risk}</div>
+          </div>
+          <div style="display:flex;gap:6px;align-items:center;flex-shrink:0;">
+            <button class="sim-context-clear" style="color:var(--blue);border-color:var(--blue-mid);background:var(--blue-lt);" onclick="switchTab('pipeline',document.querySelector('.ntab[onclick*=\'pipeline\']'));openDetail(${sd.id});">&#8592; Back to deal</button>
+            <button class="sim-context-clear" onclick="clearSimDeal()">Clear ×</button>
+          </div>
+        </div>`;
+      }
+    } else {
+      bannerEl.innerHTML="";
+    }
+  }
+  // Pipeline distribution by risk band
+  const bands=[
+    {cls:"rl",col:"var(--green)",lbl:"Low Risk",min:80,max:100},
+    {cls:"rm",col:"var(--blue)",lbl:"Medium Risk",min:60,max:79},
+    {cls:"rh",col:"var(--amber)",lbl:"High Risk",min:40,max:59},
+    {cls:"rc",col:"var(--red)",lbl:"Critical",min:0,max:39},
+  ];
+  document.getElementById("sl-pipeline-dist").innerHTML = bands.map(b=>{
+    const deals=DEALS.filter(d=>d.risk>=b.min&&d.risk<=b.max);
+    const acv=deals.reduce((s,d)=>s+d.acv,0);
+    const pct=Math.round((deals.length/DEALS.length)*100);
+    return `<div class="dist-card" style="border-top:3px solid ${b.col};">
+      <div class="dist-n" style="color:${b.col};">${deals.length}</div>
+      <div class="dist-lbl" style="color:${b.col};">${b.lbl}</div>
+      <div class="dist-acv">$${(acv/1e6).toFixed(1)}M ACV · ${pct}% of pipeline</div>
+      <div class="dist-bar-track"><div class="dist-bar-fill" style="width:${pct}%;background:${b.col};"></div></div>
+    </div>`;
+  }).join("");
+
+  // Live examples: pick one deal per band (highest ACV in band)
+  const examples = bands.map(b=>{
+    const deals=DEALS.filter(d=>d.risk>=b.min&&d.risk<=b.max).sort((a,z)=>z.acv-a.acv);
+    if(!deals.length) return null;
+    const d=deals[0];
+    const penalties=[];
+    if(d.dur>DUR_BENCH[d.stage]) penalties.push("Stage stalled (+"+DUR_BENCH[d.stage]+"d)");
+    if(d.bcCov<40) penalties.push("BC coverage "+d.bcCov+"%");
+    if(d.email==="low") penalties.push("Low email engagement");
+    if(!d.budget) penalties.push("Budget unconfirmed");
+    if(!d.proc&&["Negotiation","Commit"].includes(d.stage)) penalties.push("Procurement not engaged");
+    if(d.comp==="high") penalties.push("High competitive pressure");
+    const whyTxt = penalties.length
+      ? `<strong>Risk drivers:</strong> ${penalties.join(" · ")}`
+      : `<strong>No risk signals.</strong> Deal is on track across all 6 dimensions.`;
+    return {d, b, whyTxt};
+  }).filter(Boolean);
+
+  document.getElementById("sl-live-examples").innerHTML = examples.map(ex=>`
+    <div class="sl-ex-card ${ex.b.cls}" onclick="openDetail(${ex.d.id});switchTab('pipeline',document.querySelector('.ntab[onclick*=\'pipeline\']'))">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px;">
+        <div>
+          <div class="sl-ex-co">${ex.d.company}</div>
+          <div class="sl-ex-meta">${ex.d.industry} · ${ex.d.stage} · ${fmtACV(ex.d.acv)}</div>
+        </div>
+        <div>
+          <div class="sl-ex-score" style="color:${ex.b.col};">${ex.d.risk}</div>
+          <div style="font-size:9px;font-weight:700;color:${ex.b.col};text-align:right;">${ex.b.lbl}</div>
+        </div>
+      </div>
+      <div class="sl-ex-why">${ex.whyTxt}</div>
+    </div>`).join("");
+
+  // Render penalty dimension cards
+  document.getElementById("sl-grid").innerHTML = RISK_DIMS.map(dim=>`
+    <div class="sl-card">
+      <div class="sl-hd">
+        <div>
+          <div class="sl-title">${dim.label}</div>
+          <div class="sl-desc">${dim.desc}</div>
+        </div>
+        <div class="sl-penalty" style="background:${dim.color}18;color:${dim.color};border:1px solid ${dim.color}40;">
+          -${dim.penalty}<span>MAX PENALTY</span>
+        </div>
+      </div>
+      ${dim.rows.map(r=>`<div class="sl-row">
+        <div class="sl-tier">${r.tier}</div>
+        <div class="sl-note">${r.note}</div>
+        <div class="sl-pts" style="background:${r.pts==="No penalty"?"var(--green-lt)":"rgba(220,38,38,.1)"};color:${r.pts==="No penalty"?"var(--green)":"var(--red)"};border:1px solid ${r.pts==="No penalty"?"rgba(5,150,105,.25)":"rgba(220,38,38,.25)"};">${r.pts}</div>
+      </div>`).join("")}
+    </div>`).join("");
+
+  // Forecast confidence card
+  document.getElementById("sl-grid").innerHTML += `
+    <div class="sl-card" style="border-top:3px solid var(--green);">
+      <div class="sl-hd">
+        <div>
+          <div class="sl-title">Forecast Confidence Model (separate from Risk Score)</div>
+          <div class="sl-desc">Forecast Confidence is calculated independently from Deal Risk. It starts at 0 and accumulates positive signals. A deal can have a low risk score but low forecast confidence if key signals like champion identification or budget confirmation are missing.</div>
+        </div>
+        <div class="sl-penalty" style="background:rgba(5,150,105,.1);color:var(--green);border:1px solid rgba(5,150,105,.3);">75<span>MAX PTS</span></div>
+      </div>
+      ${FC_DIMS.map(f=>`<div class="sl-row">
+        <div class="sl-tier">${f.label}</div>
+        <div class="sl-note" style="font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--text4);">${f.signal}</div>
+        <div class="sl-pts" style="background:rgba(5,150,105,.1);color:var(--green);border:1px solid rgba(5,150,105,.25);">${f.pts}</div>
+      </div>`).join("")}
+      <div class="sl-row" style="background:var(--s2);">
+        <div class="sl-tier" style="font-weight:700;font-size:11px;">Forecast Bands</div>
+        <div class="sl-note" style="font-size:11px;color:var(--text2);">80+ = Strong Commit &nbsp;·&nbsp; 60–79 = Best Case &nbsp;·&nbsp; 40–59 = Uncertain &nbsp;·&nbsp; &lt;40 = At Risk</div>
+        <div class="sl-pts" style="background:var(--s3);color:var(--text3);border:1px solid var(--border);">0–75</div>
+      </div>
+    </div>`;
+
+  // Restore sim state from active deal if one is open
+  if(ST.simDealId){
+    const d = DEALS.find(x=>x.id===ST.simDealId);
+    if(d) loadDealIntoSim(d);
+  } else {
+    runSim();
+  }
+  renderSimCtxBanner();
+
+  // ── Live Penalty Impact Summary ──────────────────────────
+  const pipEl = document.getElementById("pip-panel");
+  if(pipEl){
+    // For each dimension, count how many deals incur the penalty and sum points
+    const dims = [
+      {key:"dur",    label:"Stage Duration",       pts:15, test:d=>d.dur>DUR_BENCH[d.stage]},
+      {key:"bc",     label:"Buying Committee Gap", pts:20, test:d=>d.bcCov<40},
+      {key:"email",  label:"Email Engagement",     pts:15, test:d=>d.email==="low"},
+      {key:"budget", label:"Budget Unconfirmed",   pts:20, test:d=>!d.budget},
+      {key:"proc",   label:"Procurement Gap",      pts:10, test:d=>!d.proc&&["Negotiation","Commit"].includes(d.stage)},
+      {key:"comp",   label:"Competitive Pressure", pts:15, test:d=>d.comp==="high"},
+      {key:"phase",  label:"Phase Misalignment",   pts:15, test:d=>phaseBehind(d)},
+    ];
+    // Calculate total penalty points across all deals and dimensions
+    const dimStats = dims.map(dim=>{
+      const affected = DEALS.filter(dim.test);
+      const totalPts = affected.length * dim.pts;
+      const affectedACV = affected.reduce((s,d)=>s+d.acv,0);
+      return {...dim, affected:affected.length, totalPts, affectedACV};
+    });
+    const grandTotal = dimStats.reduce((s,d)=>s+d.totalPts, 0);
+    const maxPts = Math.max(...dimStats.map(d=>d.totalPts));
+    // Sort by total penalty points descending
+    dimStats.sort((a,b)=>b.totalPts-a.totalPts);
+
+    const barColor = pts => pts/grandTotal > .25 ? "var(--red)" : pts/grandTotal > .15 ? "var(--amber)" : "var(--blue)";
+
+    pipEl.innerHTML = `
+      <div class="pip-title">
+        Live Pipeline Penalty Exposure
+        <span class="pip-subtitle">· ${DEALS.length} deals · ${grandTotal} total risk points lost · ranked by impact</span>
+      </div>
+      <div class="pip-hdr"><div>Dimension</div><div></div><div style="text-align:right;">Pts Lost</div><div style="text-align:right;">% of Total</div></div>
+      ${dimStats.map(dim=>{
+        const pct = grandTotal>0 ? Math.round((dim.totalPts/grandTotal)*100) : 0;
+        const barW = maxPts>0 ? Math.round((dim.totalPts/maxPts)*100) : 0;
+        return `<div class="pip-row">
+          <div>
+            <div class="pip-dim">${dim.label}</div>
+            <div style="font-size:9px;color:var(--text3);margin-top:1px;">${dim.affected} deal${dim.affected!==1?'s':''} affected · $${(dim.affectedACV/1e6).toFixed(1)}M ACV</div>
+          </div>
+          <div class="pip-bar-track"><div class="pip-bar-fill" style="width:${barW}%;background:${barColor(dim.totalPts)};"></div></div>
+          <div class="pip-pts" style="color:${barColor(dim.totalPts)};">-${dim.totalPts}</div>
+          <div class="pip-pct">${pct}%</div>
+        </div>`;
+      }).join("")}
+      <div style="margin-top:10px;padding-top:10px;border-top:1px solid var(--border);display:flex;gap:24px;">
+        <div><div style="font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.07em;color:var(--text3);">Total Risk Points Lost</div><div style="font-family:'JetBrains Mono',monospace;font-size:18px;font-weight:800;color:var(--red);">${grandTotal}</div></div>
+        <div><div style="font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.07em;color:var(--text3);">Avg Points Lost / Deal</div><div style="font-family:'JetBrains Mono',monospace;font-size:18px;font-weight:800;color:var(--amber);">${Math.round(grandTotal/DEALS.length)}</div></div>
+        <div><div style="font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.07em;color:var(--text3);">Top Exposure Dimension</div><div style="font-size:13px;font-weight:800;color:var(--text);margin-top:3px;">${dimStats[0].label}</div></div>
+        <div><div style="font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.07em;color:var(--text3);">Phase Misalignment Share</div><div style="font-family:'JetBrains Mono',monospace;font-size:18px;font-weight:800;color:var(--blue);">${grandTotal>0?Math.round((dimStats.find(d=>d.key==="phase").totalPts/grandTotal)*100):0}%</div></div>
+      </div>`;
+  }
+
+  // Render Phase-Stage Alignment Matrix
+  const pmEl = document.getElementById("sl-phase-matrix");
+  if(pmEl){
+    const misDeals = DEALS.filter(d=>phaseBehind(d));
+    pmEl.innerHTML = `
+      <table class="pa-matrix">
+        <thead><tr>
+          <th>CRM Stage</th><th>Expected Buyer Phase(s)</th><th>Phase Codes</th>
+          <th>Deals in Stage</th><th>Misaligned Deals</th><th>Penalty</th>
+        </tr></thead>
+        <tbody>
+          ${PHASE_MATRIX.map(row=>{
+            const stageDeals=DEALS.filter(d=>d.stage===row.stage);
+            const mis=stageDeals.filter(d=>phaseBehind(d));
+            return `<tr>
+              <td><span class="stage-pill ${stageCls(row.stage)}">${row.stage}</span></td>
+              <td style="font-size:11px;">${row.names}</td>
+              <td>${row.codes.split(" / ").map(code=>`<span class="phase-pill pp-${code.trim()}" style="margin-right:3px;display:inline-flex;"><span class="phase-code">${code.trim()}</span>&nbsp;${PHASE_META[code.trim()]||""}</span>`).join("")}</td>
+              <td style="font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:700;color:var(--blue);">${stageDeals.length}</td>
+              <td>${mis.length>0
+                ?`<span style="font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:700;color:var(--red);">${mis.length}</span>
+                  <span style="font-size:10px;color:var(--text3);margin-left:4px;">${mis.map(d=>d.company).join(", ")}</span>`
+                :'<span style="color:var(--green);font-size:11px;font-weight:700;">None</span>'
+              }</td>
+              <td><span style="font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;color:${mis.length>0?'var(--red)':'var(--text3)'};">${mis.length>0?"-15 per deal":"No penalty"}</span></td>
+            </tr>`;
+          }).join("")}
+        </tbody>
+      </table>
+      <div style="padding:10px 16px;font-size:10px;color:var(--text3);border-top:1px solid var(--border);">
+        ${misDeals.length} of ${DEALS.length} deals have a phase-stage misalignment ·
+        $${(misDeals.reduce((s,d)=>s+d.acv,0)/1e6).toFixed(1)}M ACV at elevated risk
+      </div>`;
+  }
+}
+
+function runSim(){
+  renderSimCtxBanner();
+  const penalties={
+    dur:  parseInt(document.getElementById("sim-dur")?.value||0),
+    bc:   parseInt(document.getElementById("sim-bc")?.value||0),
+    email:parseInt(document.getElementById("sim-email")?.value||0),
+    budget:parseInt(document.getElementById("sim-budget")?.value||0),
+    proc: parseInt(document.getElementById("sim-proc")?.value||0),
+    comp: parseInt(document.getElementById("sim-comp")?.value||0),
+    phase:parseInt(document.getElementById("sim-phase")?.value||0),
+  };
+  const total = Object.values(penalties).reduce((s,v)=>s+v,0);
+  const score = Math.max(0, 100-total);
+  const cls = score>=80?"low":score>=60?"med":score>=40?"high":"crit";
+  const lbl = {low:"Low Risk",med:"Medium Risk",high:"High Risk",crit:"Critical Risk"}[cls];
+  const col = {low:"var(--green)",med:"var(--blue)",high:"var(--amber)",crit:"var(--red)"}[cls];
+  const bg  = {low:"rgba(5,150,105,.07)",med:"var(--blue-lt)",high:"var(--amber-lt)",crit:"rgba(220,38,38,.07)"}[cls];
+  const dimNames={dur:"Stage Duration",bc:"Buying Committee",email:"Email Engagement",budget:"Budget Confirmation",proc:"Procurement",comp:"Competitive Pressure",phase:"Phase-Stage Alignment"};
+  const out = document.getElementById("sim-output");
+  if(!out) return;
+  out.style.background = bg;
+  out.style.border = `1px solid ${col}40`;
+  out.innerHTML = `
+    <div>
+      <div style="font-family:'JetBrains Mono',monospace;font-size:9px;text-transform:uppercase;letter-spacing:.1em;color:${col};margin-bottom:4px;">Simulated Risk Score</div>
+      <div class="sim-score-big" style="color:${col};">${score}</div>
+      <div style="font-size:12px;font-weight:700;color:${col};margin-top:4px;">${lbl}</div>
+    </div>
+    <div class="sim-breakdown" style="border-left:1px solid ${col}30;padding-left:16px;">
+      <div class="sim-breakdown-row"><span class="sim-bd-lbl">Base score</span><span class="sim-bd-val" style="color:var(--text);">100</span></div>
+      ${Object.entries(penalties).filter(([,v])=>v>0).map(([k,v])=>`<div class="sim-breakdown-row"><span class="sim-bd-lbl">${dimNames[k]}</span><span class="sim-bd-val" style="color:var(--red);">-${v}</span></div>`).join("")}
+      <div class="sim-breakdown-row" style="border-top:2px solid ${col}40;margin-top:4px;padding-top:4px;"><span class="sim-bd-lbl" style="font-weight:700;color:var(--text);">Final Score</span><span class="sim-bd-val" style="color:${col};font-size:13px;">${score}</span></div>
+    </div>`;
+}
+
+// ══════════════════════════════════════════════════════════════
+// CLOSE PROXIMITY tag for pipeline cards
+// ══════════════════════════════════════════════════════════════
+function closeProxTag(d){
+  const days=Math.floor((new Date(d.closeDate)-new Date())/(1000*60*60*24));
+  if(days<=14) return `<span class="close-prox urgent">Closes in ${days}d</span>`;
+  if(days<=30) return `<span class="close-prox soon">Closes in ${days}d</span>`;
+  return "";
+}
+
+function riskSigCount(d){
+  let n=0;
+  if(d.dur>DUR_BENCH[d.stage]) n++;
+  if(d.bcCov<40) n++;
+  if(d.email==="low") n++;
+  if(!d.budget) n++;
+  if(!d.proc&&["Negotiation","Commit"].includes(d.stage)) n++;
+  if(d.comp==="high") n++;
+  if(n===0) return `<span class="sig-count-pill clean">✓ No signals</span>`;
+  return `<span class="sig-count-pill has-sigs">⚠ ${n} risk signal${n>1?"s":""}</span>`;
+}
+
+// ── RELATIVE TIME ──────────────────────────────────────────────
+function relTime(daysAgo){
+  if(daysAgo===0) return "Today";
+  if(daysAgo===1) return "Yesterday";
+  if(daysAgo<7)   return `${daysAgo} days ago`;
+  if(daysAgo<14)  return "1 week ago";
+  if(daysAgo<21)  return "2 weeks ago";
+  if(daysAgo<28)  return "3 weeks ago";
+  return `${Math.round(daysAgo/30)} month${Math.round(daysAgo/30)>1?"s":""} ago`;
+}
+
+// ── ENHANCED TIMELINE with relative times & event types ───────
+function getTimeline(d){
+  const base = new Date(d.lastAct);
+  const ev = (daysBack, cls, icon, type, typeCls, event, detail) => {
+    const dt = new Date(base); dt.setDate(dt.getDate() - daysBack);
+    return {cls,icon,type,typeCls,event,detail,date:dt.toISOString().split("T")[0],daysAgo:Math.floor((new Date()-dt)/(864e5))};
+  };
+  const events=[];
+  if(d.budget) events.push(ev(3,"g","💰","Budget Signal","pos","Budget confirmed","Economic buyer confirmed budget allocation — deal can advance to procurement."));
+  if(d.proc)   events.push(ev(7,"b","📋","Procurement","pos","Procurement kickoff","Procurement team engaged. Legal review and vendor onboarding initiated."));
+  events.push(ev(10,"b","📧","Engagement",d.email==="high"?"pos":d.email==="medium"?"warn":"neg","Champion outreach",
+    d.email==="high"?"Champion responding promptly. Strong two-way communication on commercial terms.":
+    d.email==="medium"?"Champion engagement slowing. Some delays in response — re-engagement recommended.":
+    "Champion disengaged. Last outreach unanswered. Risk of silent loss escalating."));
+  if(d.dur>DUR_BENCH[d.stage]) events.push(ev(14,"a","⏱","Stage Risk","warn","Stage duration warning",`Deal in ${d.stage} for ${d.dur}d (benchmark: ${DUR_BENCH[d.stage]}d). No stage progression detected — buyer may be stalling.`));
+  if(d.comp!=="none") events.push(ev(18,"r","⚔","Competitive","neg","Competitive signal detected",`${d.comp==="high"?"Strong":"Moderate"} competitive pressure detected. ${d.comp==="high"?"Active multi-vendor evaluation underway. Displacement risk is elevated.":"1–2 alternatives in evaluation. Differentiation required."}`));
+  if(d.bcCov>=60) events.push(ev(22,"g","👥","Stakeholder","pos","Multi-threading confirmed",`Buying committee at ${d.bcCov}% coverage. ${Math.round(d.bcCov/20)} of 5 key personas identified and engaged.`));
+  else events.push(ev(22,"a","👥","Stakeholder","warn","Buying committee gap",`Coverage at ${d.bcCov}%. Critical personas still unmapped — single-threaded risk.`));
+  if(phaseBehind(d)) events.push(ev(26,"r","📍","Phase Risk","neg","Phase-stage misalignment",`Buyer phase ${d.phase} (${PHASE_META[d.phase]}) is behind expected for ${d.stage} stage. CRM stage may be overstated.`));
+  events.push(ev(d.comp!=="none"?30:25,"gr","🤝","Discovery","neu","Discovery completed","Initial discovery call completed. Pain points documented and use case validated with champion."));
+  if(d.champion) events.push(ev(35,"g","🌟","Champion","pos","Champion identified","Internal sponsor confirmed and engaged. Champion has agreed to facilitate buying committee introductions."));
+  return events;
+}
+
+// ── DEAL MOMENTUM ─────────────────────────────────────────────
+function getDealMomentum(d){
+  const daysSinceAct = daysSince(d.lastAct);
+  // Score positive signals
+  let posScore=0, negScore=0;
+  const posSigs=[], negSigs=[];
+  if(d.email==="high"){ posScore+=2; posSigs.push("Champion responding promptly to outreach"); }
+  if(d.email==="medium"){ posScore+=1; posSigs.push("Moderate email engagement maintained"); }
+  if(d.email==="low"){ negScore+=2; negSigs.push(`No champion response in ${daysSinceAct} days`); }
+  if(d.budget){ posScore+=2; posSigs.push("Budget confirmed by economic buyer"); }
+  else { negScore+=1; negSigs.push("Budget not yet confirmed"); }
+  if(d.proc){ posScore+=1; posSigs.push("Procurement actively engaged"); }
+  if(d.champion){ posScore+=1; posSigs.push("Champion confirmed and active"); }
+  if(d.dur<=DUR_BENCH[d.stage]){ posScore+=1; posSigs.push("Deal progressing within stage benchmark"); }
+  else { negScore+=2; negSigs.push(`Stage stalled — ${d.dur}d vs ${DUR_BENCH[d.stage]}d benchmark`); }
+  if(d.bcCov>60){ posScore+=1; posSigs.push("Stakeholder engagement expanding"); }
+  else if(d.bcCov<40){ negScore+=1; negSigs.push("Buying committee coverage low"); }
+  if(d.comp==="high"){ negScore+=1; negSigs.push("Competitive pressure increasing"); }
+  if(daysSinceAct>14){ negScore+=2; negSigs.push(`No deal activity in ${daysSinceAct} days`); }
+  else if(daysSinceAct<=5){ posScore+=1; posSigs.push("Recent activity signal detected"); }
+  const net = posScore - negScore;
+  if(net>=3){ return {type:"pos",arrow:"↑",label:"Positive Momentum",title:"Deal engagement trending upward",posSigs:posSigs.slice(0,3),negSigs:negSigs.slice(0,2),daysSinceAct}; }
+  if(net<=-2){ return {type:"neg",arrow:"↓",label:"Declining Momentum",title:"Engagement declining — action required",posSigs:posSigs.slice(0,2),negSigs:negSigs.slice(0,3),daysSinceAct}; }
+  return {type:"neu",arrow:"→",label:"Stable Momentum",title:"Deal holding — monitor for direction change",posSigs:posSigs.slice(0,2),negSigs:negSigs.slice(0,2),daysSinceAct};
+}
+
+// ── CONFIDENCE DRIVERS (enhanced) ─────────────────────────────
+function getConfidenceDrivers(d){
+  const pos=[], neg=[];
+  if(d.champion)     pos.push("Champion confirmed and engaged");          else neg.push("No champion identified");
+  if(d.bcCov>60)     pos.push(`Buying committee at ${d.bcCov}% coverage`); else neg.push(`Buying committee coverage only ${d.bcCov}%`);
+  if(d.budget)       pos.push("Budget confirmed by economic buyer");       else neg.push("Budget not confirmed");
+  if(d.proc)         pos.push("Procurement actively engaged");             else if(["Negotiation","Commit"].includes(d.stage)) neg.push("Procurement not engaged at "+d.stage+" stage");
+  if(d.dur<=DUR_BENCH[d.stage]) pos.push("Deal progressing on schedule");  else neg.push(`Stage stalled ${d.dur}d vs ${DUR_BENCH[d.stage]}d benchmark`);
+  if(d.email==="high") pos.push("High champion email engagement");          else if(d.email==="low") neg.push("Champion disengaged — low email activity");
+  if(d.comp==="none")  pos.push("No competitive pressure detected");        else if(d.comp==="high") neg.push("High competitive pressure — active displacement risk");
+  if(!phaseBehind(d))  pos.push("Buyer phase aligned with CRM stage");     else neg.push(`Buyer phase ${d.phase} behind expected for ${d.stage}`);
+  return {pos,neg};
+}
+
+// ── COMPARABLE DEAL PATTERNS ───────────────────────────────────
+function getComparableDeals(d){
+  // Historical closed deal patterns keyed by stage + industry bucket
+  const industryBucket = {Healthcare:"Healthcare",Fintech:"Fintech",SaaS:"SaaS",Manufacturing:"Mfg",Logistics:"Logistics",Retail:"Retail"}[d.industry]||d.industry;
+  const stageBucket = d.stage;
+
+  // Synthetic historical data patterns per stage
+  const patterns = {
+    Discovery:  {wonN:14,lostN:6,avgWonDays:87, avgLostDays:51, winRate:70, topWinFactor:"Champion identified before Evaluation", topLossFactor:"No champion — deals ended in ghosting"},
+    Evaluation: {wonN:18,lostN:9,avgWonDays:94, avgLostDays:62, winRate:67, topWinFactor:"Technical validation completed in stage", topLossFactor:"Procurement blocker or budget freeze"},
+    Proposal:   {wonN:21,lostN:11,avgWonDays:99, avgLostDays:72, winRate:66, topWinFactor:"Executive sponsor engaged before proposal", topLossFactor:"Competitive displacement — lost to incumbent"},
+    Negotiation:{wonN:24,lostN:8,avgWonDays:112,avgLostDays:90, winRate:75, topWinFactor:"Procurement engaged at start of Negotiation", topLossFactor:"Procurement delay extended close by 6+ weeks"},
+    Commit:     {wonN:31,lostN:5,avgWonDays:119,avgLostDays:105,winRate:86, topWinFactor:"Champion-led internal advocacy confirmed", topLossFactor:"Legal or security review delayed final sign-off"},
+  };
+  const p = patterns[stageBucket] || patterns.Proposal;
+
+  // Similar deal overlap: how many signals match positive pattern
+  const matchScore = (d.champion?1:0)+(d.budget?1:0)+(d.proc?1:0)+(d.email==="high"?1:0)+(d.bcCov>60?1:0);
+  const similarWon  = Math.round(p.wonN  * (matchScore/5) * 0.7) + 2;
+  const similarLost = Math.round(p.lostN * ((5-matchScore)/5) * 0.8) + 1;
+
+  // Risk-specific loss pattern
+  let riskPattern = null;
+  if(!d.proc && ["Negotiation","Commit"].includes(d.stage)){
+    riskPattern = {type:"lost",icon:"⚠",title:`${similarLost+2} comparable deals slipped due to procurement delays`,meta:`In similar ${stageBucket} deals where procurement was not engaged, average close extended by 38 days and ${Math.round((similarLost+2)*0.6)} deals eventually missed the quarter.`,stat1:"38d",stat1lbl:"Avg slip",stat2:`${Math.round((similarLost+2)*0.6)}`,stat2lbl:"Missed qtr"};
+  } else if(d.comp==="high"){
+    riskPattern = {type:"lost",icon:"⚔",title:`${similarLost+1} comparable deals lost to competitive displacement`,meta:`High-competitive-pressure deals in ${stageBucket} had a ${Math.round(p.winRate*0.7)}% win rate vs ${p.winRate}% baseline. Executive sponsorship was the decisive differentiator in the deals that did close.`,stat1:`${Math.round(p.winRate*0.7)}%`,stat1lbl:"Win rate",stat2:"Exec sponsor",stat2lbl:"Win factor"};
+  } else if(d.email==="low"){
+    riskPattern = {type:"mixed",icon:"📧",title:`${similarLost} comparable deals at risk from champion disengagement`,meta:`Champion disengagement at ${stageBucket} stage correlated with a 2.4x higher loss rate in similar deals. Re-engagement within 7 days reduced loss risk significantly.`,stat1:"2.4×",stat1lbl:"Loss multiplier",stat2:"7 days",stat2lbl:"Re-engage window"};
+  }
+
+  const wonPattern = {type:"won",icon:"🏆",title:`${similarWon} similar deals closed successfully`,meta:`${industryBucket} deals at ${stageBucket} stage with ${matchScore} of 5 positive signals closed at an average of ${p.avgWonDays} days from opportunity creation. Win rate: ${p.winRate}%.`,stat1:`${p.avgWonDays}d`,stat1lbl:"Avg close",stat2:`${p.winRate}%`,stat2lbl:"Win rate",stat3:matchScore+"/5",stat3lbl:"Signal match"};
+
+  const insight = matchScore>=4
+    ? `Strong signal match. Deals with this profile in ${industryBucket} close ${Math.round((p.avgWonDays-d.dur)*0.85)} days from now on average. Prioritise procurement engagement to protect timeline.`
+    : matchScore>=2
+    ? `Moderate signal match. Key gaps — ${!d.budget?"budget confirmation, ":""}${!d.champion?"champion identification, ":""}${d.bcCov<40?"buying committee coverage, ":""}— are reducing close probability vs benchmark.`
+    : `Low signal match. This deal profile resembles patterns that resulted in late-stage losses. Immediate action on the highest-risk dimensions is recommended.`;
+
+  const sellerPrompt = matchScore>=4
+    ? `Ask your champion to confirm the procurement timeline this week — comparable wins at ${stageBucket} closed fastest when procurement was locked in before the final proposal.`
+    : matchScore>=2
+    ? `Close the highest-impact gap first: ${!d.budget?"confirm budget with the economic buyer":!d.champion?"identify and confirm a champion":"expand buying committee coverage"}. That single action improved close rates most in similar deals.`
+    : `Treat this as a deal rescue — request a mutual action plan with your champion within 48 hours and escalate to your manager before the next pipeline review.`;
+
+  return {wonPattern, riskPattern, insight, sellerPrompt};
+}
+
+</script>
+</body>
+</html>

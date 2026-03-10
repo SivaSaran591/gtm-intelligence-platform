@@ -1,0 +1,1287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PartnerPulse · Ecosystem Intelligence</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;1,9..144,300&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --blue:#0066FF;--blue-dk:#0044CC;--blue-lt:#EBF2FF;--blue-mid:#C7DCFF;
+  --green:#059669;--green-lt:#F0FDF4;--amber:#D97706;--amber-lt:#FFFBEB;
+  --red:#DC2626;--red-lt:#FFF5F5;--purple:#7C3AED;--purple-lt:#F5F3FF;
+  --teal:#0891B2;
+  --bg:#F4F5F8;--surface:#FFFFFF;--s2:#F8F9FB;--s3:#EEF0F4;
+  --border:#E2E5EC;--border2:#C8CDDA;
+  --text:#0D1117;--text2:#4A5568;--text3:#8A94A6;--text4:#C4CAD6;
+  --sh1:0 1px 3px rgba(0,0,0,.06),0 1px 2px rgba(0,0,0,.04);
+  --sh2:0 4px 16px rgba(0,0,0,.08),0 2px 4px rgba(0,0,0,.04);
+  --sh3:0 16px 48px rgba(0,0,0,.12),0 4px 8px rgba(0,0,0,.05);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{background:var(--bg);color:var(--text);font-family:'Plus Jakarta Sans',sans-serif;-webkit-font-smoothing:antialiased;overflow:hidden;}
+
+.topbar{position:fixed;top:0;left:0;right:0;z-index:500;height:52px;background:var(--surface);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 28px;box-shadow:var(--sh1);gap:12px;}
+.tb-icon{width:28px;height:28px;background:linear-gradient(135deg,#0044CC,#0066FF);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;}
+.tb-brand{font-size:14px;font-weight:800;letter-spacing:-.02em;}
+.tb-brand span{color:var(--blue);}
+.tb-div{width:1px;height:20px;background:var(--border);flex-shrink:0;}
+.tb-sub{font-size:11px;font-weight:600;color:var(--text3);}
+.tb-right{margin-left:auto;display:flex;align-items:center;gap:8px;}
+.tb-period{padding:4px 12px;background:var(--blue-lt);border:1px solid var(--blue-mid);border-radius:6px;font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:600;color:var(--blue);}
+.live-badge{display:flex;align-items:center;gap:5px;padding:3px 10px;background:var(--green-lt);border:1px solid #a7f3d0;border-radius:20px;font-size:10px;font-weight:700;color:var(--green);}
+.live-dot{width:5px;height:5px;border-radius:50%;background:var(--green);animation:pdot 1.8s ease-in-out infinite;}
+@keyframes pdot{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.3;transform:scale(.6)}}
+
+.nav-tabs{position:fixed;top:52px;left:0;right:0;z-index:400;background:var(--surface);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 28px;gap:2px;height:42px;box-shadow:var(--sh1);}
+.ntab{padding:8px 14px;background:transparent;border:none;border-bottom:2px solid transparent;margin-bottom:-1px;font-family:'Plus Jakarta Sans',sans-serif;font-size:12px;font-weight:700;color:var(--text3);cursor:pointer;transition:all .15s;white-space:nowrap;border-radius:6px 6px 0 0;}
+.ntab:hover{color:var(--text);background:var(--s2);}
+.ntab.active{color:var(--blue);border-bottom-color:var(--blue);}
+.nav-right{margin-left:auto;display:flex;align-items:center;gap:6px;}
+.nav-btn{padding:5px 13px;background:var(--surface);border:1px solid var(--border);border-radius:6px;font-family:'Plus Jakarta Sans',sans-serif;font-size:11px;font-weight:700;color:var(--text2);cursor:pointer;transition:all .15s;}
+.nav-btn:hover{border-color:var(--blue);color:var(--blue);background:var(--blue-lt);}
+
+.view{position:fixed;top:94px;left:0;right:0;bottom:0;overflow-y:auto;display:none;background:var(--bg);}
+.view.active{display:block;}
+.vc{padding:20px 28px 40px;}
+
+/* KPI STRIP */
+.kpi-strip{display:grid;grid-template-columns:repeat(6,1fr);gap:10px;margin-bottom:18px;}
+.kpi-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:14px 16px;box-shadow:var(--sh1);position:relative;overflow:hidden;transition:box-shadow .15s,transform .15s;}
+.kpi-card:hover{box-shadow:var(--sh2);transform:translateY(-1px);}
+.kpi-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;border-radius:12px 12px 0 0;}
+.kc-blue::before{background:var(--blue);}.kc-green::before{background:var(--green);}.kc-amber::before{background:var(--amber);}
+.kc-red::before{background:var(--red);}.kc-purple::before{background:var(--purple);}.kc-teal::before{background:var(--teal);}
+.kpi-lbl{font-size:9px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.08em;margin-bottom:6px;}
+.kpi-val{font-size:22px;font-weight:800;letter-spacing:-.03em;line-height:1;margin-bottom:3px;}
+.kc-blue .kpi-val{color:var(--blue);}.kc-green .kpi-val{color:var(--green);}.kc-amber .kpi-val{color:var(--amber);}
+.kc-red .kpi-val{color:var(--red);}.kc-purple .kpi-val{color:var(--purple);}.kc-teal .kpi-val{color:var(--teal);}
+.kpi-sub{font-size:10px;color:var(--text3);}
+.kpi-trend{position:absolute;top:12px;right:12px;font-size:10px;font-weight:700;padding:2px 6px;border-radius:4px;}
+.trend-up{background:var(--green-lt);color:var(--green);}
+.trend-dn{background:var(--red-lt);color:var(--red);}
+.trend-flat{background:var(--s3);color:var(--text3);}
+
+/* DELTA BADGES — inline QoQ arrows */
+.delta{font-family:'JetBrains Mono',monospace;font-size:9px;font-weight:700;padding:1px 5px;border-radius:3px;margin-left:4px;white-space:nowrap;}
+.delta-up{background:var(--green-lt);color:var(--green);}
+.delta-dn{background:var(--red-lt);color:var(--red);}
+.delta-flat{background:var(--s3);color:var(--text3);}
+
+/* QBR READINESS BADGE */
+.qbr-badge{display:inline-flex;align-items:center;gap:4px;padding:2px 8px;border-radius:4px;font-size:9px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;}
+.qbr-ready{background:var(--green-lt);color:var(--green);border:1px solid rgba(5,150,105,.2);}
+.qbr-due{background:var(--amber-lt);color:var(--amber);border:1px solid rgba(215,119,6,.2);}
+.qbr-overdue{background:var(--red-lt);color:var(--red);border:1px solid rgba(220,38,38,.2);}
+
+.sec-hd{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:8px;}
+.sec-title{font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--text2);display:flex;align-items:center;gap:8px;}
+.sec-title::before{content:'';display:inline-block;width:3px;height:13px;border-radius:2px;background:var(--blue);}
+.sec-meta{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text3);}
+
+/* LEADERBOARD */
+.leaderboard{background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow:hidden;box-shadow:var(--sh1);}
+.lb-header{display:grid;padding:9px 16px;gap:10px;font-family:'JetBrains Mono',monospace;font-size:9px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.08em;background:var(--s2);border-bottom:1px solid var(--border);}
+.lb-row{display:grid;padding:11px 16px;gap:10px;border-bottom:1px solid var(--border);transition:background .12s;cursor:pointer;align-items:center;}
+.lb-row:last-child{border-bottom:none;}
+.lb-row:hover{background:var(--blue-lt);}
+.lb-row.selected{background:var(--blue-lt);border-left:3px solid var(--blue);}
+.rank-badge{width:26px;height:26px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;flex-shrink:0;font-family:'JetBrains Mono',monospace;}
+.r1{background:linear-gradient(135deg,#F59E0B,#D97706);color:#fff;}
+.r2{background:linear-gradient(135deg,#94A3B8,#64748B);color:#fff;}
+.r3{background:linear-gradient(135deg,#CD7C2F,#A16207);color:#fff;}
+.rn{background:var(--s3);color:var(--text3);}
+.partner-name{font-size:13px;font-weight:800;color:var(--text);letter-spacing:-.01em;}
+.partner-sub{font-size:10px;color:var(--text3);margin-top:2px;}
+.pbm-chip{display:inline-flex;align-items:center;gap:4px;padding:2px 7px;border-radius:10px;font-size:9px;font-weight:700;background:var(--blue-lt);color:var(--blue);border:1px solid var(--blue-mid);font-family:'JetBrains Mono',monospace;}
+.metric-cell{display:flex;flex-direction:column;gap:1px;}
+.mc-val{font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:700;display:flex;align-items:center;gap:2px;}
+.mc-bar{height:3px;border-radius:2px;background:var(--s3);margin-top:3px;overflow:hidden;}
+.mc-fill{height:100%;border-radius:2px;}
+.score-pill{display:inline-flex;align-items:center;gap:4px;padding:4px 10px;border-radius:6px;font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:700;}
+.sp-hot{background:rgba(5,150,105,.1);border:1px solid rgba(5,150,105,.25);color:var(--green);}
+.sp-warm{background:var(--amber-lt);border:1px solid rgba(215,119,6,.25);color:var(--amber);}
+.sp-low{background:var(--s3);border:1px solid var(--border);color:var(--text3);}
+.sp-risk{background:var(--red-lt);border:1px solid rgba(220,38,38,.25);color:var(--red);}
+
+.alert-pill{display:inline-flex;align-items:center;gap:4px;padding:2px 8px;border-radius:4px;font-size:9px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;}
+.ap-stall{background:#FFFBEB;color:#B45309;border:1px solid #FCD34D;}
+.ap-disc{background:var(--red-lt);color:var(--red);border:1px solid rgba(220,38,38,.2);}
+.ap-ok{background:var(--green-lt);color:var(--green);border:1px solid rgba(5,150,105,.2);}
+
+/* ACTION ITEMS */
+.action-item{display:flex;align-items:flex-start;gap:10px;padding:9px 12px;border-radius:8px;background:var(--s2);border:1px solid var(--border);margin-bottom:7px;transition:opacity .2s;}
+.action-item:last-child{margin-bottom:0;}
+.action-item.done{opacity:.45;}
+.action-cb{width:16px;height:16px;border-radius:4px;border:2px solid var(--border2);cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all .15s;background:var(--surface);margin-top:1px;}
+.action-cb.checked{background:var(--green);border-color:var(--green);}
+.action-text{font-size:11px;color:var(--text2);flex:1;line-height:1.5;}
+.action-text.done{text-decoration:line-through;color:var(--text4);}
+.action-priority{padding:1px 6px;border-radius:3px;font-size:9px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;flex-shrink:0;margin-top:1px;}
+.ap-high{background:var(--red-lt);color:var(--red);}
+.ap-med{background:var(--amber-lt);color:var(--amber);}
+.ap-low-p{background:var(--s3);color:var(--text3);}
+
+/* DETAIL PANEL */
+.detail-panel{position:fixed;top:94px;right:0;bottom:0;width:380px;background:var(--surface);border-left:1px solid var(--border);box-shadow:var(--sh3);z-index:300;display:none;flex-direction:column;overflow-y:auto;}
+.detail-panel.open{display:flex;}
+.dp-hd{padding:16px 20px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:flex-start;}
+.dp-close{width:26px;height:26px;border-radius:6px;border:1px solid var(--border);background:transparent;cursor:pointer;font-size:14px;color:var(--text3);display:flex;align-items:center;justify-content:center;transition:all .15s;flex-shrink:0;}
+.dp-close:hover{border-color:var(--text2);color:var(--text);}
+.dp-name{font-size:16px;font-weight:800;color:var(--text);margin-bottom:4px;letter-spacing:-.02em;}
+.dp-hero{padding:14px 20px;background:var(--s2);border-bottom:1px solid var(--border);}
+.dp-score-row{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px;}
+.dp-score-big{font-size:32px;font-weight:800;letter-spacing:-.04em;font-family:'JetBrains Mono',monospace;}
+.dp-score-lbl{font-size:9px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.08em;margin-top:3px;}
+.dp-score-delta{font-size:11px;font-weight:700;margin-top:4px;}
+.dp-meta-row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;}
+.dp-section{padding:14px 20px;border-bottom:1px solid var(--border);}
+.dp-section:last-child{border-bottom:none;}
+.dp-section-title{font-family:'JetBrains Mono',monospace;font-size:9px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.1em;margin-bottom:10px;}
+.dp-dim-item{margin-bottom:9px;}
+.dp-dim-top{display:flex;justify-content:space-between;margin-bottom:3px;align-items:center;}
+.dp-dim-lbl{font-size:11px;color:var(--text2);font-weight:500;}
+.dp-dim-val{font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;color:var(--text);display:flex;align-items:center;gap:4px;}
+.dp-dim-track{height:4px;background:var(--s3);border-radius:2px;overflow:hidden;}
+.dp-dim-fill{height:100%;border-radius:2px;}
+.dp-alert-item{display:flex;align-items:flex-start;gap:8px;margin-bottom:7px;padding:8px 10px;border-radius:7px;background:var(--s2);border:1px solid var(--border);}
+.dp-alert-item:last-child{margin-bottom:0;}
+
+/* QBR SECTION */
+.qbr-card{background:var(--s2);border:1px solid var(--border);border-radius:8px;padding:12px 14px;margin-bottom:8px;}
+.qbr-card:last-child{margin-bottom:0;}
+.qbr-score-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;}
+.qbr-score-num{font-family:'JetBrains Mono',monospace;font-size:20px;font-weight:800;}
+.qbr-criteria{display:flex;flex-direction:column;gap:5px;}
+.qbr-criterion{display:flex;align-items:center;gap:8px;font-size:11px;color:var(--text2);}
+.qbr-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+
+/* FILTERS */
+.filter-bar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:16px;}
+.fsel{background:var(--surface);color:var(--text);border:1px solid var(--border);border-radius:7px;padding:6px 10px;font-size:12px;outline:none;font-family:'Plus Jakarta Sans',sans-serif;transition:border-color .15s;}
+.fsel:focus{border-color:var(--blue);}
+.ftog{padding:6px 12px;border-radius:7px;border:1px solid var(--border);font-family:'Plus Jakarta Sans',sans-serif;font-size:11px;font-weight:700;color:var(--text2);cursor:pointer;background:var(--surface);transition:all .15s;}
+.ftog:hover,.ftog.on{border-color:var(--blue);color:var(--blue);background:var(--blue-lt);}
+
+/* ANALYTICS */
+.an-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:18px;}
+.an-grid-2{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;}
+.an-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:18px 20px;box-shadow:var(--sh1);}
+.an-title{font-size:9px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.1em;font-family:'JetBrains Mono',monospace;margin-bottom:14px;}
+.br-item{margin-bottom:10px;}
+.br-top{display:flex;justify-content:space-between;margin-bottom:4px;align-items:center;}
+.br-name{font-size:12px;font-weight:500;color:var(--text2);}
+.br-val{font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;}
+.br-track{height:5px;background:var(--s3);border-radius:3px;overflow:hidden;}
+.br-fill{height:100%;border-radius:3px;}
+
+table{width:100%;border-collapse:collapse;}
+thead tr{background:var(--s2);border-bottom:1px solid var(--border);}
+th{padding:9px 14px;text-align:left;font-size:9px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.1em;font-family:'JetBrains Mono',monospace;white-space:nowrap;}
+td{padding:10px 14px;font-size:12px;color:var(--text2);border-bottom:1px solid var(--border);vertical-align:middle;}
+tr:last-child td{border-bottom:none;}
+tbody tr:hover{background:var(--s2);}
+.td-bold{font-weight:700;color:var(--text);font-size:13px;}
+
+/* ALERTS */
+.alerts-grid{display:flex;flex-direction:column;gap:10px;}
+.alert-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:14px 16px;box-shadow:var(--sh1);display:flex;align-items:flex-start;gap:12px;}
+.ac-icon{font-size:20px;flex-shrink:0;}
+.ac-body{flex:1;}
+.ac-title{font-size:13px;font-weight:700;color:var(--text);margin-bottom:3px;}
+.ac-sub{font-size:11px;color:var(--text3);line-height:1.5;}
+.ac-pills{display:flex;gap:6px;margin-top:8px;flex-wrap:wrap;align-items:center;}
+.ac-right{display:flex;flex-direction:column;align-items:flex-end;gap:6px;flex-shrink:0;}
+.severity-badge{padding:3px 9px;border-radius:5px;font-size:9px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;}
+.sev-high{background:var(--red-lt);color:var(--red);}
+.sev-med{background:var(--amber-lt);color:var(--amber);}
+
+/* SCORE LOGIC */
+.sl-hero{background:linear-gradient(135deg,#0044CC,#0066FF);border-radius:12px;padding:18px 22px;margin-bottom:16px;box-shadow:0 4px 20px rgba(0,102,255,.25);max-width:820px;}
+.sl-grid{display:flex;flex-direction:column;gap:12px;max-width:820px;}
+.sl-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow:hidden;box-shadow:var(--sh1);}
+.sl-hd{padding:14px 18px;display:flex;justify-content:space-between;align-items:flex-start;border-bottom:1px solid var(--border);background:var(--s2);gap:12px;}
+.sl-title{font-size:13px;font-weight:700;color:var(--text);}
+.sl-desc{font-size:11px;color:var(--text3);margin-top:3px;line-height:1.5;max-width:560px;}
+.sl-max{padding:5px 14px;border-radius:6px;font-family:'JetBrains Mono',monospace;font-size:15px;font-weight:700;flex-shrink:0;text-align:center;}
+.sl-max span{display:block;font-size:8px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;margin-top:2px;opacity:.7;}
+.sl-row{display:flex;align-items:center;padding:9px 18px;border-bottom:1px solid var(--border);gap:12px;}
+.sl-row:last-child{border-bottom:none;}
+.sl-tier{font-size:11px;font-weight:600;color:var(--text);flex:0 0 240px;}
+.sl-note{font-size:10px;color:var(--text3);flex:1;line-height:1.5;}
+.sl-pts{padding:2px 10px;border-radius:4px;font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;flex-shrink:0;}
+
+
+/* MOMENTUM BADGE */
+.mom-badge{display:inline-flex;align-items:center;gap:4px;padding:2px 8px;border-radius:4px;font-size:9px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;}
+.mom-accel{background:rgba(5,150,105,.12);color:var(--green);border:1px solid rgba(5,150,105,.25);}
+.mom-stable{background:var(--blue-lt);color:var(--blue);border:1px solid var(--blue-mid);}
+.mom-slow{background:var(--amber-lt);color:var(--amber);border:1px solid rgba(215,119,6,.2);}
+.mom-decline{background:var(--red-lt);color:var(--red);border:1px solid rgba(220,38,38,.2);}
+
+/* RISK FORECAST */
+.risk-low{color:var(--green);}.risk-mod{color:var(--amber);}.risk-high{color:var(--red);}
+.risk-card{border-radius:8px;padding:10px 12px;margin-bottom:8px;}
+.risk-low-bg{background:var(--green-lt);border:1px solid rgba(5,150,105,.2);}
+.risk-mod-bg{background:var(--amber-lt);border:1px solid rgba(215,119,6,.2);}
+.risk-high-bg{background:var(--red-lt);border:1px solid rgba(220,38,38,.2);}
+
+/* INTELLIGENCE SUMMARY */
+.intel-card{background:linear-gradient(135deg,#0a0f1e,#0d1a3a);border-radius:10px;padding:14px 16px;margin-bottom:14px;border:1px solid rgba(0,102,255,.2);}
+.intel-row{display:flex;gap:8px;margin-bottom:8px;align-items:flex-start;}
+.intel-lbl{font-size:9px;font-weight:700;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:.08em;min-width:80px;margin-top:1px;}
+.intel-val{font-size:11px;font-weight:600;color:#fff;line-height:1.4;}
+.intel-title{font-size:9px;font-weight:700;color:rgba(0,102,255,.8);text-transform:uppercase;letter-spacing:.12em;margin-bottom:10px;font-family:'JetBrains Mono',monospace;}
+
+/* SCORE TREND VIZ */
+.trend-viz{display:flex;align-items:flex-end;gap:4px;height:40px;margin:8px 0;}
+.trend-bar-wrap{display:flex;flex-direction:column;align-items:center;gap:3px;flex:1;}
+.trend-bar{width:100%;border-radius:3px 3px 0 0;transition:height .3s;min-height:2px;}
+.trend-lbl{font-size:8px;color:var(--text3);font-family:'JetBrains Mono',monospace;font-weight:600;}
+.trend-score{font-size:9px;font-weight:700;font-family:'JetBrains Mono',monospace;}
+
+/* GROWTH SIGNAL */
+.growth-badge{display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border-radius:6px;font-size:10px;font-weight:700;border:1px solid;}
+.growth-expansion{background:rgba(5,150,105,.08);color:var(--green);border-color:rgba(5,150,105,.3);}
+.growth-momentum{background:var(--blue-lt);color:var(--blue);border-color:var(--blue-mid);}
+.growth-high{background:var(--purple-lt);color:var(--purple);border-color:rgba(124,58,237,.3);}
+.growth-watch{background:var(--amber-lt);color:var(--amber);border-color:rgba(215,119,6,.3);}
+
+/* CRM SYNC */
+.crm-sync{display:inline-flex;align-items:center;gap:5px;padding:2px 8px;border-radius:4px;font-size:9px;font-weight:700;background:#f0f9ff;color:#0369a1;border:1px solid #bae6fd;font-family:'JetBrains Mono',monospace;}
+
+/* INTEL FLOW */
+.intel-flow{display:flex;align-items:center;gap:6px;flex-wrap:wrap;padding:12px 16px;background:var(--s2);border-radius:8px;margin-bottom:12px;}
+.flow-step{font-size:10px;font-weight:700;color:var(--text2);padding:4px 10px;background:var(--surface);border:1px solid var(--border);border-radius:6px;white-space:nowrap;}
+.flow-arrow{color:var(--text4);font-size:12px;}
+::-webkit-scrollbar{width:5px;height:5px;}
+::-webkit-scrollbar-track{background:transparent;}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px;}
+
+
+
+/* ─── GTM INTELLIGENCE SUITE HEADER ─────────────────────────── */
+.suite-bar{display:flex;flex-direction:column;justify-content:center;padding:0 28px;height:36px;background:linear-gradient(90deg,#0a0f1e 0%,#0d1a3a 100%);border-bottom:1px solid rgba(0,102,255,.18);flex-shrink:0;position:fixed;top:0;left:0;right:0;z-index:600;}
+.suite-bar-top{display:flex;align-items:center;gap:0;}
+.suite-name{font-family:'JetBrains Mono',monospace;font-size:9px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.45);white-space:nowrap;flex-shrink:0;}
+.suite-div{width:1px;height:12px;background:rgba(255,255,255,.12);margin:0 10px;flex-shrink:0;}
+.suite-modules{display:flex;align-items:center;gap:2px;}
+.suite-mod{font-family:'JetBrains Mono',monospace;font-size:9px;font-weight:600;letter-spacing:.06em;color:rgba(255,255,255,.3);padding:1px 7px;border-radius:3px;white-space:nowrap;transition:color .15s,background .15s;text-decoration:none;border:1px solid transparent;}
+.suite-mod:hover{color:rgba(255,255,255,.7);background:rgba(255,255,255,.06);}
+.suite-mod.active{color:#fff;background:rgba(0,102,255,.35);border-color:rgba(0,102,255,.4);}
+.suite-mod-sep{font-size:9px;color:rgba(255,255,255,.15);padding:0 1px;}
+.suite-descriptor{font-size:8px;font-weight:500;color:rgba(255,255,255,.22);letter-spacing:.04em;margin-top:1px;padding-left:1px;}
+/* Push topbar and nav-tabs down by suite-bar height */
+.topbar{top:36px!important;}
+.nav-tabs{top:88px!important;}
+.view{top:130px!important;}
+
+</style>
+</head>
+<body>
+<!-- GTM INTELLIGENCE SUITE BAR -->
+<div class="suite-bar">
+  <div class="suite-bar-top">
+    <span class="suite-name">GTM Intelligence Suite</span>
+    <div class="suite-div"></div>
+    <div class="suite-modules"><a href="SignalOps___GTM_Intelligence_Engine.html" class="suite-mod" title="Open SignalOps">SignalOps</a><span class="suite-mod-sep">·</span><a href="CampaignForge___AI_GTM_Campaign_Builder.html" class="suite-mod" title="Open CampaignForge">CampaignForge</a><span class="suite-mod-sep">·</span><a href="DealLens___Pipeline_Intelligence_Engine.html" class="suite-mod" title="Open DealLens">DealLens</a><span class="suite-mod-sep">·</span><a href="PartnerPulse___Ecosystem_Intelligence.html" class="suite-mod active" title="Open PartnerPulse">PartnerPulse</a></div>
+  </div>
+  <div class="suite-descriptor">Market signals &nbsp;→&nbsp; Campaign activation &nbsp;→&nbsp; Pipeline intelligence &nbsp;→&nbsp; Partner analytics</div>
+</div>
+  <div class="suite-div"></div>
+  <div class="suite-modules">
+    <a class="suite-mod " href="SignalOps___GTM_Intelligence_Engine.html">SignalOps</a>
+    <span class="suite-mod-sep">·</span>
+    <a class="suite-mod " href="CampaignForge___AI_GTM_Campaign_Builder.html">CampaignForge</a>
+    <span class="suite-mod-sep">·</span>
+    <a class="suite-mod " href="DealLens___Pipeline_Intelligence_Engine.html">DealLens</a>
+    <span class="suite-mod-sep">·</span>
+    <a class="suite-mod active" href="PartnerPulse___Ecosystem_Intelligence.html">PartnerPulse</a>
+  </div>
+</div>
+
+  <div class="suite-modules">
+    <span class="suite-mod ">SignalOps</span>
+    <span class="suite-mod-sep">·</span>
+    <span class="suite-mod ">CampaignForge</span>
+    <span class="suite-mod-sep">·</span>
+    <span class="suite-mod ">DealLens</span>
+    <span class="suite-mod-sep">·</span>
+    <span class="suite-mod active">PartnerPulse</span>
+  </div>
+</div>
+
+
+<div class="topbar">
+  <div class="tb-icon">🤝</div>
+  <div class="tb-brand">Partner<span>Pulse</span></div>
+  <div class="tb-div"></div>
+  <div class="tb-sub">Channel Intelligence · Partner Performance Dashboard</div>
+  <div class="tb-right">
+    <select id="period-select" onchange="onPeriodChange()" style="padding:4px 10px;background:var(--blue-lt);border:1px solid var(--blue-mid);border-radius:6px;font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:600;color:var(--blue);outline:none;cursor:pointer;">
+      <option value="q3_q2">Q3 vs Q2 FY25-26</option>
+      <option value="q4_q3">Q4 vs Q3 FY25-26</option>
+      <option value="h2_h1">H2 vs H1 FY25-26</option>
+    </select>
+    <div class="live-badge"><div class="live-dot"></div>14 PARTNERS</div>
+  </div>
+</div>
+
+<div class="nav-tabs">
+  <button class="ntab active" onclick="switchTab('rankings',this)">Rankings</button>
+  <button class="ntab" onclick="switchTab('pipeline',this)">Pipeline</button>
+  <button class="ntab" onclick="switchTab('qbr',this)">QBR Readiness</button>
+  <button class="ntab" onclick="switchTab('alerts',this)">⚠ Alerts <span id="alert-count" style="background:var(--red);color:#fff;border-radius:10px;padding:1px 7px;font-size:9px;font-weight:800;margin-left:2px;">0</span></button>
+  <button class="ntab" onclick="switchTab('analytics',this)">Analytics</button>
+  <button class="ntab" onclick="switchTab('scorelogic',this)">Score Logic</button>
+  <button class="ntab" onclick="switchTab('intelligence',this)">⚡ Intelligence</button>
+  <div class="nav-right"><button class="nav-btn" onclick="exportCSV()">Export CSV</button></div>
+</div>
+
+<!-- RANKINGS -->
+<div id="view-rankings" class="view active">
+  <div class="vc">
+    <div class="kpi-strip" id="kpi-strip"></div>
+    <div class="filter-bar">
+      <select class="fsel" id="f-pbm" onchange="renderRankings()"><option>All PBMs</option></select>
+      <select class="fsel" id="f-sort" onchange="renderRankings()">
+        <option value="overall">Sort: Overall Score</option>
+        <option value="score_delta">Sort: Most Improved</option>
+        <option value="pipeline_created">Sort: Pipeline Created</option>
+        <option value="pipeline_d">Sort: Pipeline D+</option>
+        <option value="stalled">Sort: Stalled (High First)</option>
+        <option value="disc">Sort: Discontinued (High First)</option>
+        <option value="qbr">Sort: QBR Readiness</option>
+        <option value="momentum">Sort: Momentum Score</option>
+      </select>
+      <button class="ftog" id="tog-risk" onclick="toggleRisk()">Show At-Risk Only</button>
+      <button class="ftog" id="tog-improved" onclick="toggleImproved()">Show Improved Only</button>
+    </div>
+    <div class="sec-hd">
+      <div class="sec-title">Partner Leaderboard <span style="font-size:9px;font-weight:400;color:var(--text3);text-transform:none;letter-spacing:0;margin-left:6px;">Arrows show Q3 vs Q2 movement</span></div>
+      <div class="sec-meta" id="ranking-meta">— partners</div>
+    </div>
+    <div class="leaderboard">
+      <div class="lb-header" id="lb-header"></div>
+      <div id="lb-body"></div>
+    </div>
+  </div>
+  <div class="detail-panel" id="detail-panel">
+    <div class="dp-hd">
+      <div><div class="dp-name" id="dp-name">—</div><div id="dp-meta-row" class="dp-meta-row"></div></div>
+      <button class="dp-close" onclick="closeDetail()">✕</button>
+    </div>
+    <div class="dp-hero">
+      <div class="dp-score-row">
+        <div>
+          <div class="dp-score-big" id="dp-score">—</div>
+          <div class="dp-score-lbl">Overall Score / 100</div>
+          <div class="dp-score-delta" id="dp-score-delta"></div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:6px;align-items:flex-end;">
+          <div id="dp-rank-tag"></div>
+          <div id="dp-qbr-tag"></div>
+          <div id="dp-mom-tag"></div>
+        </div>
+      </div>
+    </div>
+    <!-- INTELLIGENCE SUMMARY -->
+    <div class="dp-section" id="dp-intel-section">
+      <div class="dp-section-title">Partner Intelligence Summary</div>
+      <div id="dp-intel"></div>
+    </div>
+    <!-- SCORE TREND -->
+    <div class="dp-section">
+      <div class="dp-section-title">Performance Trend</div>
+      <div id="dp-trend-viz"></div>
+    </div>
+    <div class="dp-section">
+      <div class="dp-section-title">Score Breakdown</div>
+      <div id="dp-dims"></div>
+    </div>
+    <div class="dp-section">
+      <div class="dp-section-title">Signals & Alerts</div>
+      <div id="dp-alert-items"></div>
+    </div>
+    <div class="dp-section">
+      <div class="dp-section-title">Recommended Actions <span style="font-weight:400;color:var(--text4);font-size:9px;margin-left:4px;">click to mark done</span></div>
+      <div id="dp-actions"></div>
+    </div>
+  </div>
+</div>
+
+<!-- PIPELINE -->
+<div id="view-pipeline" class="view">
+  <div class="vc">
+    <div class="sec-hd"><div class="sec-title">Pipeline by Stage — Q3 vs Q2</div></div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px;margin-bottom:20px;" id="stage-cards"></div>
+    <div class="sec-hd"><div class="sec-title">Stalled & Discontinued by Partner</div><div class="sec-meta" id="stall-meta"></div></div>
+    <div class="leaderboard">
+      <div class="lb-header" style="grid-template-columns:160px 1fr 1fr 1fr 1fr 110px 100px;display:grid;padding:9px 16px;gap:10px;">
+        <span>Partner</span><span>Stalled Opps</span><span>Stalled $M</span><span>Disc. Opps</span><span>Disc. $M</span><span>PBM</span><span>Action</span>
+      </div>
+      <div id="stall-body"></div>
+    </div>
+  </div>
+</div>
+
+<!-- QBR READINESS -->
+<div id="view-qbr" class="view">
+  <div class="vc">
+    <div style="background:linear-gradient(135deg,#065F46,#059669);border-radius:12px;padding:16px 22px;margin-bottom:16px;box-shadow:0 4px 20px rgba(5,150,105,.2);">
+      <div style="font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.55);margin-bottom:4px;">QBR READINESS ENGINE</div>
+      <div style="font-family:'Fraunces',serif;font-size:16px;font-weight:400;color:#fff;margin-bottom:4px;">Is this partner ready for a Business Review?</div>
+      <div style="font-size:11px;color:rgba(255,255,255,.75);line-height:1.7;">Scored on 4 criteria: pipeline momentum, implementation delivery, stall/disc ratio, and QoQ score improvement. <strong style="color:#fff;">70+</strong> = Ready · <strong style="color:#fff;">45–69</strong> = Due · <strong style="color:#fff;">&lt;45</strong> = Overdue (needs prep before QBR)</div>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:12px;" id="qbr-grid"></div>
+  </div>
+</div>
+
+<!-- ALERTS -->
+<div id="view-alerts" class="view">
+  <div class="vc">
+    <div class="sec-hd"><div class="sec-title">Active Alerts & Recommended Actions</div><div class="sec-meta" id="alerts-meta"></div></div>
+    <div class="alerts-grid" id="alerts-grid"></div>
+  </div>
+</div>
+
+<!-- ANALYTICS -->
+<div id="view-analytics" class="view">
+  <div class="vc">
+    <div class="an-grid" id="an-grid"></div>
+    <div class="an-grid-2" id="an-grid2"></div>
+  </div>
+</div>
+
+
+<!-- INTELLIGENCE -->
+<div id="view-intelligence" class="view">
+  <div class="vc">
+    <div style="background:linear-gradient(135deg,#0a0f1e,#0d1a3a);border-radius:14px;padding:22px 26px;margin-bottom:20px;border:1px solid rgba(0,102,255,.25);box-shadow:0 8px 32px rgba(0,0,255,.1);">
+      <div style="font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:rgba(0,102,255,.6);margin-bottom:6px;">PARTNER INTELLIGENCE PLATFORM · ARCHITECTURE OVERVIEW</div>
+      <div style="font-family:'Fraunces',serif;font-size:20px;font-weight:400;color:#fff;margin-bottom:8px;">How Partner Intelligence Works</div>
+      <div style="font-size:12px;color:rgba(255,255,255,.6);line-height:1.7;max-width:640px;">This system ingests partner performance signals across pipeline, delivery, and engagement dimensions. It produces a layered intelligence stack — from raw metrics to predictive risk forecasts and CRM activation workflows.</div>
+    </div>
+    <div class="intel-flow" style="margin-bottom:20px;">
+      <div class="flow-step">📡 Partner Signals</div><div class="flow-arrow">→</div>
+      <div class="flow-step">📊 Performance Scoring</div><div class="flow-arrow">→</div>
+      <div class="flow-step">📈 Momentum Analysis</div><div class="flow-arrow">→</div>
+      <div class="flow-step">⚠️ Risk Forecast</div><div class="flow-arrow">→</div>
+      <div class="flow-step">💡 Growth Signals</div><div class="flow-arrow">→</div>
+      <div class="flow-step">✅ Recommended Actions</div><div class="flow-arrow">→</div>
+      <div class="flow-step">🔗 CRM Activation</div>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:16px;">
+      <div class="an-card" style="border-top:3px solid var(--blue);">
+        <div class="an-title">Momentum Engine</div>
+        <div style="font-size:12px;color:var(--text2);line-height:1.6;margin-bottom:10px;">Evaluates partner <strong>trajectory</strong> rather than snapshot position. Combines pipeline growth rate, late-stage expansion, score velocity, and stall reduction into a single 0–100 score.</div>
+        <div style="display:flex;flex-direction:column;gap:5px;">
+          <div style="display:flex;justify-content:space-between;align-items:center;"><span class="mom-badge mom-accel">↑ Accelerating</span><span style="font-size:10px;color:var(--text3);">80–100</span></div>
+          <div style="display:flex;justify-content:space-between;align-items:center;"><span class="mom-badge mom-stable">= Stable</span><span style="font-size:10px;color:var(--text3);">60–79</span></div>
+          <div style="display:flex;justify-content:space-between;align-items:center;"><span class="mom-badge mom-slow">↓ Slowing</span><span style="font-size:10px;color:var(--text3);">40–59</span></div>
+          <div style="display:flex;justify-content:space-between;align-items:center;"><span class="mom-badge mom-decline">↓↓ Declining</span><span style="font-size:10px;color:var(--text3);">&lt;40</span></div>
+        </div>
+      </div>
+      <div class="an-card" style="border-top:3px solid var(--red);">
+        <div class="an-title">90-Day Risk Forecast</div>
+        <div style="font-size:12px;color:var(--text2);line-height:1.6;margin-bottom:10px;">Scans for compounding negative signals across 4 dimensions. A partner with 3+ negative signals is automatically escalated to <strong>High Risk</strong> in the alerts system.</div>
+        <div style="display:flex;flex-direction:column;gap:5px;">
+          <div style="padding:6px 10px;border-radius:6px;background:var(--red-lt);border:1px solid rgba(220,38,38,.2);">
+            <div style="font-size:10px;font-weight:700;color:var(--red);margin-bottom:4px;">Signals monitored:</div>
+            <div style="font-size:10px;color:var(--text2);line-height:1.6;">Pipeline creation declining · Stalled pipeline rising · Discontinuation spike · Score velocity negative</div>
+          </div>
+        </div>
+      </div>
+      <div class="an-card" style="border-top:3px solid var(--green);">
+        <div class="an-title">Growth Opportunity Signals</div>
+        <div style="font-size:12px;color:var(--text2);line-height:1.6;margin-bottom:10px;">Identifies partners with compounding positive signals as candidates for investment, expansion, or co-sell acceleration.</div>
+        <div style="display:flex;flex-direction:column;gap:5px;">
+          <div style="display:flex;justify-content:space-between;align-items:center;"><span class="growth-badge growth-expansion">🚀 Expansion Candidate</span></div>
+          <div style="display:flex;justify-content:space-between;align-items:center;"><span class="growth-badge growth-high">⚡ High Growth Potential</span></div>
+          <div style="display:flex;justify-content:space-between;align-items:center;"><span class="growth-badge growth-momentum">📈 Momentum Partner</span></div>
+          <div style="display:flex;justify-content:space-between;align-items:center;"><span class="growth-badge growth-watch">👀 Watch & Support</span></div>
+        </div>
+      </div>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:14px;">
+      <div class="an-card" style="border-top:3px solid #0369a1;">
+        <div class="an-title">CRM Activation Layer</div>
+        <div style="font-size:12px;color:var(--text2);line-height:1.6;margin-bottom:10px;">When a partner is flagged, the system simulates CRM activation signals. In production, these would trigger live Salesforce or HubSpot workflows.</div>
+        <div style="display:flex;flex-direction:column;gap:6px;">
+          <div style="display:flex;align-items:center;gap:8px;font-size:11px;color:var(--text2);">
+            <span class="crm-sync">CRM SYNC</span> Task created for PBM owner
+          </div>
+          <div style="display:flex;align-items:center;gap:8px;font-size:11px;color:var(--text2);">
+            <span class="crm-sync">CRM SYNC</span> QBR meeting auto-suggested
+          </div>
+          <div style="display:flex;align-items:center;gap:8px;font-size:11px;color:var(--text2);">
+            <span class="crm-sync">CRM SYNC</span> Pipeline review scheduled
+          </div>
+          <div style="display:flex;align-items:center;gap:8px;font-size:11px;color:var(--text2);">
+            <span class="crm-sync">CRM SYNC</span> Email draft generated
+          </div>
+        </div>
+      </div>
+      <div class="an-card" style="border-top:3px solid var(--purple);">
+        <div class="an-title">Scoring Methodology</div>
+        <div style="font-size:12px;color:var(--text2);line-height:1.6;margin-bottom:10px;">Performance score (0–100) across 5 dimensions. All scores are period-aware and support Q3 vs Q2, Q4 vs Q3, and H2 vs H1 comparisons.</div>
+        <div style="display:flex;flex-direction:column;gap:4px;">
+          <div style="display:flex;justify-content:space-between;font-size:11px;"><span style="color:var(--text2);">Pipeline Created</span><span style="font-family:'JetBrains Mono',monospace;font-weight:700;color:#0066FF;">25 pts</span></div>
+          <div style="display:flex;justify-content:space-between;font-size:11px;"><span style="color:var(--text2);">Pipeline D Phase+</span><span style="font-family:'JetBrains Mono',monospace;font-weight:700;color:#7C3AED;">20 pts</span></div>
+          <div style="display:flex;justify-content:space-between;font-size:11px;"><span style="color:var(--text2);">Stalled Pipeline (inv.)</span><span style="font-family:'JetBrains Mono',monospace;font-weight:700;color:#D97706;">15 pts</span></div>
+          <div style="display:flex;justify-content:space-between;font-size:11px;"><span style="color:var(--text2);">Implementations</span><span style="font-family:'JetBrains Mono',monospace;font-weight:700;color:#059669;">20 pts</span></div>
+          <div style="display:flex;justify-content:space-between;font-size:11px;"><span style="color:var(--text2);">Discontinuation (inv.)</span><span style="font-family:'JetBrains Mono',monospace;font-weight:700;color:#DC2626;">10 pts</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SCORE LOGIC -->
+<div id="view-scorelogic" class="view">
+  <div class="vc">
+    <div class="sl-hero">
+      <div style="font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.55);margin-bottom:6px;">SCORING METHODOLOGY · v2 — TREND AWARE</div>
+      <div style="font-family:'Fraunces',serif;font-size:18px;font-weight:400;color:#fff;line-height:1.3;margin-bottom:6px;">How partners are ranked</div>
+      <div style="font-size:12px;color:rgba(255,255,255,.75);line-height:1.7;">Each partner is scored out of <strong style="color:#fff;">100 points</strong> across 6 dimensions. Two dimensions — Stalled Pipeline and Discontinuation — are <strong style="color:#fff;">inverse scores</strong>. All metrics show <strong style="color:#fff;">Q3 vs Q2 deltas</strong> to surface momentum, not just snapshot position. Partners scoring <strong style="color:#fff;">75+</strong> Strong · <strong style="color:#fff;">55–74</strong> Moderate · <strong style="color:#fff;">35–54</strong> Watch · <strong style="color:#fff;">&lt;35</strong> At-Risk</div>
+    </div>
+    <div class="sl-grid" id="sl-grid"></div>
+  </div>
+</div>
+
+<script>
+const PARTNERS = [
+  {id:1,  name:"Partner A", pbm:"PBM Alpha",  lastQBR:"2025-10-14",
+   q2:{pipeline_created:6.8,impl:11,pipe_d:4.1,stalled_opps:3,stalled_val:1.1,disc_opps:2,disc_val:0.5},
+   q3:{pipeline_created:8.4,impl:14,pipe_d:5.2,stalled_opps:2,stalled_val:0.6,disc_opps:1,disc_val:0.3},
+   q4:{pipeline_created:9.1,impl:15,pipe_d:5.8,stalled_opps:1,stalled_val:0.4,disc_opps:1,disc_val:0.2},
+   h1:{pipeline_created:13.6,impl:21,pipe_d:7.8,stalled_opps:5,stalled_val:1.8,disc_opps:3,disc_val:0.7},
+   h2:{pipeline_created:17.5,impl:29,pipe_d:11.0,stalled_opps:3,stalled_val:1.0,disc_opps:2,disc_val:0.5}},
+
+  {id:2,  name:"Partner B", pbm:"PBM Beta",   lastQBR:"2025-07-20",
+   q2:{pipeline_created:7.4,impl:12,pipe_d:5.0,stalled_opps:2,stalled_val:0.7,disc_opps:1,disc_val:0.2},
+   q3:{pipeline_created:7.1,impl:11,pipe_d:4.8,stalled_opps:3,stalled_val:1.1,disc_opps:2,disc_val:0.5},
+   q4:{pipeline_created:6.8,impl:10,pipe_d:4.4,stalled_opps:4,stalled_val:1.4,disc_opps:2,disc_val:0.5},
+   h1:{pipeline_created:14.2,impl:23,pipe_d:9.2,stalled_opps:4,stalled_val:1.4,disc_opps:2,disc_val:0.4},
+   h2:{pipeline_created:13.9,impl:21,pipe_d:9.2,stalled_opps:7,stalled_val:2.5,disc_opps:4,disc_val:1.0}},
+
+  {id:3,  name:"Partner C", pbm:"PBM Alpha",  lastQBR:"2026-01-08",
+   q2:{pipeline_created:5.2,impl:7,pipe_d:2.8,stalled_opps:5,stalled_val:1.8,disc_opps:2,disc_val:0.4},
+   q3:{pipeline_created:6.8,impl:9,pipe_d:3.9,stalled_opps:4,stalled_val:1.4,disc_opps:1,disc_val:0.2},
+   q4:{pipeline_created:7.5,impl:11,pipe_d:4.3,stalled_opps:3,stalled_val:1.0,disc_opps:1,disc_val:0.2},
+   h1:{pipeline_created:10.4,impl:14,pipe_d:5.5,stalled_opps:8,stalled_val:2.8,disc_opps:3,disc_val:0.5},
+   h2:{pipeline_created:14.3,impl:20,pipe_d:8.2,stalled_opps:7,stalled_val:2.4,disc_opps:2,disc_val:0.4}},
+
+  {id:4,  name:"Partner D", pbm:"PBM Gamma",  lastQBR:"2025-12-02",
+   q2:{pipeline_created:8.1,impl:14,pipe_d:5.3,stalled_opps:2,stalled_val:0.6,disc_opps:1,disc_val:0.2},
+   q3:{pipeline_created:9.2,impl:16,pipe_d:6.1,stalled_opps:1,stalled_val:0.3,disc_opps:0,disc_val:0.0},
+   q4:{pipeline_created:9.8,impl:17,pipe_d:6.6,stalled_opps:1,stalled_val:0.2,disc_opps:0,disc_val:0.0},
+   h1:{pipeline_created:16.0,impl:26,pipe_d:10.2,stalled_opps:3,stalled_val:0.9,disc_opps:1,disc_val:0.2},
+   h2:{pipeline_created:19.0,impl:33,pipe_d:12.7,stalled_opps:2,stalled_val:0.5,disc_opps:0,disc_val:0.0}},
+
+  {id:5,  name:"Partner E", pbm:"PBM Beta",   lastQBR:"2025-08-15",
+   q2:{pipeline_created:6.1,impl:9,pipe_d:3.6,stalled_opps:3,stalled_val:1.0,disc_opps:2,disc_val:0.5},
+   q3:{pipeline_created:5.6,impl:8,pipe_d:3.1,stalled_opps:5,stalled_val:1.8,disc_opps:3,disc_val:0.9},
+   q4:{pipeline_created:5.1,impl:7,pipe_d:2.7,stalled_opps:6,stalled_val:2.1,disc_opps:3,disc_val:0.9},
+   h1:{pipeline_created:12.0,impl:18,pipe_d:7.0,stalled_opps:5,stalled_val:1.7,disc_opps:3,disc_val:0.8},
+   h2:{pipeline_created:10.7,impl:15,pipe_d:5.8,stalled_opps:11,stalled_val:3.9,disc_opps:6,disc_val:1.8}},
+
+  {id:6,  name:"Partner F", pbm:"PBM Delta",  lastQBR:"2025-11-20",
+   q2:{pipeline_created:3.8,impl:6,pipe_d:2.2,stalled_opps:4,stalled_val:1.1,disc_opps:2,disc_val:0.4},
+   q3:{pipeline_created:4.3,impl:7,pipe_d:2.6,stalled_opps:3,stalled_val:0.9,disc_opps:2,disc_val:0.4},
+   q4:{pipeline_created:4.8,impl:8,pipe_d:2.9,stalled_opps:2,stalled_val:0.7,disc_opps:1,disc_val:0.2},
+   h1:{pipeline_created:7.5,impl:12,pipe_d:4.2,stalled_opps:7,stalled_val:2.0,disc_opps:3,disc_val:0.6},
+   h2:{pipeline_created:9.1,impl:15,pipe_d:5.5,stalled_opps:5,stalled_val:1.6,disc_opps:3,disc_val:0.6}},
+
+  {id:7,  name:"Partner G", pbm:"PBM Epsilon", lastQBR:"2025-06-10",
+   q2:{pipeline_created:4.2,impl:7,pipe_d:2.7,stalled_opps:4,stalled_val:1.3,disc_opps:2,disc_val:0.4},
+   q3:{pipeline_created:3.8,impl:6,pipe_d:2.2,stalled_opps:6,stalled_val:2.1,disc_opps:4,disc_val:0.8},
+   q4:{pipeline_created:3.4,impl:5,pipe_d:1.8,stalled_opps:7,stalled_val:2.4,disc_opps:5,disc_val:1.0},
+   h1:{pipeline_created:8.2,impl:13,pipe_d:5.1,stalled_opps:7,stalled_val:2.2,disc_opps:4,disc_val:0.8},
+   h2:{pipeline_created:7.2,impl:11,pipe_d:4.0,stalled_opps:13,stalled_val:4.5,disc_opps:9,disc_val:1.8}},
+
+  {id:8,  name:"Partner H", pbm:"PBM Gamma",  lastQBR:"2025-10-30",
+   q2:{pipeline_created:6.9,impl:11,pipe_d:3.9,stalled_opps:3,stalled_val:1.0,disc_opps:1,disc_val:0.2},
+   q3:{pipeline_created:7.6,impl:12,pipe_d:4.4,stalled_opps:2,stalled_val:0.7,disc_opps:1,disc_val:0.2},
+   q4:{pipeline_created:8.2,impl:13,pipe_d:4.9,stalled_opps:2,stalled_val:0.6,disc_opps:1,disc_val:0.2},
+   h1:{pipeline_created:13.7,impl:21,pipe_d:7.6,stalled_opps:5,stalled_val:1.6,disc_opps:2,disc_val:0.4},
+   h2:{pipeline_created:15.8,impl:25,pipe_d:9.3,stalled_opps:4,stalled_val:1.3,disc_opps:2,disc_val:0.4}},
+
+  {id:9,  name:"Partner I", pbm:"PBM Delta",  lastQBR:"2025-12-18",
+   q2:{pipeline_created:4.4,impl:7,pipe_d:2.5,stalled_opps:3,stalled_val:0.8,disc_opps:1,disc_val:0.3},
+   q3:{pipeline_created:4.9,impl:8,pipe_d:2.9,stalled_opps:2,stalled_val:0.6,disc_opps:1,disc_val:0.3},
+   q4:{pipeline_created:5.3,impl:9,pipe_d:3.2,stalled_opps:2,stalled_val:0.5,disc_opps:1,disc_val:0.2},
+   h1:{pipeline_created:8.7,impl:14,pipe_d:4.8,stalled_opps:5,stalled_val:1.3,disc_opps:2,disc_val:0.5},
+   h2:{pipeline_created:10.2,impl:17,pipe_d:6.1,stalled_opps:4,stalled_val:1.1,disc_opps:2,disc_val:0.5}},
+
+  {id:10, name:"Partner J", pbm:"PBM Epsilon", lastQBR:"2025-09-05",
+   q2:{pipeline_created:3.6,impl:6,pipe_d:2.0,stalled_opps:4,stalled_val:1.2,disc_opps:2,disc_val:0.5},
+   q3:{pipeline_created:4.1,impl:7,pipe_d:2.4,stalled_opps:3,stalled_val:0.8,disc_opps:2,disc_val:0.5},
+   q4:{pipeline_created:4.6,impl:8,pipe_d:2.8,stalled_opps:2,stalled_val:0.6,disc_opps:1,disc_val:0.3},
+   h1:{pipeline_created:7.1,impl:12,pipe_d:4.0,stalled_opps:7,stalled_val:2.0,disc_opps:4,disc_val:1.0},
+   h2:{pipeline_created:8.7,impl:15,pipe_d:5.2,stalled_opps:5,stalled_val:1.4,disc_opps:3,disc_val:0.8}},
+
+  {id:11, name:"Partner K", pbm:"PBM Alpha",  lastQBR:"2025-08-28",
+   q2:{pipeline_created:3.9,impl:6,pipe_d:2.3,stalled_opps:3,stalled_val:0.8,disc_opps:2,disc_val:0.3},
+   q3:{pipeline_created:3.5,impl:5,pipe_d:1.9,stalled_opps:4,stalled_val:1.2,disc_opps:3,disc_val:0.6},
+   q4:{pipeline_created:3.2,impl:5,pipe_d:1.7,stalled_opps:5,stalled_val:1.4,disc_opps:3,disc_val:0.6},
+   h1:{pipeline_created:7.7,impl:12,pipe_d:4.5,stalled_opps:5,stalled_val:1.4,disc_opps:3,disc_val:0.6},
+   h2:{pipeline_created:6.7,impl:10,pipe_d:3.6,stalled_opps:9,stalled_val:2.6,disc_opps:6,disc_val:1.2}},
+
+  {id:12, name:"Partner L", pbm:"PBM Delta",  lastQBR:"2025-07-01",
+   q2:{pipeline_created:2.4,impl:4,pipe_d:1.3,stalled_opps:4,stalled_val:1.0,disc_opps:3,disc_val:0.6},
+   q3:{pipeline_created:2.1,impl:3,pipe_d:1.0,stalled_opps:5,stalled_val:1.4,disc_opps:4,disc_val:0.9},
+   q4:{pipeline_created:1.9,impl:3,pipe_d:0.8,stalled_opps:6,stalled_val:1.6,disc_opps:5,disc_val:1.0},
+   h1:{pipeline_created:4.8,impl:7,pipe_d:2.5,stalled_opps:7,stalled_val:1.9,disc_opps:5,disc_val:1.0},
+   h2:{pipeline_created:4.0,impl:6,pipe_d:1.8,stalled_opps:11,stalled_val:3.0,disc_opps:9,disc_val:1.9}},
+
+  {id:13, name:"Partner M", pbm:"PBM Epsilon", lastQBR:"2025-11-10",
+   q2:{pipeline_created:1.5,impl:2,pipe_d:0.6,stalled_opps:4,stalled_val:1.0,disc_opps:3,disc_val:0.6},
+   q3:{pipeline_created:1.8,impl:3,pipe_d:0.8,stalled_opps:3,stalled_val:0.7,disc_opps:2,disc_val:0.4},
+   q4:{pipeline_created:2.1,impl:3,pipe_d:1.0,stalled_opps:2,stalled_val:0.5,disc_opps:2,disc_val:0.3},
+   h1:{pipeline_created:2.9,impl:4,pipe_d:1.1,stalled_opps:7,stalled_val:1.8,disc_opps:5,disc_val:1.0},
+   h2:{pipeline_created:3.9,impl:6,pipe_d:1.8,stalled_opps:5,stalled_val:1.2,disc_opps:4,disc_val:0.7}},
+
+  {id:14, name:"Partner N", pbm:"PBM Beta",   lastQBR:"2025-05-22",
+   q2:{pipeline_created:1.8,impl:3,pipe_d:0.9,stalled_opps:5,stalled_val:1.3,disc_opps:3,disc_val:0.7},
+   q3:{pipeline_created:1.4,impl:2,pipe_d:0.6,stalled_opps:6,stalled_val:1.7,disc_opps:5,disc_val:1.1},
+   q4:{pipeline_created:1.2,impl:2,pipe_d:0.5,stalled_opps:7,stalled_val:2.0,disc_opps:6,disc_val:1.3},
+   h1:{pipeline_created:3.5,impl:5,pipe_d:1.7,stalled_opps:9,stalled_val:2.4,disc_opps:6,disc_val:1.4},
+   h2:{pipeline_created:2.6,impl:4,pipe_d:1.1,stalled_opps:13,stalled_val:3.7,disc_opps:11,disc_val:2.4}},
+];
+
+const PBMS = ["PBM Alpha","PBM Beta","PBM Gamma","PBM Delta","PBM Epsilon"];
+
+// ── PERIOD CONFIG ─────────────────────────────────────────────────────────
+const PERIODS = {
+  q3_q2:{cur:"q3",prv:"q2",label:"Q3 vs Q2"},
+  q4_q3:{cur:"q4",prv:"q3",label:"Q4 vs Q3"},
+  h2_h1:{cur:"h2",prv:"h1",label:"H2 vs H1"},
+};
+let activePeriod = localStorage.getItem("pid_period") || "q3_q2";
+document.getElementById("period-select").value = activePeriod;
+
+function onPeriodChange(){
+  activePeriod = document.getElementById("period-select").value;
+  localStorage.setItem("pid_period", activePeriod);
+  rebuildE();
+  renderAll();
+}
+
+// ── LOCALSTORAGE — ACTION PERSISTENCE ─────────────────────────────────────
+const LS_ACTIONS = "pid_actions_v3";
+function saveActions(){
+  const out={};
+  E.forEach(p=>{ out[p.id]=p.actions.map(a=>a.done); });
+  try{ localStorage.setItem(LS_ACTIONS, JSON.stringify(out)); }catch(e){}
+}
+function applyStoredActions(actions, id){
+  try{
+    const saved=JSON.parse(localStorage.getItem(LS_ACTIONS)||"{}");
+    if(saved[id]) actions.forEach((a,i)=>{ if(saved[id][i]!==undefined) a.done=saved[id][i]; });
+  }catch(e){}
+}
+
+// ── SCORING ENGINE ────────────────────────────────────────────────────────
+function computeScore(partners, period){
+  const maxPC  =Math.max(...partners.map(x=>x[period].pipeline_created));
+  const maxImpl=Math.max(...partners.map(x=>x[period].impl));
+  const maxPD  =Math.max(...partners.map(x=>x[period].pipe_d));
+  const maxSt  =Math.max(...partners.map(x=>x[period].stalled_val));
+  const maxDisc=Math.max(...partners.map(x=>x[period].disc_val));
+  return partners.map(p=>{
+    const d=p[period];
+    const pcScore   =Math.round((d.pipeline_created/maxPC)*25);
+    const implScore =Math.round((d.impl/maxImpl)*20);
+    const pdScore   =Math.round((d.pipe_d/maxPD)*20);
+    const stScore   =Math.round((1-(d.stalled_val/maxSt))*15);
+    const discScore =Math.round((1-(d.disc_val/maxDisc))*10);
+    const total=pcScore+implScore+pdScore+stScore+discScore;
+    return{total,dims:{
+      pc:  {label:"Pipeline Created",           score:pcScore,  max:25,color:"#0066FF",raw:`$${d.pipeline_created}M`},
+      impl:{label:"Implementations",            score:implScore,max:20,color:"#059669",raw:`${d.impl} deals`},
+      pd:  {label:"Pipeline D Phase+",          score:pdScore,  max:20,color:"#7C3AED",raw:`$${d.pipe_d}M`},
+      st:  {label:"Stalled Pipeline (low=good)",score:stScore,  max:15,color:"#D97706",raw:`$${d.stalled_val}M stalled`},
+      disc:{label:"Discontinuation (low=good)", score:discScore,max:10,color:"#DC2626",raw:`${d.disc_opps} opps ($${d.disc_val}M)`},
+    }};
+  });
+}
+
+// ── MOMENTUM ENGINE ───────────────────────────────────────────────────────
+function momentumScore(p, cur, prv){
+  const d=p[cur], dp=p[prv];
+  let score=0;
+
+  // 1. Pipeline created growth (30pts)
+  const pcD=d.pipeline_created-dp.pipeline_created;
+  const pcPct=dp.pipeline_created>0?pcD/dp.pipeline_created:0;
+  score+=pcPct>0.15?30:pcPct>0.05?22:pcPct>=0?14:pcPct>-0.1?6:0;
+
+  // 2. Late-stage (D+) growth (30pts)
+  const pdD=d.pipe_d-dp.pipe_d;
+  const pdPct=dp.pipe_d>0?pdD/dp.pipe_d:0;
+  score+=pdPct>0.15?30:pdPct>0.05?22:pdPct>=0?14:pdPct>-0.1?6:0;
+
+  // 3. Overall score delta (25pts)
+  const sd=p.scoreDelta;
+  score+=sd>8?25:sd>3?18:sd>=0?12:sd>-5?5:0;
+
+  // 4. Stall reduction (15pts)
+  const stD=dp.stalled_val-d.stalled_val; // positive = reduction = good
+  score+=stD>0.5?15:stD>0?10:stD===0?7:stD>-0.5?3:0;
+
+  score=Math.min(100,Math.max(0,score));
+  const label=score>=80?"Accelerating":score>=60?"Stable":score>=40?"Slowing":"Declining";
+  const cls=score>=80?"mom-accel":score>=60?"mom-stable":score>=40?"mom-slow":"mom-decline";
+  const arrow=score>=80?"↑↑":score>=60?"→":score>=40?"↓":"↓↓";
+  return{score,label,cls,arrow};
+}
+
+// ── RISK FORECAST ENGINE ──────────────────────────────────────────────────
+function riskForecast(p, cur, prv){
+  const d=p[cur], dp=p[prv];
+  const signals=[];
+
+  const pcD=d.pipeline_created-dp.pipeline_created;
+  if(pcD<0) signals.push({icon:"📉",text:`Pipeline creation declining ($${Math.abs(pcD).toFixed(1)}M drop)`});
+
+  const stD=d.stalled_val-dp.stalled_val;
+  if(stD>0.3) signals.push({icon:"⏸",text:`Stalled pipeline rising (+$${stD.toFixed(1)}M)`});
+
+  const discD=d.disc_opps-dp.disc_opps;
+  if(discD>0) signals.push({icon:"❌",text:`Discontinuation rate rising (+${discD} opps)`});
+
+  if(p.scoreDelta<-3) signals.push({icon:"📊",text:`Score velocity negative (${p.scoreDelta} pts)`});
+
+  const pdD=d.pipe_d-dp.pipe_d;
+  if(pdD<0) signals.push({icon:"🔻",text:`Late-stage pipeline shrinking ($${Math.abs(pdD).toFixed(1)}M)`});
+
+  if(p.qbr&&p.qbr.daysSince>150) signals.push({icon:"📅",text:`QBR ${Math.round(p.qbr.daysSince/30)}mo overdue — engagement gap`});
+
+  const count=signals.length;
+  const level=count>=3?"High Risk":count>=1?"Moderate Risk":"Low Risk";
+  const cls=count>=3?"risk-high":count>=1?"risk-mod":"risk-low";
+  const bgCls=count>=3?"risk-high-bg":count>=1?"risk-mod-bg":"risk-low-bg";
+  return{level,cls,bgCls,signals};
+}
+
+// ── GROWTH OPPORTUNITY SIGNALS ────────────────────────────────────────────
+function growthSignal(p, cur, prv){
+  const d=p[cur], dp=p[prv];
+  const pcD=d.pipeline_created-dp.pipeline_created;
+  const pdD=d.pipe_d-dp.pipe_d;
+  const implD=d.impl-dp.impl;
+
+  const positives=[pcD>1,pdD>0.5,implD>1,p.scoreDelta>5,d.pipeline_created>7].filter(Boolean).length;
+
+  if(positives>=4) return{label:"Expansion Candidate",cls:"growth-expansion",icon:"🚀",note:"Strong across pipeline, delivery and score trend."};
+  if(positives>=3) return{label:"High Growth Potential",cls:"growth-high",icon:"⚡",note:"Multiple positive signals — consider investment acceleration."};
+  if(positives>=2) return{label:"Momentum Partner",cls:"growth-momentum",icon:"📈",note:"Positive trajectory. Co-sell and joint GTM recommended."};
+  return{label:"Watch & Support",cls:"growth-watch",icon:"👀",note:"Limited positive signals. Review enablement and coverage."};
+}
+
+
+function qbrScore(p, cur, prv, scCur, scPrv){
+  const d=p[cur], dp=p[prv];
+  let score=0; const criteria=[];
+
+  // 1. Pipeline momentum (20pts)
+  const pcD=d.pipeline_created-dp.pipeline_created;
+  score+=pcD>0?20:pcD===0?12:4;
+  criteria.push({label:"Pipeline Momentum",pass:pcD>0,note:pcD>0?`+$${pcD.toFixed(1)}M`:pcD<0?`▼$${Math.abs(pcD).toFixed(1)}M`:"Flat"});
+
+  // 3. Implementations (15pts)
+  const implD=d.impl-dp.impl;
+  score+=d.impl>=8?15:d.impl>=5?10:d.impl>=3?5:1;
+  criteria.push({label:"Implementations",pass:d.impl>=5,note:`${d.impl} go-lives (${implD>=0?"+"+implD:implD} vs prior)`});
+
+  // 4. Pipeline health ratio (15pts)
+  const rr=(d.stalled_val+d.disc_val)/(d.pipeline_created||1);
+  score+=rr<0.1?15:rr<0.2?10:rr<0.35?5:0;
+  criteria.push({label:"Pipeline Health",pass:rr<0.25,note:`${Math.round(rr*100)}% of pipeline at-risk`});
+
+  // 5. Score trend (10pts)
+  const sd=scCur.total-scPrv.total;
+  score+=sd>5?10:sd>=0?7:sd>=-5?3:0;
+  criteria.push({label:"Score Trend",pass:sd>=0,note:sd>0?`+${sd} pts`:sd<0?`${sd} pts`:"Flat"});
+
+  // 6. Last QBR recency (25pts) ← NEW: hard signal, not soft
+  const msPerDay=86400000;
+  const daysSince=p.lastQBR ? Math.floor((Date.now()-new Date(p.lastQBR).getTime())/msPerDay) : 999;
+  const recencyPts=daysSince<=45?25:daysSince<=75?18:daysSince<=105?10:daysSince<=120?4:0;
+  score+=recencyPts;
+  const agoStr=daysSince<999?(daysSince<=60?`${daysSince}d ago`:`${Math.round(daysSince/30)}mo ago`):"No record";
+  const forceDowngrade=daysSince>120; // force from Ready→Due if overdue on recency alone
+  criteria.push({label:"Last QBR",pass:daysSince<=90,note:agoStr+(forceDowngrade?" ⚠ overdue":"")});
+
+  const raw=score>=70?"Ready":score>=45?"Due":"Overdue";
+  const label=forceDowngrade&&raw==="Ready"?"Due":raw;
+  const cls=label==="Ready"?"qbr-ready":label==="Due"?"qbr-due":"qbr-overdue";
+  return{score,label,cls,criteria,daysSince,lastQBR:p.lastQBR||null};
+}
+
+// ── AUTO ACTIONS ──────────────────────────────────────────────────────────
+function buildActions(p, cur, prv){
+  const d=p[cur], dp=p[prv];
+  const pcD=d.pipeline_created-dp.pipeline_created;
+  const periodLabel=PERIODS[activePeriod].label;
+  const actions=[];
+  const qbrLbl=p.qbr?p.qbr.label:"—";
+  const lastStr=p.lastQBR||"No record";
+  actions.push({text:`Schedule QBR — review ${periodLabel} performance. Status: ${qbrLbl}. Last review: ${lastStr}`,priority:"med"});
+  if(d.stalled_val>=1.5) actions.push({text:`Exec escalation: $${d.stalled_val}M (${d.stalled_opps} opps) stalled. Joint call before period-end`,priority:"high"});
+  else if(d.stalled_opps>0) actions.push({text:`Pipeline review: ${d.stalled_opps} stalled opps ($${d.stalled_val}M) — agree advancement plan`,priority:"med"});
+  if(d.disc_opps>=3) actions.push({text:`Discontinuation audit: ${d.disc_opps} opps ($${d.disc_val}M) lost. Review ICP and qualification`,priority:"high"});
+  else if(d.disc_opps>0) actions.push({text:`Review ${d.disc_opps} discontinued opp — update qualification checklist`,priority:"med"});
+  if(pcD<0) actions.push({text:`Pipeline creation down $${Math.abs(pcD).toFixed(1)}M vs prior period. Review territory coverage`,priority:"high"});
+  if(d.pipe_d<1.5) actions.push({text:`Late-stage pipeline thin ($${d.pipe_d}M D+). Run opportunity advancement workshop`,priority:"high"});
+  if(p.qbr&&p.qbr.daysSince>120) actions.push({text:`QBR overdue — last review ${p.qbr.lastQBR||"unknown"}. Schedule immediately regardless of pipeline status`,priority:"high"});
+  return actions.map(a=>({...a,done:false}));
+}
+
+// ── ENRICH DATA ───────────────────────────────────────────────────────────
+let E=[];
+function rebuildE(){
+  const {cur,prv}=PERIODS[activePeriod];
+  const scsCur=computeScore(PARTNERS,cur);
+  const scsPrv=computeScore(PARTNERS,prv);
+  E.length=0;
+  PARTNERS.forEach((p,i)=>{
+    const sc=scsCur[i], sp=scsPrv[i];
+    const row={...p, sc, sp, scoreDelta:sc.total-sp.total, qbr:null, mom:null, risk:null, growth:null, actions:null};
+    row.qbr=qbrScore(row,cur,prv,sc,sp);
+    row.mom=momentumScore(row,cur,prv);
+    row.risk=riskForecast(row,cur,prv);
+    row.growth=growthSignal(row,cur,prv);
+    const actions=buildActions(row,cur,prv);
+    applyStoredActions(actions,p.id);
+    row.actions=actions;
+    E.push(row);
+  });
+  E.sort((a,b)=>b.sc.total-a.sc.total);
+}
+const ST={detailId:null,riskOnly:false,improvedOnly:false};
+rebuildE();
+
+// ── HELPERS ───────────────────────────────────────────────────────────────
+function scoreCls(s){return s>=75?"sp-hot":s>=55?"sp-warm":s>=35?"sp-low":"sp-risk";}
+function scoreLbl(s){return s>=75?"Strong":s>=55?"Moderate":s>=35?"Watch":"At-Risk";}
+function priCls(pr){return pr==="high"?"ap-high":pr==="med"?"ap-med":"ap-low-p";}
+function deltaBadge(val,suffix,invertGood){
+  if(Math.abs(val)<0.01) return `<span class="delta delta-flat">= flat</span>`;
+  const isGood=invertGood?val<0:val>0;
+  const arrow=val>0?"↑":"↓";
+  const cls=isGood?"delta-up":"delta-dn";
+  const fmt=suffix==="$"?`${arrow}$${Math.abs(val).toFixed(1)}M`:`${arrow}${Math.abs(val)}${suffix}`;
+  return `<span class="delta ${cls}">${fmt}</span>`;
+}
+function getCurPrv(){return PERIODS[activePeriod];}
+function curData(p){return p[getCurPrv().cur];}
+function prvData(p){return p[getCurPrv().prv];}
+
+// ── KPI STRIP ─────────────────────────────────────────────────────────────
+function renderKPI(){
+  const {cur,prv,label}=getCurPrv();
+  const sumF=(period,f)=>PARTNERS.reduce((s,p)=>s+f(p[period]),0);
+  const tPC =sumF(cur,d=>d.pipeline_created), tPC2=sumF(prv,d=>d.pipeline_created);
+  const tPD =sumF(cur,d=>d.pipe_d),            tPD2=sumF(prv,d=>d.pipe_d);
+  const tSt =sumF(cur,d=>d.stalled_val),       tSt2=sumF(prv,d=>d.stalled_val);
+  const tDi =sumF(cur,d=>d.disc_val),           tDi2=sumF(prv,d=>d.disc_val);
+  const avgMom=Math.round(E.reduce((s,p)=>s+(p.mom?p.mom.score:0),0)/(E.length||1));
+  const [_,prvLbl]=label.split(" vs ");
+  const accel=E.filter(p=>p.mom&&p.mom.score>=80).length;
+  document.getElementById("kpi-strip").innerHTML=`
+    <div class="kpi-card kc-blue"><div class="kpi-lbl">Pipeline Created</div><div class="kpi-val">$${tPC.toFixed(1)}M</div><div class="kpi-sub">${prvLbl}: $${tPC2.toFixed(1)}M</div><div class="kpi-trend ${tPC>=tPC2?"trend-up":"trend-dn"}">${tPC>=tPC2?"+":""}$${(tPC-tPC2).toFixed(1)}M</div></div>
+    <div class="kpi-card kc-purple"><div class="kpi-lbl">Pipeline D Phase+</div><div class="kpi-val">$${tPD.toFixed(1)}M</div><div class="kpi-sub">${prvLbl}: $${tPD2.toFixed(1)}M</div><div class="kpi-trend ${tPD>=tPD2?"trend-up":"trend-dn"}">${tPD>=tPD2?"+":""}$${(tPD-tPD2).toFixed(1)}M</div></div>
+    <div class="kpi-card kc-amber"><div class="kpi-lbl">Stalled Pipeline</div><div class="kpi-val">$${tSt.toFixed(1)}M</div><div class="kpi-sub">${prvLbl}: $${tSt2.toFixed(1)}M</div><div class="kpi-trend ${tSt<=tSt2?"trend-up":"trend-dn"}">${tSt<=tSt2?"▼":"▲"}$${Math.abs(tSt-tSt2).toFixed(1)}M</div></div>
+    <div class="kpi-card kc-red"><div class="kpi-lbl">Discontinued</div><div class="kpi-val">$${tDi.toFixed(1)}M</div><div class="kpi-sub">${prvLbl}: $${tDi2.toFixed(1)}M</div><div class="kpi-trend ${tDi<=tDi2?"trend-up":"trend-dn"}">${tDi<=tDi2?"▼":"▲"}$${Math.abs(tDi-tDi2).toFixed(1)}M</div></div>
+    <div class="kpi-card kc-green"><div class="kpi-lbl">Avg Momentum Score</div><div class="kpi-val">${avgMom}</div><div class="kpi-sub">${accel} partner${accel!==1?"s":""} accelerating</div><div class="kpi-trend ${avgMom>=60?"trend-up":avgMom>=40?"trend-flat":"trend-dn"}">${avgMom>=80?"↑↑ Hot":avgMom>=60?"→ Stable":avgMom>=40?"↓ Slowing":"↓↓ Risk"}</div></div>
+    <div class="kpi-card kc-teal"><div class="kpi-lbl">High Risk Partners</div><div class="kpi-val">${E.filter(p=>p.risk&&p.risk.signals.length>=3).length}</div><div class="kpi-sub">of ${E.length} partners flagged</div><div class="kpi-trend ${E.filter(p=>p.risk&&p.risk.signals.length>=3).length===0?"trend-up":"trend-dn"}">${E.filter(p=>p.risk&&p.risk.signals.length>=3).length===0?"✓ All clear":"⚠ Needs attention"}</div></div>`;
+}
+
+// ── LEADERBOARD ───────────────────────────────────────────────────────────
+const GT="36px 155px 110px 1fr 1fr 1fr 1fr 90px";
+document.getElementById("lb-header").style.gridTemplateColumns=GT;
+document.getElementById("lb-header").innerHTML=["#","Partner","PBM","Pipeline","Pipe D+","Stalled","Disc.",,"Score"].map(h=>`<span>${h}</span>`).join("");
+const pbmSel=document.getElementById("f-pbm");
+PBMS.forEach(pb=>{const o=document.createElement("option");o.textContent=pb;pbmSel.appendChild(o);});
+
+function bar(val,max,color){return `<div class="mc-bar"><div class="mc-fill" style="width:${Math.round((val/max)*100)}%;background:${color};"></div></div>`;}
+
+function getFiltered(){
+  const pbm=document.getElementById("f-pbm").value;
+  const sort=document.getElementById("f-sort").value;
+  let rows=[...E];
+  if(pbm!=="All PBMs") rows=rows.filter(p=>p.pbm===pbm);
+  if(ST.riskOnly)      rows=rows.filter(p=>p.sc.total<55);
+  if(ST.improvedOnly)  rows=rows.filter(p=>p.scoreDelta>0);
+  const {cur,prv}=getCurPrv();
+  if(sort==="score_delta")       rows.sort((a,b)=>b.scoreDelta-a.scoreDelta);
+  else if(sort==="pipeline_created") rows.sort((a,b)=>b[cur].pipeline_created-a[cur].pipeline_created);
+  else if(sort==="pipeline_d")   rows.sort((a,b)=>b[cur].pipe_d-a[cur].pipe_d);
+  else if(sort==="stalled")      rows.sort((a,b)=>b[cur].stalled_val-a[cur].stalled_val);
+  else if(sort==="disc")         rows.sort((a,b)=>b[cur].disc_val-a[cur].disc_val);
+  else if(sort==="qbr")          rows.sort((a,b)=>b.qbr.score-a.qbr.score);
+  else if(sort==="momentum")     rows.sort((a,b)=>(b.mom?b.mom.score:0)-(a.mom?a.mom.score:0));
+  else rows.sort((a,b)=>b.sc.total-a.sc.total);
+  return rows;
+}
+
+function renderRankings(){
+  const rows=getFiltered();
+  const {cur,prv,label}=getCurPrv();
+  const maxPC =Math.max(...rows.map(p=>p[cur].pipeline_created),0.1);
+  const maxPD =Math.max(...rows.map(p=>p[cur].pipe_d),0.1);
+  const maxSt =Math.max(...rows.map(p=>p[cur].stalled_val),0.1);
+  const maxDi =Math.max(...rows.map(p=>p[cur].disc_val),0.1);
+  document.getElementById("ranking-meta").textContent=`${rows.length} partners · ${label}`;
+  document.getElementById("lb-body").innerHTML=rows.map((p,i)=>{
+    const rank=i+1, sc=p.sc.total;
+    const d=p[cur], dp=p[prv];
+    const rCls=rank===1?"r1":rank===2?"r2":rank===3?"r3":"rn";
+    const pcD=d.pipeline_created-dp.pipeline_created;
+      const pdD=d.pipe_d-dp.pipe_d;
+    const stD=d.stalled_val-dp.stalled_val;
+    const discD=d.disc_opps-dp.disc_opps;
+    const sDir=p.scoreDelta>0?"↑":p.scoreDelta<0?"↓":"=";
+    const sCol=p.scoreDelta>0?"var(--green)":p.scoreDelta<0?"var(--red)":"var(--text3)";
+    return `<div class="lb-row${ST.detailId===p.id?" selected":""}" style="grid-template-columns:${GT};" onclick="openDetail(${p.id})">
+      <div><span class="rank-badge ${rCls}">${rank}</span></div>
+      <div><div class="partner-name">${p.name}</div><div class="partner-sub" style="color:${sCol};font-weight:700;font-size:10px;">${sDir} ${Math.abs(p.scoreDelta)} pts</div></div>
+      <div><span class="pbm-chip">👤 ${p.pbm}</span><div style="margin-top:4px;"><span class="qbr-badge ${p.qbr.cls}">${p.qbr.label}</span></div></div>
+      <div class="metric-cell"><span class="mc-val" style="color:#0066FF;">$${d.pipeline_created}M ${deltaBadge(pcD,"$",false)}</span>${bar(d.pipeline_created,maxPC,"#0066FF")}</div>
+      <div class="metric-cell"><span class="mc-val" style="color:#7C3AED;">$${d.pipe_d}M ${deltaBadge(pdD,"$",false)}</span>${bar(d.pipe_d,maxPD,"#7C3AED")}</div>
+      <div class="metric-cell"><span class="mc-val" style="color:${d.stalled_val>=1.5?"#DC2626":"#D97706"};">$${d.stalled_val}M ${deltaBadge(stD,"$",true)}</span>${bar(d.stalled_val,maxSt,d.stalled_val>=1.5?"#DC2626":"#D97706")}</div>
+      <div class="metric-cell"><span class="mc-val" style="color:${d.disc_opps>=3?"#DC2626":"#D97706"};">${d.disc_opps} opps ${deltaBadge(discD,"",true)}</span>${bar(d.disc_val,maxDi,d.disc_opps>=3?"#DC2626":"#D97706")}</div>
+      <div style="display:flex;flex-direction:column;align-items:flex-start;gap:3px;"><span class="mom-badge ${p.mom?p.mom.cls:"mom-stable"}">${p.mom?p.mom.arrow:""} ${p.mom?p.mom.score:"-"}</span><span style="font-size:8px;color:var(--text3);">${p.mom?p.mom.label:""}</span></div>
+      <div><span class="score-pill ${scoreCls(sc)}">${sc}</span></div>
+    </div>`;
+  }).join("");
+}
+
+// ── DETAIL PANEL ──────────────────────────────────────────────────────────
+function openDetail(id){
+  ST.detailId=id;
+  const p=E.find(x=>x.id===id);
+  const {cur,prv,label}=getCurPrv();
+  const d=p[cur], dp=p[prv], sc=p.sc.total;
+
+  document.getElementById("dp-name").textContent=p.name;
+  document.getElementById("dp-meta-row").innerHTML=`<span class="pbm-chip">👤 ${p.pbm}</span>`;
+
+  const scorEl=document.getElementById("dp-score");
+  scorEl.textContent=sc;
+  scorEl.style.color=sc>=75?"#059669":sc>=55?"#D97706":sc>=35?"#8A94A6":"#DC2626";
+
+  const dDir=p.scoreDelta>0?"↑":p.scoreDelta<0?"↓":"=";
+  const dCol=p.scoreDelta>0?"var(--green)":p.scoreDelta<0?"var(--red)":"var(--text3)";
+  const [curLbl,prvLbl]=label.split(" vs ");
+  document.getElementById("dp-score-delta").innerHTML=`<span style="color:${dCol};font-weight:700;">${dDir} ${Math.abs(p.scoreDelta)} pts vs ${prvLbl}</span> <span style="color:var(--text3);font-size:10px;">(${prvLbl}: ${p.sp.total})</span>`;
+
+  const rank=E.findIndex(x=>x.id===id)+1;
+  document.getElementById("dp-rank-tag").innerHTML=`<span style="background:${sc>=75?"var(--green-lt)":sc>=55?"var(--amber-lt)":"var(--red-lt)"};color:${sc>=75?"var(--green)":sc>=55?"var(--amber)":"var(--red)"};border:1px solid ${sc>=75?"rgba(5,150,105,.25)":sc>=55?"rgba(215,119,6,.25)":"rgba(220,38,38,.25)"};padding:5px 12px;border-radius:7px;font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:800;display:inline-block;">#${rank} · ${scoreLbl(sc)}</span>`;
+  document.getElementById("dp-qbr-tag").innerHTML=`<span class="qbr-badge ${p.qbr.cls}">QBR: ${p.qbr.label}</span>`;
+  document.getElementById("dp-mom-tag").innerHTML=`<span class="mom-badge ${p.mom?p.mom.cls:"mom-stable"}">${p.mom?p.mom.arrow:""} Momentum: ${p.mom?p.mom.score:"-"}</span>`;
+
+  // Intelligence Summary
+  const rf=p.risk, gs=p.growth, mom=p.mom;
+  const riskCol=rf&&rf.signals.length>=3?"var(--red)":rf&&rf.signals.length>=1?"var(--amber)":"var(--green)";
+  document.getElementById("dp-intel").innerHTML=`
+    <div class="intel-card">
+      <div class="intel-title">⚡ AI PARTNER INTELLIGENCE · ${label.toUpperCase()}</div>
+      <div class="intel-row"><span class="intel-lbl">Momentum</span><span class="intel-val"><span class="mom-badge ${mom?mom.cls:"mom-stable"}" style="font-size:10px;">${mom?mom.arrow:""} ${mom?mom.label:"-"} (${mom?mom.score:"-"}/100)</span></span></div>
+      <div class="intel-row"><span class="intel-lbl">Risk Forecast</span><span class="intel-val" style="color:${riskCol};font-weight:700;">${rf?rf.level:"—"} ${rf&&rf.signals.length>0?"· "+rf.signals.length+" signal"+(rf.signals.length>1?"s":""):""}</span></div>
+      <div class="intel-row"><span class="intel-lbl">Growth Signal</span><span class="intel-val"><span class="growth-badge ${gs?gs.cls:"growth-watch"}" style="padding:2px 8px;font-size:10px;">${gs?gs.icon+" "+gs.label:"—"}</span></span></div>
+      <div class="intel-row" style="margin-bottom:0;"><span class="intel-lbl">Next Action</span><span class="intel-val">${rf&&rf.signals.length>=3?"🔴 Immediate exec escalation required":p.qbr&&p.qbr.daysSince>120?"📅 Schedule QBR — overdue":"📊 "+label+" review with PBM"}</span></div>
+    </div>
+    ${rf&&rf.signals.length>0?`<div class="risk-card ${rf.bgCls}"><div style="font-size:10px;font-weight:800;color:inherit;margin-bottom:6px;letter-spacing:.04em;text-transform:uppercase;">90-Day Risk Signals</div>${rf.signals.map(s=>`<div style="display:flex;align-items:center;gap:6px;font-size:11px;color:var(--text2);margin-bottom:4px;">${s.icon} ${s.text}</div>`).join("")}</div>`:""}
+    ${gs?`<div style="padding:8px 10px;border-radius:7px;background:var(--green-lt);border:1px solid rgba(5,150,105,.15);"><span class="growth-badge ${gs.cls}" style="margin-bottom:4px;display:inline-flex;">${gs.icon} ${gs.label}</span><div style="font-size:10px;color:var(--text3);margin-top:4px;">${gs.note}</div></div>`:""}`;
+
+  // Score Trend Visualization (Q2 → Q3 → Q4)
+  const trendPeriods=[["q2","Q2"],["q3","Q3"],["q4","Q4"]];
+  const allScores=computeScore(PARTNERS,"q2").concat(computeScore(PARTNERS,"q3")).concat(computeScore(PARTNERS,"q4"));
+  // Compute partner score across available periods
+  const trendData=trendPeriods.map(([pk,lbl])=>{
+    const sc2=computeScore([p],pk)[0];
+    return{lbl,score:sc2?sc2.total:0};
+  });
+  const maxTrend=Math.max(...trendData.map(t=>t.score),1);
+  document.getElementById("dp-trend-viz").innerHTML=`
+    <div style="display:flex;align-items:flex-end;gap:8px;height:60px;padding:0 4px;">
+      ${trendData.map((t,i)=>{
+        const ht=Math.max(Math.round((t.score/100)*56),4);
+        const isActive=(i===trendData.length-1);
+        const col=t.score>=75?"#059669":t.score>=55?"#D97706":"#DC2626";
+        return `<div style="display:flex;flex-direction:column;align-items:center;gap:3px;flex:1;">
+          <div style="font-family:'JetBrains Mono',monospace;font-size:9px;font-weight:700;color:${col};">${t.score}</div>
+          <div style="width:100%;height:${ht}px;background:${isActive?col:col+"40"};border-radius:4px 4px 0 0;border:${isActive?"2px solid "+col:"none"};transition:height .3s;"></div>
+          <div style="font-size:9px;color:${isActive?"var(--text)":"var(--text3)"};font-weight:${isActive?"700":"500"};">${t.lbl}</div>
+        </div>`;
+      }).join("")}
+    </div>
+    <div style="display:flex;align-items:center;gap:6px;margin-top:6px;font-size:10px;color:var(--text3);">
+      <div style="height:2px;flex:1;background:linear-gradient(90deg,${trendData.map(t=>t.score>=75?"#059669":t.score>=55?"#D97706":"#DC2626").join(",")});border-radius:1px;"></div>
+      <span>Score trend across periods</span>
+    </div>`;
+
+  const invertKeys=["st","disc"];
+  document.getElementById("dp-dims").innerHTML=Object.entries(p.sc.dims).map(([k,d3])=>{
+    const d2=p.sp.dims[k], dSc=d3.score-d2.score, isInv=invertKeys.includes(k);
+    const dCol2=dSc===0?"var(--text3)":(isInv?dSc<0?"var(--green)":"var(--red)":dSc>0?"var(--green)":"var(--red)");
+    return `<div class="dp-dim-item">
+      <div class="dp-dim-top"><span class="dp-dim-lbl">${d3.label}</span><span class="dp-dim-val">${d3.score}/${d3.max} <span style="color:${dCol2};font-size:10px;">${dSc>0?"↑":dSc<0?"↓":"="}${Math.abs(dSc)}</span> <span style="color:var(--text3);font-weight:400;font-size:10px;">${d3.raw}</span></span></div>
+      <div class="dp-dim-track"><div class="dp-dim-fill" style="width:${Math.round((d3.score/d3.max)*100)}%;background:${d3.color};"></div></div>
+    </div>`;
+  }).join("");
+
+  const alerts=buildAlertList(p);
+  document.getElementById("dp-alert-items").innerHTML=alerts.length
+    ? alerts.map(a=>`<div class="dp-alert-item"><div style="font-size:14px;flex-shrink:0;">${a.icon}</div><div style="font-size:11px;color:var(--text2);line-height:1.5;"><strong>${a.title}</strong><br>${a.body}</div></div>`).join("")
+    : `<div class="dp-alert-item"><div style="font-size:14px;flex-shrink:0;">✅</div><div style="font-size:11px;color:var(--text2);"><strong>No critical alerts</strong><br>Partner health within normal parameters.</div></div>`;
+
+  renderActions(id);
+  document.getElementById("detail-panel").classList.add("open");
+  renderRankings();
+}
+
+function renderActions(id){
+  const p=E.find(x=>x.id===id);
+  const crmActions=["QBR","Schedule","Review","Pipeline","outreach"];
+  document.getElementById("dp-actions").innerHTML=`
+    <div class="crm-sync" style="margin-bottom:10px;display:inline-flex;">🔗 CRM Sync Enabled &nbsp;·&nbsp; SAP CRM</div>
+    ${p.actions.map((a,i)=>{
+      const dc=a.done?" done":"", cc=a.done?" checked":"";
+      const tick=a.done?'<svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4l3 3 5-6" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>':"";
+      const isCRM=crmActions.some(kw=>a.text.includes(kw));
+      return `<div class="action-item${dc}"><div class="action-cb${cc}" onclick="toggleAction(${id},${i})">${tick}</div><div class="action-text${dc}">${a.text}</div><div style="display:flex;gap:4px;align-items:center;flex-shrink:0;">${isCRM?'<span class="crm-sync" style="font-size:8px;padding:1px 5px;">CRM</span>':""}  <span class="action-priority ${priCls(a.priority)}">${a.priority.toUpperCase()}</span></div></div>`;
+    }).join("")}`;
+}
+
+function toggleAction(pid,idx){
+  E.find(x=>x.id===pid).actions[idx].done^=true;
+  saveActions();
+  renderActions(pid);
+}
+
+function closeDetail(){ST.detailId=null;document.getElementById("detail-panel").classList.remove("open");renderRankings();}
+function toggleRisk(){ST.riskOnly=!ST.riskOnly;document.getElementById("tog-risk").classList.toggle("on",ST.riskOnly);document.getElementById("tog-risk").textContent=ST.riskOnly?"At-Risk: ON":"Show At-Risk Only";renderRankings();}
+function toggleImproved(){ST.improvedOnly=!ST.improvedOnly;document.getElementById("tog-improved").classList.toggle("on",ST.improvedOnly);document.getElementById("tog-improved").textContent=ST.improvedOnly?"Improved: ON":"Show Improved Only";renderRankings();}
+
+function buildAlertList(p){
+  const {cur,prv}=getCurPrv();
+  const d=p[cur], dp=p[prv], alerts=[];
+  const pcD=d.pipeline_created-dp.pipeline_created;
+  const stD=d.stalled_val-dp.stalled_val;
+  if(d.stalled_val>=1.5) alerts.push({icon:"🟠",title:"Pipeline Risk Alert — Stalled",body:`$${d.stalled_val}M (${d.stalled_opps} opps) stalled. ${stD>0?"Rising +$"+stD.toFixed(1)+"M vs prior.":""}  Exec escalation required.`});
+  if(d.disc_opps>=3)     alerts.push({icon:"🔴",title:"Discontinuation Spike",body:`${d.disc_opps} opps ($${d.disc_val}M) discontinued. Review ICP and deal qualification.`});
+  if(pcD<0)              alerts.push({icon:"📉",title:"Pipeline Risk Alert — Declining",body:`Pipeline creation down $${Math.abs(pcD).toFixed(1)}M vs prior. Territory coverage review recommended.`});
+  if(d.pipe_d<1.5)       alerts.push({icon:"⚠️",title:"Pipeline Risk Alert — Thin Late-Stage",body:`Only $${d.pipe_d}M in D phase+. Run opportunity advancement workshop.`});
+  if(p.qbr&&p.qbr.daysSince>120) alerts.push({icon:"📅",title:"QBR Overdue",body:`Last review ${p.qbr.daysSince<999?p.qbr.daysSince+"d ago":"not recorded"}. Schedule immediately — engagement gap risk.`});
+  if(p.mom&&p.mom.score<40) alerts.push({icon:"📊",title:"Momentum Decline",body:`Partner momentum score ${p.mom.score}/100 (${p.mom.label}). Pipeline and score trajectory both negative.`});
+  return alerts;
+}
+
+// ── QBR VIEW ──────────────────────────────────────────────────────────────
+function renderQBR(){
+  const sorted=[...E].sort((a,b)=>b.qbr.score-a.qbr.score);
+  document.getElementById("qbr-grid").innerHTML=sorted.map(p=>{
+    const {cur}=getCurPrv(); const d=p[cur];
+    const recencyStr=p.lastQBR?(p.qbr.daysSince<=60?`${p.qbr.daysSince}d ago`:`${Math.round(p.qbr.daysSince/30)}mo ago`):"No record";
+    const col=p.qbr.cls==="qbr-ready"?"#059669":p.qbr.cls==="qbr-due"?"#D97706":"#DC2626";
+    return `<div class="an-card" style="border-top:3px solid ${col};">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px;">
+        <div>
+          <div style="font-size:14px;font-weight:800;color:var(--text);">${p.name}</div>
+          <div style="margin-top:3px;display:flex;gap:6px;align-items:center;flex-wrap:wrap;">
+            <span class="pbm-chip">👤 ${p.pbm}</span>
+            <span class="qbr-badge ${p.qbr.cls}">${p.qbr.label}</span>
+            <span style="font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--text3);">Last: ${recencyStr}</span>
+          </div>
+        </div>
+        <div style="text-align:right;flex-shrink:0;">
+          <div style="font-family:'JetBrains Mono',monospace;font-size:24px;font-weight:800;color:${col};">${p.qbr.score}</div>
+          <div style="font-size:9px;color:var(--text3);font-weight:700;letter-spacing:.06em;">/ 100</div>
+        </div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:5px;">
+        ${p.qbr.criteria.map(c=>`<div style="display:flex;align-items:center;gap:8px;">
+          <div style="width:8px;height:8px;border-radius:50%;background:${c.pass?"var(--green)":"var(--red)"};flex-shrink:0;"></div>
+          <span style="font-size:11px;font-weight:600;color:var(--text);flex:1;">${c.label}</span>
+          <span style="font-family:'JetBrains Mono',monospace;font-size:10px;color:${c.pass?"var(--green)":"var(--red)"};">${c.note}</span>
+        </div>`).join("")}
+      </div>
+      <div style="margin-top:10px;padding-top:8px;border-top:1px solid var(--border);font-size:10px;color:var(--text3);">
+        Score: <strong style="color:var(--text);">${p.sc.total}/100</strong> &nbsp;·&nbsp;
+        QoQ: <strong style="color:${p.scoreDelta>=0?"var(--green)":"var(--red)"};">${p.scoreDelta>=0?"+":""}${p.scoreDelta} pts</strong> &nbsp;·&nbsp;
+      </div>
+    </div>`;
+  }).join("");
+}
+
+// ── PIPELINE VIEW ─────────────────────────────────────────────────────────
+function renderPipeline(){
+  const {cur,prv,label}=getCurPrv();
+  const [curLbl,prvLbl]=label.split(" vs ");
+  const stages=[
+    {label:"Stage A–B (Early)", color:"#94A3B8",cv:E.reduce((s,p)=>s+p[cur].pipeline_created*0.3,0),pv:E.reduce((s,p)=>s+p[prv].pipeline_created*0.3,0)},
+    {label:"Stage C",           color:"#D97706",cv:E.reduce((s,p)=>s+p[cur].pipeline_created*0.22,0),pv:E.reduce((s,p)=>s+p[prv].pipeline_created*0.22,0)},
+    {label:"Stage D+ (Late)",   color:"#7C3AED",cv:E.reduce((s,p)=>s+p[cur].pipe_d,0),pv:E.reduce((s,p)=>s+p[prv].pipe_d,0)},
+    {label:"Stalled",           color:"#F59E0B",cv:E.reduce((s,p)=>s+p[cur].stalled_val,0),pv:E.reduce((s,p)=>s+p[prv].stalled_val,0)},
+    {label:"Discontinued",      color:"#DC2626",cv:E.reduce((s,p)=>s+p[cur].disc_val,0),pv:E.reduce((s,p)=>s+p[prv].disc_val,0)},
+    {label:"Implemented",       color:"#059669",cv:E.reduce((s,p)=>s+p[cur].impl*0.45,0),pv:E.reduce((s,p)=>s+p[prv].impl*0.45,0)},
+  ];
+  document.getElementById("stage-cards").innerHTML=stages.map(st=>{
+    const delta=st.cv-st.pv, dCol=delta>0?"var(--green)":delta<0?"var(--red)":"var(--text3)";
+    return`<div class="an-card" style="border-top:3px solid ${st.color};">
+      <div class="an-title">${st.label}</div>
+      <div style="font-size:24px;font-weight:800;letter-spacing:-.04em;color:${st.color};font-family:'JetBrains Mono',monospace;">$${st.cv.toFixed(1)}M</div>
+      <div style="font-size:11px;color:var(--text3);margin-top:3px;">${prvLbl}: $${st.pv.toFixed(1)}M &nbsp;<span style="color:${dCol};font-weight:700;">${delta>0?"↑":"↓"}$${Math.abs(delta).toFixed(1)}M</span></div>
+    </div>`;
+  }).join("");
+
+  const stalled=[...E].sort((a,b)=>b[cur].stalled_val-a[cur].stalled_val);
+  document.getElementById("stall-meta").textContent=`${stalled.length} partners`;
+  document.getElementById("stall-body").innerHTML=stalled.map(p=>{
+    const d=p[cur], dp=p[prv];
+    return`<div class="lb-row" style="grid-template-columns:160px 1fr 1fr 1fr 1fr 110px 100px;display:grid;align-items:center;">
+      <div><div class="partner-name">${p.name}</div></div>
+      <div style="font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--amber);">${d.stalled_opps} ${deltaBadge(d.stalled_opps-dp.stalled_opps,"",true)}</div>
+      <div style="font-family:'JetBrains Mono',monospace;font-size:12px;color:${d.stalled_val>=1.5?"var(--red)":"var(--amber)"};">$${d.stalled_val}M ${deltaBadge(d.stalled_val-dp.stalled_val,"$",true)}</div>
+      <div style="font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--red);">${d.disc_opps} ${deltaBadge(d.disc_opps-dp.disc_opps,"",true)}</div>
+      <div style="font-family:'JetBrains Mono',monospace;font-size:12px;color:${d.disc_val>=0.8?"var(--red)":"var(--amber)"};">$${d.disc_val}M ${deltaBadge(d.disc_val-dp.disc_val,"$",true)}</div>
+      <div><span class="pbm-chip">👤 ${p.pbm}</span></div>
+      <div><span class="alert-pill ${d.stalled_val>=1.5||d.disc_opps>=3?"ap-disc":"ap-stall"}">${d.stalled_val>=1.5||d.disc_opps>=3?"Escalate":"Review"}</span></div>
+    </div>`;
+  }).join("");
+}
+
+// ── ALERTS VIEW ───────────────────────────────────────────────────────────
+function buildAllAlerts(){
+  const {cur,prv}=getCurPrv();
+  const all=[];
+  E.forEach(p=>{
+    const d=p[cur], dp=p[prv], pcD=d.pipeline_created-dp.pipeline_created;
+    if(d.disc_opps>=4)        all.push({sev:"high",p,icon:"🔴",title:`${p.name} — High Discontinuation`,sub:`${d.disc_opps} opps ($${d.disc_val}M). PBM: ${p.pbm}.`,actions:["Schedule Partner Review","Review Deal Qualification"]});
+    if(d.stalled_val>=1.5)   all.push({sev:"high",p,icon:"🟠",title:`${p.name} — Critical Stalled Pipeline`,sub:`$${d.stalled_val}M stalled. PBM: ${p.pbm}. Exec escalation required.`,actions:["Exec Escalation Call","Joint Pipeline Review"]});
+    if(pcD<-0.5)             all.push({sev:"high",p,icon:"📉",title:`${p.name} — Pipeline Declining`,sub:`Down $${Math.abs(pcD).toFixed(1)}M. PBM: ${p.pbm}.`,actions:["Account Coverage Review"]});
+    if(p.qbr&&p.qbr.daysSince>120) all.push({sev:"high",p,icon:"📅",title:`${p.name} — QBR Overdue`,sub:`Last review ${p.qbr.daysSince<999?p.qbr.daysSince+"d ago":"not recorded"}. PBM: ${p.pbm}.`,actions:["Schedule QBR Now"]});
+    if(d.pipe_d<1.5)         all.push({sev:"med",p,icon:"📊",title:`${p.name} — Thin Late-Stage Pipeline`,sub:`$${d.pipe_d}M in D phase+. PBM: ${p.pbm}.`,actions:["Opportunity Advancement Workshop"]});
+    if(p.mom&&p.mom.score<40) all.push({sev:"med",p,icon:"📉",title:`${p.name} — Momentum Decline`,sub:`Momentum score ${p.mom.score}/100 (${p.mom.label}). Pipeline and score both declining. PBM: ${p.pbm}.`,actions:["Momentum Recovery Plan","PBM Coaching Session"]});
+  });
+  all.sort((a,b)=>a.sev==="high"&&b.sev!=="high"?-1:b.sev==="high"&&a.sev!=="high"?1:0);
+  return all;
+}
+function renderAlerts(){
+  const alerts=buildAllAlerts();
+  document.getElementById("alert-count").textContent=alerts.length;
+  document.getElementById("alerts-meta").textContent=`${alerts.filter(a=>a.sev==="high").length} high · ${alerts.filter(a=>a.sev==="med").length} medium`;
+  document.getElementById("alerts-grid").innerHTML=alerts.map(a=>`
+    <div class="alert-card">
+      <div class="ac-icon">${a.icon}</div>
+      <div class="ac-body">
+        <div class="ac-title">${a.title}</div>
+        <div class="ac-sub">${a.sub}</div>
+        <div class="ac-pills">
+          <span class="pbm-chip">👤 ${a.p.pbm}</span>
+          ${a.actions.map(ac=>`<span style="padding:2px 8px;border-radius:4px;font-size:9px;font-weight:700;background:var(--blue-lt);color:var(--blue);border:1px solid var(--blue-mid);">${ac}</span>`).join("")}
+        </div>
+      </div>
+      <div class="ac-right"><span class="severity-badge ${a.sev==="high"?"sev-high":"sev-med"}">${a.sev.toUpperCase()}</span></div>
+    </div>`).join("");
+}
+
+// ── ANALYTICS ─────────────────────────────────────────────────────────────
+const COLORS=["#0066FF","#059669","#D97706","#7C3AED","#DC2626","#0891B2"];
+function renderAnalytics(){
+  const {cur}=getCurPrv();
+  const sdist=[{l:"Strong (75-100)",min:75,max:100,c:"#059669"},{l:"Moderate (55-74)",min:55,max:74,c:"#D97706"},{l:"Watch (35-54)",min:35,max:54,c:"#8A94A6"},{l:"At-Risk (<35)",min:0,max:34,c:"#DC2626"}];
+  const pData=PBMS.map((pbm,i)=>({name:pbm,color:COLORS[i%COLORS.length],pc:PARTNERS.filter(p=>p.pbm===pbm).reduce((s,p)=>s+p[cur].pipeline_created,0),count:PARTNERS.filter(p=>p.pbm===pbm).length,avg:Math.round(E.filter(p=>p.pbm===pbm).reduce((s,p)=>s+p.sc.total,0)/(E.filter(p=>p.pbm===pbm).length||1))})).filter(x=>x.count>0);
+  const maxPPC=Math.max(...pData.map(x=>x.pc));
+  const mostImp=[...E].sort((a,b)=>b.scoreDelta-a.scoreDelta).slice(0,7);
+  const mostDec=[...E].sort((a,b)=>a.scoreDelta-b.scoreDelta).slice(0,7);
+  const maxI=Math.max(...mostImp.map(p=>Math.abs(p.scoreDelta)),1);
+  const maxD=Math.max(...mostDec.map(p=>Math.abs(p.scoreDelta)),1);
+  document.getElementById("an-grid").innerHTML=`
+    <div class="an-card"><div class="an-title">Pipeline Created by PBM</div>
+      ${pData.map(pb=>`<div class="br-item"><div class="br-top"><span class="br-name">${pb.name} (${pb.count})</span><span class="br-val" style="color:${pb.color};">$${pb.pc.toFixed(1)}M <span style="color:var(--text3);font-weight:400;">avg ${pb.avg}/100</span></span></div><div class="br-track"><div class="br-fill" style="width:${Math.round((pb.pc/maxPPC)*100)}%;background:${pb.color};"></div></div></div>`).join("")}
+    </div>
+    <div class="an-card"><div class="an-title">Partner Score Distribution</div>
+      ${sdist.map(t=>{const cnt=E.filter(p=>p.sc.total>=t.min&&p.sc.total<=t.max).length,pct=Math.round((cnt/PARTNERS.length)*100);return`<div class="br-item"><div class="br-top"><span class="br-name" style="color:${t.c};font-weight:600;">${t.l}</span><span class="br-val" style="color:${t.c};">${cnt} <span style="color:var(--text3);font-weight:400;">(${pct}%)</span></span></div><div class="br-track"><div class="br-fill" style="width:${pct}%;background:${t.c};"></div></div></div>`;}).join("")}
+    </div>
+    <div class="an-card"><div class="an-title">QBR Readiness Breakdown</div>
+      ${[{l:"Ready (70+)",min:70,c:"#059669"},{l:"Due (45-69)",min:45,c:"#D97706"},{l:"Overdue (<45)",min:0,c:"#DC2626"}].map(t=>{const cnt=E.filter(p=>t.min===0?p.qbr.score<45:t.min===45?p.qbr.score>=45&&p.qbr.score<70:p.qbr.score>=70).length;const pct=Math.round((cnt/E.length)*100);return`<div class="br-item"><div class="br-top"><span class="br-name" style="color:${t.c};font-weight:600;">${t.l}</span><span class="br-val" style="color:${t.c};">${cnt} partners</span></div><div class="br-track"><div class="br-fill" style="width:${pct}%;background:${t.c};"></div></div></div>`;}).join("")}
+    </div>`;
+  document.getElementById("an-grid2").innerHTML=`
+    <div class="an-card"><div class="an-title">Most Improved — Score Change</div>
+      ${mostImp.map(p=>`<div class="br-item"><div class="br-top"><span class="br-name">${p.name}</span><span class="br-val" style="color:var(--green);">+${p.scoreDelta} pts</span></div><div class="br-track"><div class="br-fill" style="width:${Math.round((Math.abs(p.scoreDelta)/maxI)*100)}%;background:var(--green);"></div></div></div>`).join("")}
+    </div>
+    <div class="an-card"><div class="an-title">Most Declined — Score Change</div>
+      ${mostDec.map(p=>`<div class="br-item"><div class="br-top"><span class="br-name">${p.name}</span><span class="br-val" style="color:${p.scoreDelta<0?"var(--red)":"var(--text3)"};">${p.scoreDelta} pts</span></div><div class="br-track"><div class="br-fill" style="width:${Math.round((Math.abs(p.scoreDelta)/maxD)*100)}%;background:${p.scoreDelta<0?"var(--red)":"var(--green)"};"></div></div></div>`).join("")}
+    </div>`;
+}
+
+// ── SCORE LOGIC ───────────────────────────────────────────────────────────
+const SL=[
+  {label:"1. Pipeline Created",max:25,color:"#0066FF",desc:"Primary growth signal — normalised against the cohort max for the selected period. Delta badge shows movement vs prior period.",rows:[{t:"Top performer",p:"25",n:"Full marks"},{t:"50–99% of max",p:"12–24",n:"Strong to moderate"},{t:"<50% of max",p:"0–11",n:"Below expectation"}]},
+  {label:"2. Implementations",max:20,color:"#059669",desc:"Delivery quality signal. Go-lives drive renewals and expansion, not just pipeline.",rows:[{t:"Cohort max",p:"20",n:"Full marks"},{t:"50–99% of max",p:"10–19",n:"Good delivery"},{t:"<50% of max",p:"0–9",n:"Capacity or enablement gap"}]},
+  {label:"3. Pipeline D Phase+",max:20,color:"#7C3AED",desc:"Late-stage quality. D phase = qualified, near-close. Signals conversion from early-stage activity.",rows:[{t:"Cohort max",p:"20",n:"Strongest late-stage"},{t:"50–99% of max",p:"10–19",n:"Moderate"},{t:"<50% of max",p:"0–9",n:"Top-of-funnel not converting"}]},
+  {label:"4. Stalled Pipeline",max:15,color:"#D97706",desc:"Inverse score — lower stalled = higher points. High stall is a leading indicator of pipeline decay.",rows:[{t:"Near zero",p:"15",n:"Full marks"},{t:"Low-moderate",p:"6–14",n:"Watch"},{t:"≥$1.5M",p:"0–5",n:"Exec escalation required"}]},
+  {label:"5. Discontinuation",max:10,color:"#DC2626",desc:"Inverse score — fewer discontinued opps = higher score. Signals qualification gaps or ICP mismatch.",rows:[{t:"Zero",p:"10",n:"Full marks"},{t:"1–2 opps",p:"5–9",n:"Acceptable"},{t:"3+ opps",p:"0–4",n:"Enablement intervention"}]},
+  {label:"QBR Readiness (6 criteria)",max:100,color:"#059669",desc:"Composite score: Pipeline Momentum (25), Implementations (20), Pipeline Health Ratio (20), Score Trend (10), Last QBR Recency (25). Recency is the largest single weight — a partner is capped from Ready to Due if last review was >120 days ago regardless of other scores.",rows:[{t:"70–100: Ready",p:"✅",n:"Clear agenda — proceed"},{t:"45–69: Due",p:"⚠️",n:"Schedule now"},{t:"<45: Overdue",p:"🔴",n:"Address gaps first, or use QBR to course-correct"}]},
+];
+function renderScoreLogic(){
+  document.getElementById("sl-grid").innerHTML=SL.map(s=>`
+    <div class="sl-card">
+      <div class="sl-hd"><div><div class="sl-title">${s.label}</div><div class="sl-desc">${s.desc}</div></div>${s.max?`<div class="sl-max" style="background:${s.color}18;color:${s.color};border:1px solid ${s.color}40;">+${s.max}<span>MAX</span></div>`:`<div class="sl-max" style="background:${s.color}18;color:${s.color};border:1px solid ${s.color}40;">ROI<span>METRIC</span></div>`}</div>
+      ${s.rows.map(r=>`<div class="sl-row"><div class="sl-tier">${r.t}</div><div class="sl-note">${r.n}</div><div class="sl-pts" style="background:${s.color}12;color:${s.color};border:1px solid ${s.color}30;">${r.p}</div></div>`).join("")}
+    </div>`).join("");
+}
+
+// ── EXPORT ────────────────────────────────────────────────────────────────
+function exportCSV(){
+  const {cur,prv,label}=getCurPrv();
+  const [curLbl,prvLbl]=label.split(" vs ");
+  const h=["Rank","Partner","PBM",`${curLbl} Pipeline $M`,`${prvLbl} Pipeline $M`,"Pipeline Delta",`${curLbl} Impl`,`${prvLbl} Impl`,`${curLbl} PipeD`,`${prvLbl} PipeD`,`${curLbl} Stalled`,`${prvLbl} Stalled`,`${curLbl} Disc Opps`,`${prvLbl} Disc Opps`,`${curLbl} Score`,`${prvLbl} Score`,"Score Delta","QBR Score","QBR Status","Last QBR","Days Since QBR"];
+  const rows=E.map((p,i)=>{
+    const d=p[cur], dp=p[prv];
+    return[i+1,p.name,p.pbm,d.pipeline_created,dp.pipeline_created,(d.pipeline_created-dp.pipeline_created).toFixed(1),d.impl,dp.impl,d.pipe_d,dp.pipe_d,d.stalled_val,dp.stalled_val,d.disc_opps,dp.disc_opps,p.sc.total,p.sp.total,p.scoreDelta,p.qbr.score,p.qbr.label,p.lastQBR||"",p.qbr.daysSince<999?p.qbr.daysSince:""];
+  });
+  const csv=[h,...rows].map(r=>r.map(v=>`"${String(v).replace(/"/g,'""')}"`).join(",")).join("\n");
+  const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([csv],{type:"text/csv"}));a.download=`partner-insights-${activePeriod}.csv`;a.click();
+}
+
+// ── RENDER ALL (called on period change) ───────────────────────────────────
+function renderAll(){
+  renderKPI();
+  renderRankings();
+  renderAlerts();
+  if(document.getElementById("view-pipeline").classList.contains("active")) renderPipeline();
+  if(document.getElementById("view-qbr").classList.contains("active")) renderQBR();
+  if(document.getElementById("view-analytics").classList.contains("active")) renderAnalytics();
+  if(document.getElementById("view-scorelogic").classList.contains("active")) renderScoreLogic();
+  if(ST.detailId) openDetail(ST.detailId);
+}
+
+// ── TAB SWITCH ────────────────────────────────────────────────────────────
+function switchTab(tab,btn){
+  document.querySelectorAll(".view").forEach(v=>v.classList.remove("active"));
+  document.querySelectorAll(".ntab").forEach(b=>b.classList.remove("active"));
+  document.getElementById("view-"+tab).classList.add("active");
+  if(btn)btn.classList.add("active");
+  if(tab==="pipeline")   renderPipeline();
+  if(tab==="qbr")        renderQBR();
+  if(tab==="alerts")     renderAlerts();
+  if(tab==="analytics")  renderAnalytics();
+  if(tab==="scorelogic")    renderScoreLogic();
+  if(tab==="intelligence")  {/* static, no render needed */}
+}
+
+// ── INIT ──────────────────────────────────────────────────────────────────
+renderKPI();
+renderRankings();
+renderAlerts();
+</script>
+</body>
+</html>

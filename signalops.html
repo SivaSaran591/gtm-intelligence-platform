@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SignalOps · GTM Intelligence Platform</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { height: 100%; overflow: hidden; }
+body { font-family: 'Plus Jakarta Sans', sans-serif; -webkit-font-smoothing: antialiased; display: flex; flex-direction: column; }
+
+.module-nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 10000;
+  height: 44px;
+  background: rgba(255,255,255,.96);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid #E2E5EC;
+  box-shadow: 0 1px 3px rgba(0,0,0,.06);
+  display: flex; align-items: center; padding: 0 20px; gap: 4px;
+}
+.nav-back {
+  display: flex; align-items: center; gap: 6px;
+  font-size: 11px; font-weight: 700; color: #8A94A6;
+  text-decoration: none; padding: 4px 10px; border-radius: 6px;
+  transition: all .15s; margin-right: 6px;
+  border: 1px solid #E2E5EC;
+}
+.nav-back:hover { color: #0D1117; background: #F4F5F8; border-color: #C8CDDA; }
+.nav-div { width: 1px; height: 18px; background: #E2E5EC; margin: 0 6px; }
+.nav-module-id {
+  display: flex; align-items: center; gap: 7px;
+  font-size: 12px; font-weight: 800; color: #0D1117;
+  letter-spacing: -.01em;
+}
+.nav-module-dot {
+  width: 7px; height: 7px; border-radius: 50%;
+  background: #0066FF;
+}
+.nav-link {
+  padding: 4px 10px; border-radius: 6px;
+  font-size: 11px; font-weight: 700; color: #8A94A6;
+  text-decoration: none; transition: all .15s; white-space: nowrap;
+}
+.nav-link:hover { color: #0D1117; background: #F4F5F8; }
+.nav-link.active {
+  color: #0066FF;
+  background: #EBF2FF;
+}
+.nav-right { margin-left: auto; display: flex; align-items: center; gap: 8px; }
+.nav-badge {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 8px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase;
+  color: #0066FF; padding: 2px 8px;
+  border: 1px solid #0066FF40;
+  background: #EBF2FF;
+  border-radius: 10px;
+}
+.nav-meta { font-size: 10px; color: #8A94A6; font-weight: 600; }
+
+.proto-frame {
+  position: fixed;
+  top: 44px; left: 0; right: 0; bottom: 0;
+  border: none; width: 100%; height: calc(100% - 44px);
+  display: block;
+}
+</style>
+</head>
+<body>
+
+<nav class="module-nav">
+  <a class="nav-back" href="index.html">← Platform</a>
+  <div class="nav-div"></div>
+  <div class="nav-module-id">
+    <div class="nav-module-dot"></div>
+    SignalOps
+  </div>
+  <div class="nav-div"></div>
+  <a class="nav-link" href="index.html">Platform</a>
+  <a class="nav-link active" href="signalops.html">SignalOps</a>
+  <a class="nav-link" href="campaignforge.html">CampaignForge</a>
+  <a class="nav-link" href="deallens.html">DealLens</a>
+  <a class="nav-link" href="partnerpulse.html">PartnerPulse</a>
+  <div class="nav-right">
+    <span class="nav-meta">Market signal intelligence · TAL scoring · 38 India Corporate accounts</span>
+    <span class="nav-badge">GTM Intelligence Engine</span>
+  </div>
+</nav>
+
+<iframe class="proto-frame" src="SignalOps___GTM_Intelligence_Engine.html" title="SignalOps - GTM Intelligence Engine"></iframe>
+
+</body>
+</html>
