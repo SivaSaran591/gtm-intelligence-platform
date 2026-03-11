@@ -8,31 +8,32 @@
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;1,9..144,300;1,9..144,400&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
 :root {
-  --blue: #0066FF;
-  --blue-dk: #0044CC;
-  --blue-lt: #EBF2FF;
-  --blue-mid: #C7DCFF;
-  --green: #059669;
-  --green-lt: #F0FDF4;
-  --amber: #D97706;
-  --purple: #7C3AED;
-  --indigo: #4F46E5;
-  --red: #DC2626;
-  --bg: #F4F5F8;
-  --surface: #FFFFFF;
-  --s2: #F8F9FB;
-  --s3: #EEF0F4;
-  --border: #E2E5EC;
-  --border2: #C8CDDA;
-  --text: #0D1117;
-  --text2: #4A5568;
-  --text3: #8A94A6;
-  --text4: #C4CAD6;
-  --sh1: 0 1px 3px rgba(0,0,0,.06), 0 1px 2px rgba(0,0,0,.04);
-  --sh2: 0 4px 16px rgba(0,0,0,.07), 0 2px 4px rgba(0,0,0,.04);
-  --sh3: 0 16px 48px rgba(0,0,0,.10), 0 4px 8px rgba(0,0,0,.05);
-  --navy: #0a0f1e;
-  --navy2: #0d1a3a;
+  /* New accessible palette */
+  --blue: #38BDF8;
+  --blue-dk: #0EA5E9;
+  --blue-lt: rgba(56,189,248,.12);
+  --blue-mid: rgba(56,189,248,.25);
+  --green: #34D399;
+  --green-lt: rgba(52,211,153,.1);
+  --amber: #FBBF24;
+  --purple: #A78BFA;
+  --indigo: #818CF8;
+  --red: #F87171;
+  --bg: #0F172A;
+  --surface: #1E293B;
+  --s2: #162032;
+  --s3: #263348;
+  --border: rgba(255,255,255,.08);
+  --border2: rgba(255,255,255,.14);
+  --text: #E2E8F0;
+  --text2: #CBD5E1;
+  --text3: #94A3B8;
+  --text4: #64748B;
+  --sh1: 0 1px 3px rgba(0,0,0,.3), 0 1px 2px rgba(0,0,0,.2);
+  --sh2: 0 4px 16px rgba(0,0,0,.4), 0 2px 4px rgba(0,0,0,.2);
+  --sh3: 0 16px 48px rgba(0,0,0,.5), 0 4px 8px rgba(0,0,0,.3);
+  --navy: #0F172A;
+  --navy2: #0D1525;
 }
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -49,9 +50,9 @@ body {
 .nav {
   position: fixed; top: 0; left: 0; right: 0; z-index: 100;
   height: 56px;
-  background: rgba(255,255,255,.92);
+  background: rgba(15,23,42,.95);
   backdrop-filter: blur(12px);
-  border-bottom: 1px solid var(--border);
+  border-bottom: 1px solid rgba(255,255,255,.08);
   box-shadow: var(--sh1);
   display: flex; align-items: center; padding: 0 32px; gap: 6px;
 }
@@ -67,7 +68,7 @@ body {
   font-size: 13px; color: #fff; font-weight: 800;
 }
 .nav-logo-name {
-  font-size: 13px; font-weight: 800; color: var(--text);
+  font-size: 13px; font-weight: 800; color: #E2E8F0;
   letter-spacing: -.02em;
 }
 .nav-div { width: 1px; height: 20px; background: var(--border); margin: 0 6px; }
@@ -95,7 +96,7 @@ body {
 }
 .hero-bg {
   position: absolute; inset: 0; z-index: 0;
-  background: linear-gradient(160deg, #0a0f1e 0%, #0d1a3a 45%, #091428 100%);
+  background: linear-gradient(160deg, #0F172A 0%, #0D1525 45%, #0A1020 100%);
 }
 .hero-grid {
   position: absolute; inset: 0; z-index: 1;
@@ -133,7 +134,7 @@ body {
 
 .hero-title {
   font-family: 'Fraunces', serif;
-  font-size: clamp(42px, 6vw, 72px);
+  font-size: clamp(48px, 7vw, 82px);
   font-weight: 300;
   line-height: 1.08;
   color: #fff;
@@ -142,8 +143,8 @@ body {
 }
 .hero-title em { font-style: italic; color: rgba(0,102,255,.9); }
 .hero-subtitle {
-  font-size: 17px; font-weight: 400; line-height: 1.7;
-  color: rgba(255,255,255,.55);
+  font-size: 19px; font-weight: 400; line-height: 1.7;
+  color: rgba(255,255,255,.65);
   max-width: 620px; margin: 0 auto 40px;
 }
 .hero-desc {
@@ -223,6 +224,7 @@ body {
   font-size: clamp(28px, 3.5vw, 40px);
   font-weight: 300; line-height: 1.15;
   color: var(--text); letter-spacing: -.02em;
+  letter-spacing: -.02em;
 }
 .section-title em { font-style: italic; color: var(--blue); }
 .section-sub {
@@ -295,7 +297,7 @@ body {
 @media (max-width: 720px) { .modules-grid { grid-template-columns: 1fr; } }
 
 .module-card {
-  background: var(--surface);
+  background: var(--surface); color: var(--text);
   border: 1px solid var(--border);
   border-radius: 16px;
   overflow: hidden;
@@ -324,7 +326,7 @@ body {
 }
 .module-card-body { padding: 16px 24px; flex: 1; }
 .module-card-name {
-  font-size: 18px; font-weight: 800; color: var(--text);
+  font-size: 18px; font-weight: 800; color: var(--text2);
   letter-spacing: -.02em; margin-bottom: 4px;
 }
 .module-card-name span { color: var(--blue); }
@@ -333,7 +335,7 @@ body {
   color: var(--text3); margin-bottom: 12px;
 }
 .module-card-desc {
-  font-size: 13px; color: var(--text2); line-height: 1.65;
+  font-size: 13px; color: var(--text3); line-height: 1.65;
 }
 .module-card-signals {
   display: flex; gap: 5px; flex-wrap: wrap; margin-top: 14px;
@@ -346,7 +348,7 @@ body {
 .module-card-foot {
   padding: 16px 24px;
   border-top: 1px solid var(--border);
-  background: var(--s2);
+  background: var(--s3);
   display: flex; align-items: center; justify-content: space-between;
 }
 .module-card-meta { font-size: 10px; color: var(--text3); font-weight: 600; }
@@ -383,7 +385,7 @@ body {
 }
 @media (max-width: 840px) { .how-grid { grid-template-columns: repeat(2,1fr); } }
 .how-card {
-  background: var(--surface); border: 1px solid var(--border);
+  background: var(--s3); border: 1px solid var(--border);
   border-radius: 12px; padding: 20px; box-shadow: var(--sh1);
   position: relative; overflow: hidden;
 }
@@ -398,7 +400,7 @@ body {
 .how-num {
   font-family: 'JetBrains Mono', monospace;
   font-size: 10px; font-weight: 700; letter-spacing: .1em;
-  color: var(--text4); margin-bottom: 10px;
+  color: var(--text3); margin-bottom: 10px;
 }
 .how-title { font-size: 13px; font-weight: 800; color: var(--text); margin-bottom: 6px; }
 .how-desc { font-size: 11px; color: var(--text3); line-height: 1.6; }
@@ -481,6 +483,63 @@ body {
 }
 .about-linkedin:hover { border-color: rgba(255,255,255,.35); color: #fff; background: rgba(255,255,255,.05); }
 
+
+/* ── WHY SECTION ─────────────────────────────────────────── */
+.why-section { background: var(--bg); border-bottom: 1px solid var(--border); }
+.why-grid { display: grid; grid-template-columns: 1fr auto 1fr auto 1fr; gap: 0; align-items: start; margin: 40px 0 32px; }
+@media (max-width: 768px) { .why-grid { grid-template-columns: 1fr; gap: 20px; } .why-arrow { display: none; } }
+.why-col { padding: 24px; background: var(--surface); border: 1px solid var(--border); border-radius: 12px; }
+.why-num { font-family: 'JetBrains Mono', monospace; font-size: 9px; font-weight: 700; letter-spacing: .12em; color: var(--blue); margin-bottom: 10px; }
+.why-name { font-size: 14px; font-weight: 800; color: var(--text); margin-bottom: 8px; }
+.why-desc { font-size: 12px; color: var(--text3); line-height: 1.65; }
+.why-arrow { display: flex; align-items: center; justify-content: center; padding: 0 16px; font-size: 20px; color: var(--border2); padding-top: 32px; }
+.why-conclusion { font-size: 15px; color: var(--text3); line-height: 1.8; padding: 24px; background: var(--surface); border: 1px solid var(--border); border-radius: 12px; border-left: 3px solid var(--blue); }
+.why-conclusion span { color: var(--text2); display: block; margin-top: 10px; }
+
+/* ── CONTEXT SECTION ─────────────────────────────────────── */
+.context-section { background: var(--surface); border-bottom: 1px solid var(--border); }
+.context-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; margin-top: 40px; }
+@media (max-width: 640px) { .context-grid { grid-template-columns: 1fr; } }
+.context-item { display: flex; gap: 16px; padding: 20px; background: var(--s3); border: 1px solid var(--border); border-radius: 12px; }
+.context-icon { font-size: 20px; flex-shrink: 0; margin-top: 2px; }
+.context-title { font-size: 13px; font-weight: 800; color: var(--text); margin-bottom: 6px; }
+.context-desc { font-size: 12px; color: var(--text3); line-height: 1.65; }
+
+/* ── DEMONSTRATES SECTION ────────────────────────────────── */
+.demonstrates-section { background: var(--bg); border-bottom: 1px solid var(--border); }
+.demonstrates-inner { display: grid; grid-template-columns: 1fr 1fr; gap: 64px; align-items: center; }
+@media (max-width: 720px) { .demonstrates-inner { grid-template-columns: 1fr; gap: 32px; } }
+.demonstrates-list { list-style: none; display: flex; flex-direction: column; gap: 14px; }
+.demonstrates-list li { display: flex; align-items: center; gap: 12px; font-size: 14px; color: var(--text2); font-weight: 500; }
+.dl-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--blue); flex-shrink: 0; }
+
+/* ── ABOUT SECTION UPDATED COLORS ───────────────────────── */
+.about-body { font-size: 14px; line-height: 1.85; color: var(--text3); }
+.about-body p { margin-bottom: 16px; }
+.about-body p:last-child { margin-bottom: 0; }
+.about-body strong { color: var(--text); font-weight: 700; }
+.about-name { font-family: 'Fraunces', serif; font-size: 26px; font-weight: 300; color: var(--text); letter-spacing: -.02em; line-height: 1.1; margin-bottom: 6px; }
+.about-name em { font-style: italic; color: var(--blue); }
+.about-title { font-family: 'JetBrains Mono', monospace; font-size: 9px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: var(--text3); margin-bottom: 20px; }
+.about-tag { font-family: 'JetBrains Mono', monospace; font-size: 9px; font-weight: 600; letter-spacing: .06em; color: var(--blue); padding: 4px 10px; border: 1px solid rgba(56,189,248,.25); background: rgba(56,189,248,.06); border-radius: 4px; width: fit-content; }
+.about-linkedin { display: inline-flex; align-items: center; gap: 7px; margin-top: 24px; padding: 8px 18px; border: 1px solid var(--border2); border-radius: 7px; color: var(--text3); font-size: 11px; font-weight: 700; text-decoration: none; transition: all .15s; }
+.about-linkedin:hover { border-color: var(--blue); color: var(--blue); background: rgba(56,189,248,.06); }
+
+/* ── GLOBAL READABILITY FIXES ────────────────────────────── */
+.section-label { color: var(--blue); }
+.section-sub { color: var(--text3); }
+.nav-link { color: var(--text3); }
+.nav-link:hover { color: var(--text); background: var(--s3); }
+.nav-link.active { color: var(--blue); background: var(--blue-lt); }
+.nav-badge { color: var(--text4); border-color: var(--border); }
+.arch-node-desc { color: var(--text3); }
+.module-card-sub { color: var(--text3); }
+.module-card-meta { color: var(--text3); }
+.signal-pill { background: var(--s3); color: var(--text3); }
+.how-title { color: var(--text); }
+.how-desc { color: var(--text3); }
+.footer { background: var(--navy2); }
+
 </style>
 </head>
 <body>
@@ -511,16 +570,13 @@ body {
   <div class="hero-content">
     <div class="hero-eyebrow">
       <div class="hero-eyebrow-dot"></div>
-      GTM Intelligence Suite · 4 Modules
+      GTM Intelligence Platform · Mid-Market
     </div>
     <h1 class="hero-title">
-      Turning signals into<br><em>pipeline, campaigns,</em><br>deals, and partner growth.
+      GTM intelligence for<br><em>mid-market</em><br>revenue teams.
     </h1>
     <p class="hero-subtitle">
-      A conceptual GTM intelligence platform designed to connect every layer of the modern revenue engine — from the first market signal to the final partner QBR.
-    </p>
-    <p class="hero-desc">
-      This portfolio demonstrates how four purpose-built intelligence modules can work together as a unified platform: market signal detection, AI campaign activation, pipeline risk intelligence, and partner ecosystem analytics.
+      A system that connects market signals to campaigns, pipeline momentum, and partner growth.
     </p>
     <a class="hero-cta" href="#modules">Explore Modules ↓</a>
     <a class="hero-cta-ghost" href="#architecture">View Architecture</a>
@@ -542,8 +598,42 @@ body {
   </div>
 </section>
 
+
+<!-- WHY THIS PLATFORM EXISTS -->
+<section class="section why-section" id="why">
+  <div class="section-inner">
+    <div class="section-hd fade-up" style="max-width:640px;">
+      <div class="section-label">Why This Platform Exists</div>
+      <h2 class="section-title">Most GTM teams operate with<br><em>three disconnected layers.</em></h2>
+    </div>
+    <div class="why-grid fade-up">
+      <div class="why-col">
+        <div class="why-num">01</div>
+        <div class="why-name">Market intelligence</div>
+        <div class="why-desc">Signals live in one system. Expansion triggers, hiring patterns, funding activity. Rarely actioned in time.</div>
+      </div>
+      <div class="why-arrow">→</div>
+      <div class="why-col">
+        <div class="why-num">02</div>
+        <div class="why-name">Campaign execution</div>
+        <div class="why-desc">Campaigns run in another. Disconnected from the signals that should be driving targeting and messaging.</div>
+      </div>
+      <div class="why-arrow">→</div>
+      <div class="why-col">
+        <div class="why-num">03</div>
+        <div class="why-name">Pipeline reporting</div>
+        <div class="why-desc">Pipeline insights appear too late. Deal risk, engagement gaps, and forecast drift surface after the window has closed.</div>
+      </div>
+    </div>
+    <div class="why-conclusion fade-up">
+      The result is slow decision cycles.<br>
+      <span>The GTM Intelligence Platform demonstrates how these layers can operate as a single intelligence loop for mid-market revenue teams.</span>
+    </div>
+  </div>
+</section>
+
 <!-- HOW IT CONNECTS -->
-<section class="section" style="background:var(--surface);">
+<section class="section" style="background:var(--surface);border-bottom:1px solid var(--border);">
   <div class="section-inner">
     <div class="section-hd fade-up">
       <div class="section-label">Platform Logic</div>
@@ -639,6 +729,48 @@ body {
         <div class="arch-node-score tag-pp">Ecosystem Layer</div>
       </a>
 
+    </div>
+  </div>
+</section>
+
+
+<!-- CONTEXT -->
+<section class="section context-section" id="context">
+  <div class="section-inner">
+    <div class="section-hd fade-up">
+      <div class="section-label">Context</div>
+      <h2 class="section-title">Built on real mid-market<br><em>operating experience.</em></h2>
+      <p class="section-sub">This platform reflects work supporting SAP India's mid-market motion — one operator, one market unit, one revenue loop.</p>
+    </div>
+    <div class="context-grid fade-up">
+      <div class="context-item">
+        <div class="context-icon">⬡</div>
+        <div class="context-body">
+          <div class="context-title">Account prioritisation</div>
+          <div class="context-desc">Monitoring pipeline progression and identifying signal-driven account prioritisation triggers across mid-market opportunities.</div>
+        </div>
+      </div>
+      <div class="context-item">
+        <div class="context-icon">⚡</div>
+        <div class="context-body">
+          <div class="context-title">Campaign execution</div>
+          <div class="context-desc">Enabling campaign execution with sales development teams — connecting signals to targeted outreach programs.</div>
+        </div>
+      </div>
+      <div class="context-item">
+        <div class="context-icon">🔍</div>
+        <div class="context-body">
+          <div class="context-title">Pipeline visibility</div>
+          <div class="context-desc">Building structures for pipeline visibility — not reporting on what happened, but flagging what needs to happen next.</div>
+        </div>
+      </div>
+      <div class="context-item">
+        <div class="context-icon">🤝</div>
+        <div class="context-body">
+          <div class="context-title">Partner ecosystem</div>
+          <div class="context-desc">Improving visibility into partner ecosystem contribution — where partner-sourced pipeline is moving and where it is stalling.</div>
+        </div>
+      </div>
     </div>
   </div>
 </section>
@@ -752,6 +884,57 @@ body {
 <!-- FOOTER -->
 
 <!-- ABOUT -->
+
+<!-- WHAT THIS DEMONSTRATES -->
+<section class="section demonstrates-section">
+  <div class="section-inner">
+    <div class="demonstrates-inner fade-up">
+      <div class="demonstrates-left">
+        <div class="section-label">What This Platform Demonstrates</div>
+        <h2 class="section-title" style="font-size:clamp(24px,3vw,36px);">GTM systems thinking<br><em>for mid-market teams.</em></h2>
+      </div>
+      <div class="demonstrates-right">
+        <ul class="demonstrates-list">
+          <li><span class="dl-dot"></span>GTM systems thinking for mid-market organisations</li>
+          <li><span class="dl-dot"></span>Signal-driven account prioritisation</li>
+          <li><span class="dl-dot"></span>Campaign activation frameworks</li>
+          <li><span class="dl-dot"></span>Pipeline intelligence and deal monitoring</li>
+          <li><span class="dl-dot"></span>Partner ecosystem analytics</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="about-section" id="about">
+  <div class="about-inner">
+    <div class="about-left fade-up">
+      <div class="about-avatar">S</div>
+      <div class="about-name">Siva Saran<br><em>Pidaparthy</em></div>
+      <div class="about-title">Digital Campaign Manager &middot; SAP India</div>
+      <div class="about-tags">
+        <span class="about-tag">Decision Intelligence Layer</span>
+        <span class="about-tag">Mid-Market GTM Systems</span>
+        <span class="about-tag">Custodian of Analytics</span>
+        <span class="about-tag">Partner Evolution</span>
+      </div>
+    </div>
+    <div class="about-right fade-up" style="transition-delay:.1s">
+      <div class="about-body">
+        <p>I build scalable decision systems for revenue teams.</p>
+        <p>My work focuses on helping mid-market organisations translate market signals into clear GTM actions. At SAP India, I operate as a single systems owner supporting the India Market Unit, designing structures that connect market signals, marketing execution, pipeline visibility, and partner ecosystems into one operational loop.</p>
+        <p>My approach is built on three principles. <strong>Scale</strong> — systems must work across an entire market unit, not a single campaign. <strong>Accountability</strong> — every signal should connect to pipeline progression or revenue movement. <strong>Integrity</strong> — decisions should be driven by real signals, not convenient narratives.</p>
+        <p>Most revenue teams today have strong data infrastructure but lack an intelligence layer that converts signals into decisions. The GTM Intelligence Platform is my attempt to close that gap.</p>
+        <p>I see my role not as a campaign executor but as a <strong>decision intelligence layer for revenue teams</strong> — translating scattered signals into clear operational direction.</p>
+      </div>
+      <a class="about-linkedin" href="https://www.linkedin.com/in/siva-saran-pidaparthy-2181b6146/" target="_blank">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+        Connect on LinkedIn
+      </a>
+    </div>
+  </div>
+</section>
+
 <section class="about-section" id="about">
   <div class="about-inner">
     <div class="about-left fade-up">
@@ -789,7 +972,7 @@ body {
     <a class="footer-link" href="deallens.html">DealLens</a>
     <a class="footer-link" href="partnerpulse.html">PartnerPulse</a>
   </div>
-  <div class="footer-copy">Built as a portfolio demonstration · Siva Saran Pidaparthy · 2026</div>
+  <div class="footer-copy">GTM Intelligence Platform · Siva Saran Pidaparthy · SAP India · 2026</div>
 </footer>
 
 <script>
