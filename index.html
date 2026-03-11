@@ -540,6 +540,39 @@ body {
 .sysdiag-line { width: 1px; height: 18px; background: #CBD5E1; }
 .sysdiag-arrow { font-size: 10px; color: #CBD5E1; line-height: 1; }
 
+
+/* ── PROBLEM + INSIGHT SECTION ───────────────────────────── */
+.prob-section { background: #FFFFFF; border-bottom: 1px solid #E2E8F0; padding: 80px 0; }
+.prob-grid { display: grid; grid-template-columns: 1fr 1px 1fr; gap: 0 48px; align-items: start; }
+@media (max-width: 720px) { .prob-grid { grid-template-columns: 1fr; gap: 40px; } }
+.prob-divider { background: #E2E8F0; height: 100%; min-height: 180px; }
+@media (max-width: 720px) { .prob-divider { height: 1px; width: 100%; min-height: unset; } }
+.prob-block { display: flex; flex-direction: column; gap: 16px; }
+.prob-body p { font-size: 15px; color: #475569; line-height: 1.65; margin-bottom: 12px; }
+.prob-body p:last-child { margin-bottom: 0; }
+.prob-close { font-size: 15px; font-weight: 700; color: #0F172A !important; }
+.prob-list { margin: 8px 0 12px 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 6px; }
+.prob-list li { font-size: 14px; color: #64748B; padding-left: 14px; position: relative; }
+.prob-list li::before { content: '·'; position: absolute; left: 0; color: #2563EB; font-weight: 700; }
+.prob-insight p { font-size: 15px; color: #475569; line-height: 1.65; margin-bottom: 12px; }
+.insight-thesis { font-size: 17px !important; font-weight: 700; color: #0F172A !important; line-height: 1.4 !important; margin-bottom: 16px !important; }
+
+/* ── ARCH INTRO ───────────────────────────────────────────── */
+.arch-intro { margin: 20px auto 0; max-width: 480px; text-align: center; }
+.arch-intro p { font-size: 14px; color: #475569; line-height: 1.65; margin-bottom: 12px; }
+.arch-close { font-size: 13px; color: #94A3B8 !important; font-style: italic; }
+.arch-layers { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 6px; margin: 12px 0; }
+.arch-layer { font-family: 'JetBrains Mono', monospace; font-size: 10px; font-weight: 600; letter-spacing: .06em; color: #2563EB; background: #EFF6FF; border: 1px solid #BFDBFE; padding: 3px 10px; border-radius: 4px; }
+.arch-layer-sep { color: #CBD5E1; font-size: 12px; }
+
+/* ── CONTEXT + DEMONSTRATES CLOSE ────────────────────────── */
+.context-close-section { background: #F8FAFC; padding: 80px 0; border-top: 1px solid #E2E8F0; border-bottom: 1px solid #E2E8F0; }
+.ctxclose-grid { display: grid; grid-template-columns: 1fr 1px 1fr; gap: 0 48px; align-items: start; }
+@media (max-width: 720px) { .ctxclose-grid { grid-template-columns: 1fr; gap: 40px; } }
+.ctxclose-block { display: flex; flex-direction: column; gap: 14px; }
+.ctxclose-body { font-size: 15px; color: #475569; line-height: 1.65; }
+.ctxclose-list { margin-top: 4px; }
+
 </style>
 </head>
 <body>
@@ -576,7 +609,7 @@ body {
       GTM <em>Intelligence</em> Platform
     </h1>
     <p class="hero-subtitle">
-      A GTM operating system for signal-driven revenue teams
+      A GTM operating model built from mid-market execution
     </p>
     <a class="hero-cta" href="#modules">Explore Modules ↓</a>
     <a class="hero-cta-ghost" href="#architecture">View Architecture</a>
@@ -605,8 +638,20 @@ body {
   <div class="section-inner">
     <div class="section-hd fade-up" style="text-align:center;margin-bottom:40px;">
       <div class="section-label" style="justify-content:center;">System Architecture</div>
-      <h2 class="section-title">How the GTM Intelligence System Works</h2>
-      <p class="section-sub" style="margin:10px auto 0;max-width:480px;">A single intelligence loop. Each module feeds the next.</p>
+      <h2 class="section-title">How the GTM intelligence system works</h2>
+      <div class="arch-intro fade-up">
+        <p>The system operates across four layers of the revenue engine:</p>
+        <div class="arch-layers">
+          <span class="arch-layer">Signal detection</span>
+          <span class="arch-layer-sep">·</span>
+          <span class="arch-layer">Program activation</span>
+          <span class="arch-layer-sep">·</span>
+          <span class="arch-layer">Pipeline intelligence</span>
+          <span class="arch-layer-sep">·</span>
+          <span class="arch-layer">Partner ecosystem insight</span>
+        </div>
+        <p class="arch-close">These layers form a continuous signal-to-revenue loop.</p>
+      </div>
     </div>
     <div class="sysdiag-flow fade-up">
 
@@ -690,189 +735,53 @@ body {
   </div>
 </section>
 
-<!-- WHY THIS PLATFORM EXISTS -->
-<section class="section why-section" id="why">
+<!-- PROBLEM + INSIGHT -->
+<section class="section prob-section" id="problem">
   <div class="section-inner">
-    <div class="section-hd fade-up" style="max-width:640px;">
-      <div class="section-label">Why This Platform Exists</div>
-      <h2 class="section-title">Most GTM teams operate with<br><em>three disconnected layers.</em></h2>
-    </div>
-    <div class="why-grid fade-up">
-      <div class="why-col">
-        <div class="why-num">01</div>
-        <div class="why-name">Market intelligence</div>
-        <div class="why-desc">Signals live in one system. Expansion triggers, hiring patterns, funding activity. Rarely actioned in time.</div>
-      </div>
-      <div class="why-arrow">→</div>
-      <div class="why-col">
-        <div class="why-num">02</div>
-        <div class="why-name">Campaign execution</div>
-        <div class="why-desc">Campaigns run in another. Disconnected from the signals that should be driving targeting and messaging.</div>
-      </div>
-      <div class="why-arrow">→</div>
-      <div class="why-col">
-        <div class="why-num">03</div>
-        <div class="why-name">Pipeline reporting</div>
-        <div class="why-desc">Pipeline insights appear too late. Deal risk, engagement gaps, and forecast drift surface after the window has closed.</div>
-      </div>
-    </div>
-    <div class="why-conclusion fade-up">
-      The result is slow decision cycles.<br>
-      <span>The GTM Intelligence Platform demonstrates how these layers can operate as a single intelligence loop for mid-market revenue teams.</span>
-    </div>
-  </div>
-</section>
+    <div class="prob-grid fade-up">
 
-<!-- HOW IT CONNECTS -->
-<section class="section" id="how" style="background:#FFFFFF;border-bottom:1px solid #E2E8F0;">
-  <div class="section-inner">
-    <div class="section-hd fade-up">
-      <div class="section-label">Platform Logic</div>
-      <h2 class="section-title">One intelligence loop,<br><em>four connected layers.</em></h2>
-      <p class="section-sub">Each module operates independently but feeds the next. Market signals become campaigns. Campaigns generate deals. Deals inform partner performance.</p>
-    </div>
-    <div class="how-grid">
-      <div class="how-card c1 fade-up">
-        <div class="how-num">01 · SIGNAL</div>
-        <div class="how-title">Detect &amp; Prioritise</div>
-        <div class="how-desc">SignalOps identifies accounts showing expansion signals, funding events, and ERP fit. A multi-dimensional TAL scoring model surfaces the right accounts at the right moment.</div>
-      </div>
-      <div class="how-card c2 fade-up" style="transition-delay:.08s">
-        <div class="how-num">02 · ACTIVATE</div>
-        <div class="how-title">Build &amp; Launch</div>
-        <div class="how-desc">CampaignForge converts prioritised signals into targeted GTM programs. AI-generated personas, messaging, and channel strategy — ready to execute.</div>
-      </div>
-      <div class="how-card c3 fade-up" style="transition-delay:.16s">
-        <div class="how-num">03 · MANAGE</div>
-        <div class="how-title">Score &amp; Forecast</div>
-        <div class="how-desc">DealLens monitors every deal in the pipeline for risk signals, engagement gaps, and forecast confidence — with recommended actions for each seller.</div>
-      </div>
-      <div class="how-card c4 fade-up" style="transition-delay:.24s">
-        <div class="how-num">04 · SCALE</div>
-        <div class="how-title">Track &amp; Optimise</div>
-        <div class="how-desc">PartnerPulse measures partner pipeline contribution, performance trends, and QBR readiness — closing the loop from signal to ecosystem impact.</div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ARCHITECTURE -->
-<section class="arch-section" id="architecture">
-  <div class="section-inner">
-    <div class="section-hd fade-up" style="text-align:center;">
-      <div class="section-label" style="justify-content:center;">Platform Architecture</div>
-      <h2 class="section-title">The intelligence flow</h2>
-      <p class="section-sub" style="margin:10px auto 0;">Click any module to open it.</p>
-    </div>
-    <div class="arch-flow fade-up">
-
-      <a class="arch-node" href="signalops.html">
-        <div class="arch-node-icon icon-so">⬡</div>
-        <div class="arch-node-body">
-          <div class="arch-node-name">SignalOps</div>
-          <div class="arch-node-desc">Market signal intelligence · TAL scoring · 38 India Corporate accounts</div>
+      <div class="prob-block">
+        <div class="section-label">Problem this system solves</div>
+        <div class="prob-body">
+          <p>Most GTM teams operate across disconnected systems.</p>
+          <ul class="prob-list">
+            <li>Market signals appear in one tool.</li>
+            <li>Campaign execution runs in another.</li>
+            <li>Pipeline visibility appears late in CRM.</li>
+          </ul>
+          <p>Teams react after momentum appears instead of identifying it early.</p>
+          <p class="prob-close">Revenue momentum begins with signal detection.</p>
         </div>
-        <div class="arch-node-score tag-so">Signal Layer</div>
-      </a>
-
-      <div class="arch-arrow">
-        <div class="arch-arrow-line"></div>
-        <div class="arch-arrow-label">feeds ↓</div>
-        <div class="arch-arrow-line2"></div>
       </div>
 
-      <a class="arch-node" href="campaignforge.html">
-        <div class="arch-node-icon icon-cf">⚡</div>
-        <div class="arch-node-body">
-          <div class="arch-node-name">CampaignForge</div>
-          <div class="arch-node-desc">AI campaign activation · Persona builder · GTM program generator</div>
-        </div>
-        <div class="arch-node-score tag-cf">Activation Layer</div>
-      </a>
+      <div class="prob-divider"></div>
 
-      <div class="arch-arrow">
-        <div class="arch-arrow-line"></div>
-        <div class="arch-arrow-label">drives ↓</div>
-        <div class="arch-arrow-line2"></div>
+      <div class="prob-block">
+        <div class="section-label">System insight</div>
+        <div class="prob-insight">
+          <p class="insight-thesis">Revenue momentum starts with signal detection, not campaign execution.</p>
+          <p>When signal detection, campaign activation, pipeline visibility, and partner activity operate as a single system, teams move earlier in the buying cycle.</p>
+        </div>
       </div>
-
-      <a class="arch-node" href="deallens.html">
-        <div class="arch-node-icon icon-dl">🔍</div>
-        <div class="arch-node-body">
-          <div class="arch-node-name">DealLens</div>
-          <div class="arch-node-desc">Pipeline intelligence · Deal risk scoring · Forecast confidence · 24 deals</div>
-        </div>
-        <div class="arch-node-score tag-dl">Pipeline Layer</div>
-      </a>
-
-      <div class="arch-arrow">
-        <div class="arch-arrow-line"></div>
-        <div class="arch-arrow-label">informs ↓</div>
-        <div class="arch-arrow-line2"></div>
-      </div>
-
-      <a class="arch-node" href="partnerpulse.html">
-        <div class="arch-node-icon icon-pp">🤝</div>
-        <div class="arch-node-body">
-          <div class="arch-node-name">PartnerPulse</div>
-          <div class="arch-node-desc">Ecosystem intelligence · Partner performance · QBR readiness · 14 partners</div>
-        </div>
-        <div class="arch-node-score tag-pp">Ecosystem Layer</div>
-      </a>
 
     </div>
   </div>
 </section>
 
+<!-- How It Connects section removed — consolidated into system diagram -->
 
-<!-- CONTEXT -->
-<section class="section context-section" id="context">
-  <div class="section-inner">
-    <div class="section-hd fade-up">
-      <div class="section-label">Context</div>
-      <h2 class="section-title">Built on real mid-market<br><em>operating experience.</em></h2>
-      <p class="section-sub">This platform reflects work supporting SAP India's mid-market motion — one operator, one market unit, one revenue loop.</p>
-    </div>
-    <div class="context-grid fade-up">
-      <div class="context-item">
-        <div class="context-icon">⬡</div>
-        <div class="context-body">
-          <div class="context-title">Account prioritisation</div>
-          <div class="context-desc">Monitoring pipeline progression and identifying signal-driven account prioritisation triggers across mid-market opportunities.</div>
-        </div>
-      </div>
-      <div class="context-item">
-        <div class="context-icon">⚡</div>
-        <div class="context-body">
-          <div class="context-title">Campaign execution</div>
-          <div class="context-desc">Enabling campaign execution with sales development teams — connecting signals to targeted outreach programs.</div>
-        </div>
-      </div>
-      <div class="context-item">
-        <div class="context-icon">🔍</div>
-        <div class="context-body">
-          <div class="context-title">Pipeline visibility</div>
-          <div class="context-desc">Building structures for pipeline visibility — not reporting on what happened, but flagging what needs to happen next.</div>
-        </div>
-      </div>
-      <div class="context-item">
-        <div class="context-icon">🤝</div>
-        <div class="context-body">
-          <div class="context-title">Partner ecosystem</div>
-          <div class="context-desc">Improving visibility into partner ecosystem contribution — where partner-sourced pipeline is moving and where it is stalling.</div>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
+<!-- Old arch flow removed — consolidated into sysdiag -->
+
+
+<!-- Old context section removed — consolidated below -->
 
 <!-- MODULES -->
 <section class="section" id="modules" style="background:#F8FAFC;">
   <div class="section-inner">
     <div class="section-hd fade-up">
       <div class="section-label">Platform Modules</div>
-      <h2 class="section-title">Four tools.<br><em>One revenue engine.</em></h2>
-      <p class="section-sub">Each module is a working prototype. Click Open Module to explore the full interface.</p>
+      <h2 class="section-title">Four modules.<br><em>One operating loop.</em></h2>
+      <p class="section-sub">Each module is a working prototype. Click Open Module to explore the interface.</p>
     </div>
     <div class="modules-grid">
 
@@ -885,7 +794,7 @@ body {
         <div class="module-card-body">
           <div class="module-card-name">Signal<span>Ops</span></div>
           <div class="module-card-sub">GTM Intelligence Engine</div>
-          <div class="module-card-desc">Detects external market signals and prioritises target accounts using a multi-dimensional TAL scoring model. Tracks expansion triggers, funding events, hiring signals, and cloud ERP fit across 38 India Corporate accounts.</div>
+          <div class="module-card-desc">Identifies expansion signals that indicate buying momentum across 38 India Corporate accounts.</div>
           <div class="module-card-signals">
             <span class="signal-pill">Expansion Signals</span>
             <span class="signal-pill">Funding Triggers</span>
@@ -908,7 +817,7 @@ body {
         <div class="module-card-body">
           <div class="module-card-name">Campaign<span style="color:var(--purple)">Forge</span></div>
           <div class="module-card-sub">AI GTM Campaign Builder</div>
-          <div class="module-card-desc">AI-driven campaign builder that converts market signals into targeted GTM programs. Generates buyer personas, messaging frameworks, channel strategies, and campaign sequences — ready to execute across digital and field motions.</div>
+          <div class="module-card-desc">Activates targeted programs based on prioritised account signals.</div>
           <div class="module-card-signals">
             <span class="signal-pill">Persona Builder</span>
             <span class="signal-pill">AI Messaging</span>
@@ -931,7 +840,7 @@ body {
         <div class="module-card-body">
           <div class="module-card-name">Deal<span style="color:var(--red)">Lens</span></div>
           <div class="module-card-sub">Pipeline Intelligence Engine</div>
-          <div class="module-card-desc">Pipeline intelligence engine that evaluates deal risk, engagement signals, and forecast confidence. Scores every deal across 7 risk dimensions, tracks deal momentum, surfaces comparable deal patterns, and recommends the next best action for each seller.</div>
+          <div class="module-card-desc">Surfaces pipeline risk and deal momentum signals across 24 active deals.</div>
           <div class="module-card-signals">
             <span class="signal-pill">Risk Scoring</span>
             <span class="signal-pill">Deal Momentum</span>
@@ -954,7 +863,7 @@ body {
         <div class="module-card-body">
           <div class="module-card-name">Partner<span style="color:var(--green)">Pulse</span></div>
           <div class="module-card-sub">Ecosystem Intelligence Platform</div>
-          <div class="module-card-desc">Partner ecosystem intelligence that tracks partner performance, pipeline contribution, and QBR readiness across 14 channel partners. Surfaces tier health, deal registration trends, and partner-sourced revenue momentum across GSIs, resellers, and marketplaces.</div>
+          <div class="module-card-desc">Reveals partner contribution to pipeline progression across 14 channel partners.</div>
           <div class="module-card-signals">
             <span class="signal-pill">Partner Performance</span>
             <span class="signal-pill">Pipeline Contribution</span>
@@ -976,23 +885,30 @@ body {
 
 <!-- ABOUT -->
 
-<!-- WHAT THIS DEMONSTRATES -->
-<section class="section demonstrates-section">
+<!-- CONTEXT + WHAT THIS PORTFOLIO DEMONSTRATES -->
+<section class="section context-close-section">
   <div class="section-inner">
-    <div class="demonstrates-inner fade-up">
-      <div class="demonstrates-left">
-        <div class="section-label">What This Platform Demonstrates</div>
-        <h2 class="section-title" style="font-size:clamp(22px,3vw,32px);font-weight:500;">GTM systems thinking<br><em>for mid-market teams.</em></h2>
+    <div class="ctxclose-grid fade-up">
+
+      <div class="ctxclose-block">
+        <div class="section-label">Context</div>
+        <p class="ctxclose-body">This framework reflects systems developed while supporting SAP India's mid-market GTM motion.</p>
+        <p class="ctxclose-body">The focus is improving signal detection, campaign targeting, pipeline visibility, and partner ecosystem insight across the revenue engine.</p>
       </div>
-      <div class="demonstrates-right">
-        <ul class="demonstrates-list">
-          <li><span class="dl-dot"></span>GTM systems thinking for mid-market organisations</li>
-          <li><span class="dl-dot"></span>Signal-driven account prioritisation</li>
-          <li><span class="dl-dot"></span>Campaign activation frameworks</li>
-          <li><span class="dl-dot"></span>Pipeline intelligence and deal monitoring</li>
+
+      <div class="prob-divider"></div>
+
+      <div class="ctxclose-block">
+        <div class="section-label">What this portfolio demonstrates</div>
+        <ul class="demonstrates-list ctxclose-list">
+          <li><span class="dl-dot"></span>GTM systems thinking</li>
+          <li><span class="dl-dot"></span>Signal-driven marketing execution</li>
+          <li><span class="dl-dot"></span>Pipeline intelligence frameworks</li>
           <li><span class="dl-dot"></span>Partner ecosystem analytics</li>
+          <li><span class="dl-dot"></span>Scalable mid-market operating models</li>
         </ul>
       </div>
+
     </div>
   </div>
 </section>
@@ -1002,7 +918,7 @@ body {
     <div class="about-left fade-up">
       <div class="about-avatar">S</div>
       <div class="about-name">Siva Saran<br><em>Pidaparthy</em></div>
-      <div class="about-title">Digital Campaign Manager &middot; SAP India</div>
+      <div class="about-title">GTM Systems Builder | Digital Campaign Manager | SAP India</div>
       <div class="about-tags">
         <span class="about-tag">GTM Intelligence Systems</span>
         <span class="about-tag">Signal-Driven Marketing</span>
@@ -1013,15 +929,9 @@ body {
     <div class="about-right fade-up" style="transition-delay:.1s">
       <div class="about-section-label">About</div>
       <div class="about-body">
-        <p>I build systems that connect market signals to revenue execution.</p>
-        <p>Most GTM teams operate across disconnected layers. Market signals appear in one system. Campaign execution lives in another. Pipeline visibility arrives too late.</p>
-        <p>The platform shown here demonstrates how these layers can operate as a single intelligence system.</p>
-        <p><strong>SignalOps</strong> identifies market expansion signals.<br>
-        <strong>CampaignForge</strong> converts signals into targeted programs.<br>
-        <strong>DealLens</strong> monitors pipeline movement.<br>
-        <strong>PartnerPulse</strong> tracks ecosystem contribution.</p>
-        <p>Together they form a continuous GTM intelligence loop.</p>
-        <p>This work reflects systems developed while supporting SAP India's mid-market motion.</p>
+        <p>I build GTM intelligence systems for mid-market revenue teams.</p>
+        <p>My work sits at the intersection of signal detection, campaign execution, and pipeline visibility. Each module in this portfolio addresses a gap in how mid-market GTM teams make decisions.</p>
+        <p>This framework was developed while supporting SAP India's mid-market motion — one operator, one market unit, one revenue loop.</p>
       </div>
       <a class="about-linkedin" href="https://www.linkedin.com/in/siva-saran-pidaparthy-2181b6146/" target="_blank">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
@@ -1035,7 +945,7 @@ body {
 
 <footer class="footer">
   <div class="footer-name">GTM <em>Intelligence</em> Platform</div>
-  <div class="footer-sub">A conceptual platform portfolio · Four modules · One revenue engine</div>
+  <div class="footer-sub">GTM operating model · SAP India mid-market · 2026</div>
   <div class="footer-links">
     <a class="footer-link" href="signalops.html">SignalOps</a>
     <a class="footer-link" href="campaignforge.html">CampaignForge</a>
