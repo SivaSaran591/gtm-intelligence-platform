@@ -441,6 +441,46 @@ body {
   transition: opacity .5s ease, transform .5s ease;
 }
 .fade-up.visible { opacity: 1; transform: translateY(0); }
+
+/* ── ABOUT SECTION ───────────────────────────────────────── */
+.about-section { background: var(--navy); padding: 80px 0; }
+.about-inner { max-width: 900px; margin: 0 auto; padding: 0 32px; display: grid; grid-template-columns: 1fr 1.6fr; gap: 64px; align-items: center; }
+@media (max-width: 720px) { .about-inner { grid-template-columns: 1fr; gap: 32px; } }
+.about-left {}
+.about-avatar {
+  width: 72px; height: 72px; border-radius: 50%;
+  background: linear-gradient(135deg, var(--blue-dk), var(--blue));
+  display: flex; align-items: center; justify-content: center;
+  font-size: 28px; margin-bottom: 20px;
+  box-shadow: 0 0 0 4px rgba(0,102,255,.2);
+}
+.about-name { font-family: 'Fraunces', serif; font-size: 26px; font-weight: 300; color: #fff; letter-spacing: -.02em; line-height: 1.1; margin-bottom: 6px; }
+.about-name em { font-style: italic; color: rgba(0,102,255,.9); }
+.about-title { font-family: 'JetBrains Mono', monospace; font-size: 9px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: rgba(255,255,255,.3); margin-bottom: 20px; }
+.about-tags { display: flex; flex-direction: column; gap: 6px; }
+.about-tag {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px; font-weight: 600; letter-spacing: .06em;
+  color: rgba(0,102,255,.7); padding: 4px 10px;
+  border: 1px solid rgba(0,102,255,.2);
+  background: rgba(0,102,255,.06);
+  border-radius: 4px; width: fit-content;
+}
+.about-right {}
+.about-body { font-size: 14px; line-height: 1.85; color: rgba(255,255,255,.55); }
+.about-body p { margin-bottom: 16px; }
+.about-body p:last-child { margin-bottom: 0; }
+.about-body strong { color: rgba(255,255,255,.8); font-weight: 700; }
+.about-linkedin {
+  display: inline-flex; align-items: center; gap: 7px;
+  margin-top: 24px; padding: 8px 18px;
+  border: 1px solid rgba(255,255,255,.15);
+  border-radius: 7px; color: rgba(255,255,255,.5);
+  font-size: 11px; font-weight: 700; text-decoration: none;
+  transition: all .15s;
+}
+.about-linkedin:hover { border-color: rgba(255,255,255,.35); color: #fff; background: rgba(255,255,255,.05); }
+
 </style>
 </head>
 <body>
@@ -453,6 +493,7 @@ body {
   </a>
   <div class="nav-div"></div>
   <a class="nav-link active" href="index.html">Platform</a>
+  <a class="nav-link" href="#about">About</a>
   <a class="nav-link" href="signalops.html">SignalOps</a>
   <a class="nav-link" href="campaignforge.html">CampaignForge</a>
   <a class="nav-link" href="deallens.html">DealLens</a>
@@ -490,16 +531,12 @@ body {
         <div class="stat-lbl">Platform Modules</div>
       </div>
       <div class="stat-item">
-        <div class="stat-val"><span>38</span></div>
-        <div class="stat-lbl">Target Accounts</div>
+        <div class="stat-val"><span>1</span></div>
+        <div class="stat-lbl">Revenue Engine</div>
       </div>
       <div class="stat-item">
-        <div class="stat-val"><span>24</span></div>
-        <div class="stat-lbl">Active Deals</div>
-      </div>
-      <div class="stat-item">
-        <div class="stat-val"><span>14</span></div>
-        <div class="stat-lbl">Partner Entities</div>
+        <div class="stat-val"><span>&#x221E;</span></div>
+        <div class="stat-lbl">Problems to Solve</div>
       </div>
     </div>
   </div>
@@ -713,6 +750,36 @@ body {
 </section>
 
 <!-- FOOTER -->
+
+<!-- ABOUT -->
+<section class="about-section" id="about">
+  <div class="about-inner">
+    <div class="about-left fade-up">
+      <div class="about-avatar">S</div>
+      <div class="about-name">Siva Saran<br><em>Pidaparthy</em></div>
+      <div class="about-title">Digital Campaign Manager &middot; SAP APAC</div>
+      <div class="about-tags">
+        <span class="about-tag">Think Tank · New Age Marketing</span>
+        <span class="about-tag">Custodian of Analytics</span>
+        <span class="about-tag">Proponent of Partner Evolution</span>
+        <span class="about-tag">Systems Builder</span>
+      </div>
+    </div>
+    <div class="about-right fade-up" style="transition-delay:.1s">
+      <div class="about-body">
+        <p>I build systems. Not because the tools are interesting &mdash; though they are &mdash; but because <strong>a well-designed system changes how people make decisions</strong>. The four modules in this platform exist because I kept running into the same gap: good data, no intelligence layer on top of it.</p>
+        <p>I think of myself as a <strong>think tank for new age marketing</strong>. Not a campaign executor, but someone who sits at the intersection of signal, strategy, and execution &mdash; asking what the data is actually saying before anyone decides what to do next.</p>
+        <p>On analytics, I believe a <strong>custodian mindset matters more than a reporting mindset</strong>. Numbers without context are noise. My job is to turn noise into a point of view that a sales leader, an MU head, or a regional DCM can act on in the next 24 hours.</p>
+        <p>On partners, I think <strong>the ecosystem is underutilised everywhere</strong>. Partner intelligence is the last mile most revenue functions haven&rsquo;t cracked. PartnerPulse is my attempt to start that conversation.</p>
+      </div>
+      <a class="about-linkedin" href="https://www.linkedin.com/in/sivasaranpidaparthy" target="_blank">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+        Connect on LinkedIn
+      </a>
+    </div>
+  </div>
+</section>
+
 <footer class="footer">
   <div class="footer-name">GTM <em>Intelligence</em> Platform</div>
   <div class="footer-sub">A conceptual platform portfolio · Four modules · One revenue engine</div>
