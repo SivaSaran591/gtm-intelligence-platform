@@ -142,9 +142,9 @@ body {
 }
 .hero-title em { font-style: normal; color: #2563EB; font-weight: 700; }
 .hero-subtitle {
-  font-size: 20px; font-weight: 400; line-height: 1.6;
+  font-size: 22px; font-weight: 400; line-height: 1.55;
   color: #475569;
-  max-width: 600px; margin: 0 auto 40px;
+  max-width: 620px; margin: 0 auto 40px;
   letter-spacing: -.01em;
 }
 .hero-desc {
@@ -573,6 +573,14 @@ body {
 .ctxclose-body { font-size: 15px; color: #475569; line-height: 1.65; }
 .ctxclose-list { margin-top: 4px; }
 
+
+/* ── SECTION SPACING ─────────────────────────────────────── */
+.section { padding: 88px 0; }
+.sysdiag-section { padding: 88px 0; }
+.prob-section { padding: 88px 0; }
+.context-close-section { padding: 88px 0; }
+.about-section { padding: 88px 0; }
+
 </style>
 </head>
 <body>
@@ -603,16 +611,16 @@ body {
   <div class="hero-content">
     <div class="hero-eyebrow">
       <div class="hero-eyebrow-dot"></div>
-      GTM Intelligence Platform · Mid-Market
+      GTM Intelligence Platform · SAP India
     </div>
     <h1 class="hero-title">
       GTM <em>Intelligence</em> Platform
     </h1>
     <p class="hero-subtitle">
-      A GTM operating model built from mid-market execution
+      A GTM operating model for signal-driven revenue teams
     </p>
     <a class="hero-cta" href="#modules">Explore Modules ↓</a>
-    <a class="hero-cta-ghost" href="#architecture">View Architecture</a>
+    <a class="hero-cta-ghost" href="#problem">View the Problem</a>
 
     <div class="stats-strip">
       <div class="stat-item">
@@ -624,20 +632,50 @@ body {
         <div class="stat-lbl">Revenue Engine</div>
       </div>
       <div class="stat-item">
-        <div class="stat-val"><span>&#x221E;</span></div>
-        <div class="stat-lbl">Problems to Solve</div>
+        <div class="stat-val"><span>1</span></div>
+        <div class="stat-lbl">GTM Loop</div>
       </div>
     </div>
   </div>
 </section>
 
+<!-- PROBLEM + INSIGHT -->
+<section class="section prob-section" id="problem">
+  <div class="section-inner">
+    <div class="prob-grid fade-up">
 
+      <div class="prob-block">
+        <div class="section-label">Problem this system solves</div>
+        <div class="prob-body">
+          <p>Most GTM teams operate across disconnected systems.</p>
+          <ul class="prob-list">
+            <li>Market signals appear in one tool.</li>
+            <li>Campaign execution runs in another.</li>
+            <li>Pipeline visibility appears late in CRM.</li>
+          </ul>
+          <p class="prob-close">Revenue momentum is detected too late.</p>
+        </div>
+      </div>
+
+      <div class="prob-divider"></div>
+
+      <div class="prob-block">
+        <div class="section-label">System insight</div>
+        <div class="prob-insight">
+          <p class="insight-thesis">Revenue momentum begins with signal detection.</p>
+          <p>When signal detection, campaign activation, pipeline visibility, and partner activity operate as a single system, teams move earlier in the buying cycle.</p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
 
 <!-- SYSTEM DIAGRAM -->
 <section class="sysdiag-section" id="architecture">
   <div class="section-inner">
     <div class="section-hd fade-up" style="text-align:center;margin-bottom:40px;">
-      <div class="section-label" style="justify-content:center;">System Architecture</div>
+      <div class="section-label" style="justify-content:center;">Architecture</div>
       <h2 class="section-title">How the GTM intelligence system works</h2>
       <div class="arch-intro fade-up">
         <p>The system operates across four layers of the revenue engine:</p>
@@ -735,39 +773,6 @@ body {
   </div>
 </section>
 
-<!-- PROBLEM + INSIGHT -->
-<section class="section prob-section" id="problem">
-  <div class="section-inner">
-    <div class="prob-grid fade-up">
-
-      <div class="prob-block">
-        <div class="section-label">Problem this system solves</div>
-        <div class="prob-body">
-          <p>Most GTM teams operate across disconnected systems.</p>
-          <ul class="prob-list">
-            <li>Market signals appear in one tool.</li>
-            <li>Campaign execution runs in another.</li>
-            <li>Pipeline visibility appears late in CRM.</li>
-          </ul>
-          <p>Teams react after momentum appears instead of identifying it early.</p>
-          <p class="prob-close">Revenue momentum begins with signal detection.</p>
-        </div>
-      </div>
-
-      <div class="prob-divider"></div>
-
-      <div class="prob-block">
-        <div class="section-label">System insight</div>
-        <div class="prob-insight">
-          <p class="insight-thesis">Revenue momentum starts with signal detection, not campaign execution.</p>
-          <p>When signal detection, campaign activation, pipeline visibility, and partner activity operate as a single system, teams move earlier in the buying cycle.</p>
-        </div>
-      </div>
-
-    </div>
-  </div>
-</section>
-
 <!-- How It Connects section removed — consolidated into system diagram -->
 
 <!-- Old arch flow removed — consolidated into sysdiag -->
@@ -781,7 +786,7 @@ body {
     <div class="section-hd fade-up">
       <div class="section-label">Platform Modules</div>
       <h2 class="section-title">Four modules.<br><em>One operating loop.</em></h2>
-      <p class="section-sub">Each module is a working prototype. Click Open Module to explore the interface.</p>
+      <p class="section-sub">Each module is a working prototype. Open any module to explore the full interface.</p>
     </div>
     <div class="modules-grid">
 
