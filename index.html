@@ -581,6 +581,44 @@ body {
 .context-close-section { padding: 88px 0; }
 .about-section { padding: 88px 0; }
 
+
+/* ── HERO THESIS LINE ────────────────────────────────────── */
+.hero-thesis {
+  font-size: 18px; font-weight: 400; color: #64748B;
+  max-width: 540px; margin: -20px auto 32px;
+  line-height: 1.5; letter-spacing: -.01em;
+}
+
+/* ── EXAMPLE SCENARIO SECTION ───────────────────────────── */
+.example-section { background: #FFFFFF; padding: 88px 0; border-top: 1px solid #E2E8F0; border-bottom: 1px solid #E2E8F0; }
+.example-inner { max-width: 860px; margin: 0 auto; padding: 0 32px; }
+.example-header { margin-bottom: 40px; }
+.example-flow { display: flex; flex-direction: column; gap: 0; }
+.example-step {
+  display: grid; grid-template-columns: 120px 1fr; gap: 24px;
+  padding: 20px 0; border-bottom: 1px solid #F1F5F9; align-items: start;
+}
+.example-step:last-child { border-bottom: none; }
+.example-step-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase;
+  color: #2563EB; padding-top: 3px;
+}
+.example-step-text { font-size: 15px; color: #0F172A; line-height: 1.6; }
+.example-trigger {
+  font-size: 15px; color: #475569; line-height: 1.6;
+  padding: 16px 20px; background: #F8FAFC;
+  border: 1px solid #E2E8F0; border-radius: 10px;
+  margin-bottom: 32px;
+}
+.example-close {
+  margin-top: 32px; padding-top: 24px; border-top: 1px solid #E2E8F0;
+  font-size: 14px; color: #94A3B8; line-height: 1.5;
+}
+@media (max-width: 640px) {
+  .example-step { grid-template-columns: 1fr; gap: 6px; }
+}
+
 </style>
 </head>
 <body>
@@ -599,7 +637,7 @@ body {
   <a class="nav-link" href="deallens.html">DealLens</a>
   <a class="nav-link" href="partnerpulse.html">PartnerPulse</a>
   <div class="nav-right">
-    <span class="nav-badge">Conceptual GTM platform portfolio</span>
+    <span class="nav-badge">GTM operating model portfolio</span>
   </div>
 </nav>
 
@@ -619,6 +657,7 @@ body {
     <p class="hero-subtitle">
       A GTM operating model for signal-driven revenue teams
     </p>
+    <p class="hero-thesis">Revenue momentum begins with signal detection.</p>
     <a class="hero-cta" href="#modules">Explore Modules ↓</a>
     <a class="hero-cta-ghost" href="#problem">View the Problem</a>
 
@@ -647,13 +686,13 @@ body {
       <div class="prob-block">
         <div class="section-label">Problem this system solves</div>
         <div class="prob-body">
-          <p>Most GTM teams operate across disconnected systems.</p>
+          <p>GTM teams detect revenue momentum too late.</p>
           <ul class="prob-list">
-            <li>Market signals appear in one tool.</li>
+            <li>Market signals appear in one system.</li>
             <li>Campaign execution runs in another.</li>
             <li>Pipeline visibility appears late in CRM.</li>
           </ul>
-          <p class="prob-close">Revenue momentum is detected too late.</p>
+          <p class="prob-close">Revenue momentum is identified after it has already formed.</p>
         </div>
       </div>
 
@@ -662,8 +701,8 @@ body {
       <div class="prob-block">
         <div class="section-label">System insight</div>
         <div class="prob-insight">
-          <p class="insight-thesis">Revenue momentum begins with signal detection.</p>
-          <p>When signal detection, campaign activation, pipeline visibility, and partner activity operate as a single system, teams move earlier in the buying cycle.</p>
+          <p class="insight-thesis">Signals reveal when buying momentum begins.</p>
+          <p>When signal detection, campaign activation, pipeline visibility, and partner ecosystems operate as a single system, teams move earlier in the buying cycle.</p>
         </div>
       </div>
 
@@ -677,19 +716,7 @@ body {
     <div class="section-hd fade-up" style="text-align:center;margin-bottom:40px;">
       <div class="section-label" style="justify-content:center;">Architecture</div>
       <h2 class="section-title">How the GTM intelligence system works</h2>
-      <div class="arch-intro fade-up">
-        <p>The system operates across four layers of the revenue engine:</p>
-        <div class="arch-layers">
-          <span class="arch-layer">Signal detection</span>
-          <span class="arch-layer-sep">·</span>
-          <span class="arch-layer">Program activation</span>
-          <span class="arch-layer-sep">·</span>
-          <span class="arch-layer">Pipeline intelligence</span>
-          <span class="arch-layer-sep">·</span>
-          <span class="arch-layer">Partner ecosystem insight</span>
-        </div>
-        <p class="arch-close">These layers form a continuous signal-to-revenue loop.</p>
-      </div>
+      
     </div>
     <div class="sysdiag-flow fade-up">
 
@@ -773,12 +800,12 @@ body {
   </div>
 </section>
 
-<!-- How It Connects section removed — consolidated into system diagram -->
-
-<!-- Old arch flow removed — consolidated into sysdiag -->
 
 
-<!-- Old context section removed — consolidated below -->
+
+
+
+
 
 <!-- MODULES -->
 <section class="section" id="modules" style="background:#F8FAFC;">
@@ -886,9 +913,48 @@ body {
   </div>
 </section>
 
-<!-- FOOTER -->
+<!-- EXAMPLE SCENARIO -->
+<section class="example-section">
+  <div class="example-inner">
+    <div class="example-header fade-up">
+      <div class="section-label">Example signal-to-revenue scenario</div>
+      <h2 class="section-title" style="margin-top:8px;">How the system works in practice</h2>
+    </div>
 
-<!-- ABOUT -->
+    <div class="example-trigger fade-up">
+      A mid-market engineering company raises funding and expands finance leadership hiring.
+    </div>
+
+    <div class="example-flow fade-up">
+
+      <div class="example-step">
+        <div class="example-step-label">SignalOps</div>
+        <div class="example-step-text">Flags the account based on expansion signals — funding event and hiring pattern match.</div>
+      </div>
+
+      <div class="example-step">
+        <div class="example-step-label">CampaignForge</div>
+        <div class="example-step-text">Activates a targeted finance transformation sequence matched to the account's expansion stage.</div>
+      </div>
+
+      <div class="example-step">
+        <div class="example-step-label">DealLens</div>
+        <div class="example-step-text">Tracks pipeline momentum and surfaces deal risk as the opportunity progresses.</div>
+      </div>
+
+      <div class="example-step">
+        <div class="example-step-label">PartnerPulse</div>
+        <div class="example-step-text">Identifies partner influence on deal progression and flags partner-sourced momentum.</div>
+      </div>
+
+    </div>
+
+    <div class="example-close fade-up">
+      This is how the system converts signals into revenue momentum — one connected loop across four layers.
+    </div>
+  </div>
+</section>
+
 
 <!-- CONTEXT + WHAT THIS PORTFOLIO DEMONSTRATES -->
 <section class="section context-close-section">
@@ -935,8 +1001,7 @@ body {
       <div class="about-section-label">About</div>
       <div class="about-body">
         <p>I build GTM intelligence systems for mid-market revenue teams.</p>
-        <p>My work sits at the intersection of signal detection, campaign execution, and pipeline visibility. Each module in this portfolio addresses a gap in how mid-market GTM teams make decisions.</p>
-        <p>This framework was developed while supporting SAP India's mid-market motion — one operator, one market unit, one revenue loop.</p>
+        <p>Each module in this portfolio addresses a specific gap in how mid-market GTM teams make decisions — from account prioritisation to pipeline visibility.</p>
       </div>
       <a class="about-linkedin" href="https://www.linkedin.com/in/siva-saran-pidaparthy-2181b6146/" target="_blank">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
