@@ -2200,9 +2200,72 @@ function setPT(n,state){
   el.className='pt-step '+state;
 }
 
+// ─── DEMO MODE FLAG ───────────────────────────────────────────────────
+// Set to true automatically when the API is unavailable (e.g. GitHub Pages)
+let DEMO_MODE = false;
+let DEMO_CALL_INDEX = 0;
+
+const DEMO_INSIGHTS = [
+  {"source":"G2 / Capterra","theme":"Month-end close taking 3 extra weeks","quote":"Our finance team spends the last three weeks of every quarter reconciling data from four different systems. We cannot close the books until everyone stops working.","sentiment":22,"frequency":"High","type":"pain"},
+  {"source":"Reddit / SAP Community","theme":"No single view of inventory across plants","quote":"We have six manufacturing plants and zero visibility across them in real time. Every plant manager runs their own spreadsheet. The CTO has been asking for a consolidated view for two years.","sentiment":18,"frequency":"High","type":"pain"},
+  {"source":"LinkedIn Discussions","theme":"Compliance reporting done manually","quote":"Every statutory filing requires three people to manually pull data, cross-check it, and reformat it. One error and we are facing penalties. The risk is not theoretical any more.","sentiment":30,"frequency":"High","type":"pain"},
+  {"source":"Economic Times","theme":"Competitor modernisation creating cost gap","quote":"We are watching peers in our segment reduce their cost-to-serve by 18 to 22 percent after consolidating onto a single platform. We cannot price competitively if our back-office overhead does not come down.","sentiment":25,"frequency":"Medium","type":"pain"},
+  {"source":"NASSCOM / Gartner","theme":"IT fragmentation slowing new market entry","quote":"Every time we want to expand to a new geography, IT has to replicate a patchwork of legacy systems. The last expansion took 14 months. That is not a growth engine.","sentiment":35,"frequency":"Medium","type":"pain"},
+  {"source":"LinkedIn Discussions","theme":"Unified operations platform as foundation for scale","quote":"What we want is a single source of truth that lets finance, operations, and leadership look at the same number at the same time. Not integration. Foundation.","sentiment":72,"frequency":"High","type":"aspiration"},
+  {"source":"G2 / Capterra","theme":"Real-time decision-making across functions","quote":"The goal is for our CFO and COO to be working from the same data in real time. Right now they are in different meetings with different numbers. That is a leadership problem before it is a technology problem.","sentiment":68,"frequency":"Medium","type":"aspiration"},
+  {"source":"NASSCOM / Gartner","theme":"Cloud platform that scales with the business","quote":"We need a platform that grows with us, not one we have to re-implement every three years. The next system we pick has to last a decade.","sentiment":75,"frequency":"Medium","type":"aspiration"}
+];
+
+const DEMO_EMAILS = [
+  {
+    step:1,
+    subject:"{{account.name}} and the close cycle problem",
+    timing:"Day 1 — Tuesday, 9:00 AM IST",
+    body:"Hi {{prospect.first_name}},\n\nManufacturing companies in India at your scale typically spend 18 to 22 days on month-end close. Most of that time is reconciliation across disconnected systems, not analysis.\n\nFor a CTO or IT Director, that is not a finance problem. That is a data architecture problem. Every plant running its own reporting stack means leadership is always looking backwards, never in real time.\n\nPeers in your sector who have consolidated onto a single platform have cut that close cycle to under 7 days. The gap is compounding quarterly.\n\nIs consolidated real-time operations visibility on {{account.name}}'s roadmap for this year?\n\nBest,\n{{sender.first_name}}\n{{sender.title}}\nSAP APAC Digital Hub\n{{sender.phone}}"
+  },
+  {
+    step:2,
+    subject:"What peers in Indian manufacturing discovered",
+    timing:"Day 3 — Thursday, 8:30 AM IST",
+    body:"Hi {{prospect.first_name}},\n\nBuilding on my last note. The close cycle problem is a symptom. The root cause is that finance, operations, and leadership at {{account.name}} are working from different versions of the same data.\n\nFor a manufacturing business at your scale, that fragmentation has a direct cost: slower pricing decisions, higher audit exposure, and IT overhead that grows with every new plant or product line.\n\nBajaj Electricals faced the same structural constraint before consolidating their operations platform. They reduced their reporting overhead by 40 percent and eliminated the manual reconciliation that was blocking their quarterly planning cycle.\n\nThe companies in your segment that are moving fastest on cost and margin are the ones who stopped patching the fragmentation and addressed the foundation.\n\nWhat does {{account.name}}'s current close cycle look like across plants?\n\nBest,\n{{sender.first_name}}\n{{sender.title}}\nSAP APAC Digital Hub\n{{sender.phone}}"
+  },
+  {
+    step:3,
+    subject:"Last note, {{prospect.first_name}}",
+    timing:"Day 7 — Tuesday, 9:00 AM IST",
+    body:"Hi {{prospect.first_name}},\n\nOne more thought before I step back.\n\nBajaj Electricals consolidated their operations onto a single platform and cut reporting overhead by 40 percent within the first year. The decision-maker profile was exactly the CTO and CFO working together to address a fragmentation problem that had become a growth ceiling.\n\nFor {{account.name}}, the window to address this before the cost gap widens further is now. Manufacturing peers who delayed this decision by 12 months found the integration cost had grown proportionally with their technical debt.\n\nI have 2 slots available this week. [Book a 20-minute call here: {{sender.meeting_link}}]\n\nBest,\n{{sender.first_name}}\n{{sender.title}}\nSAP APAC Digital Hub\n{{sender.phone}}"
+  },
+  {
+    step:4,
+    subject:"Stepping back, {{prospect.first_name}}",
+    timing:"Day 12 — Wednesday, 7:45 AM IST",
+    body:"Hi {{prospect.first_name}},\n\nI know this is a busy period for {{account.name}} and I do not want to add to the noise.\n\nThe single reason timing matters now: Indian manufacturing companies that consolidate operations platforms in the next 12 months will have a 2-year cost and speed advantage over those that wait. That gap is already visible in your segment.\n\nI will step back. But if operations visibility and close cycle efficiency become a priority, I am one reply away.\n\nBest,\n{{sender.first_name}}\n{{sender.title}}\nSAP APAC Digital Hub\n{{sender.phone}}"
+  }
+];
+
+const DEMO_RESULT = {
+  topTalkingPoint: "Manufacturing companies at this scale are closing the books 3 weeks late because finance, operations, and leadership are working from different data — and that is a CTO problem before it is a finance problem.",
+  displacementAngle: "A fragmented stack of disconnected systems creates compounding audit exposure, manual reconciliation overhead, and a close cycle that blocks quarterly planning.",
+  onePagerSummary: "This campaign targets CTO and IT Director personas at Indian manufacturing companies (₹150–299 Cr revenue) running fragmented or non-SAP ERP environments. The commercial anchor is the operational and financial cost of data fragmentation — close cycle drag, compliance exposure, and an IT overhead that grows with scale. The 4-step sequence is designed to move the prospect from problem recognition to a booked discovery call.",
+  emails: DEMO_EMAILS
+};
+
+function getDemoResponse(callIndex) {
+  if (callIndex === 0) return JSON.stringify(DEMO_INSIGHTS);
+  if (callIndex === 1) return JSON.stringify(DEMO_RESULT);
+  return JSON.stringify(DEMO_INSIGHTS);
+}
+
 // ─── API ─────────────────────────────────────────────────────────────
 async function claude(prompt, sys, attempt=0){
-  const r = await fetch('https://api.anthropic.com/v1/messages',{
+  // Demo mode: return pre-built data without hitting the API
+  if(DEMO_MODE){
+    await new Promise(r=>setTimeout(r, 900 + Math.random()*600));
+    return getDemoResponse(DEMO_CALL_INDEX++);
+  }
+  let r;
+  try {
+    r = await fetch('https://api.anthropic.com/v1/messages',{
     method:'POST',
     headers:{'Content-Type':'application/json'},
     body:JSON.stringify({
@@ -2235,6 +2298,24 @@ async function claude(prompt, sys, attempt=0){
   }
   const d = await r.json();
   return d.content[0].text;
+  } catch(fetchErr) {
+    // Network/CORS block (e.g. GitHub Pages) — switch to demo mode silently
+    if(!DEMO_MODE){
+      DEMO_MODE = true;
+      DEMO_CALL_INDEX = 0;
+      const bar = document.getElementById('errBar');
+      if(bar){
+        bar.textContent = '📊 Running in Demo Mode — showing pre-built campaign output';
+        bar.style.display = 'block';
+        bar.style.background = 'rgba(0,102,255,.08)';
+        bar.style.color = '#0044CC';
+        bar.style.borderColor = 'rgba(0,102,255,.25)';
+        setTimeout(()=>{ bar.style.display='none'; bar.style.background=''; bar.style.color=''; bar.style.borderColor=''; }, 4000);
+      }
+    }
+    await new Promise(r=>setTimeout(r, 900 + Math.random()*600));
+    return getDemoResponse(DEMO_CALL_INDEX++);
+  }
 }
 
 function parseJ(raw){return JSON.parse(raw.replace(/```json|```/g,'').trim());}
@@ -2538,6 +2619,7 @@ async function startPipeline(){
   if(running) return;
   document.getElementById('mainRunBtn').disabled=true;
   running=true;
+  DEMO_CALL_INDEX = 0; // reset demo sequence on each new run
   showResults();
 
   // Reset results
