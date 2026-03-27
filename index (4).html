@@ -1,0 +1,1077 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GTM Intelligence Platform</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;1,9..144,300;1,9..144,400&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  /* Light palette — Stripe / Linear / Vercel-inspired */
+  --blue: #2563EB;
+  --blue-dk: #1D4ED8;
+  --blue-lt: #EFF6FF;
+  --blue-mid: #BFDBFE;
+  --green: #059669;
+  --green-lt: #ECFDF5;
+  --amber: #D97706;
+  --purple: #7C3AED;
+  --indigo: #4F46E5;
+  --red: #DC2626;
+  --bg: #F8FAFC;
+  --surface: #FFFFFF;
+  --s2: #F1F5F9;
+  --s3: #E2E8F0;
+  --border: #E2E8F0;
+  --border2: #CBD5E1;
+  --text: #0F172A;
+  --text2: #1E293B;
+  --text3: #475569;
+  --text4: #94A3B8;
+  --sh1: 0 1px 3px rgba(0,0,0,.06), 0 1px 2px rgba(0,0,0,.04);
+  --sh2: 0 4px 16px rgba(0,0,0,.07), 0 2px 4px rgba(0,0,0,.04);
+  --sh3: 0 16px 48px rgba(0,0,0,.10), 0 4px 8px rgba(0,0,0,.05);
+  --navy: #F1F5F9;
+  --navy2: #E2E8F0;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
+}
+
+/* ── NAV ─────────────────────────────────────────────────── */
+.nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  height: 56px;
+  background: rgba(248,250,252,.96);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid #E2E8F0;
+  box-shadow: var(--sh1);
+  display: flex; align-items: center; padding: 0 32px; gap: 6px;
+}
+.nav-logo {
+  display: flex; align-items: center; gap: 10px; margin-right: 12px;
+  text-decoration: none;
+}
+.nav-logo-mark {
+  width: 28px; height: 28px;
+  background: linear-gradient(135deg, var(--blue-dk), var(--blue));
+  border-radius: 7px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 13px; color: #fff; font-weight: 800;
+}
+.nav-logo-name {
+  font-size: 13px; font-weight: 800; color: #0F172A;
+  letter-spacing: -.02em;
+}
+.nav-div { width: 1px; height: 20px; background: var(--border); margin: 0 6px; }
+.nav-link {
+  padding: 6px 12px; border-radius: 7px;
+  font-size: 12px; font-weight: 600; color: #475569;
+  text-decoration: none; transition: all .15s; white-space: nowrap;
+}
+.nav-link:hover { color: #0F172A; background: #F1F5F9; }
+.nav-link.active { color: #2563EB; background: #EFF6FF; }
+.nav-right { margin-left: auto; display: flex; align-items: center; gap: 8px; }
+.nav-badge {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px; font-weight: 600; letter-spacing: .07em;
+  color: var(--text4);
+}
+
+/* ── HERO ────────────────────────────────────────────────── */
+.hero {
+  min-height: 100vh;
+  display: flex; flex-direction: column; justify-content: center;
+  padding: 120px 0 80px;
+  position: relative; overflow: hidden;
+}
+.hero-bg {
+  position: absolute; inset: 0; z-index: 0;
+  background: #F8FAFC;
+}
+.hero-grid {
+  position: absolute; inset: 0; z-index: 1;
+  background-image:
+    linear-gradient(rgba(37,99,235,.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(37,99,235,.04) 1px, transparent 1px);
+  background-size: 48px 48px;
+}
+.hero-glow {
+  position: absolute; top: -160px; left: 50%; transform: translateX(-50%);
+  width: 900px; height: 500px;
+  background: radial-gradient(ellipse at center, rgba(37,99,235,.07) 0%, transparent 70%);
+  z-index: 1;
+}
+.hero-content {
+  position: relative; z-index: 2;
+  max-width: 900px; margin: 0 auto; padding: 0 32px;
+  text-align: center;
+}
+.hero-eyebrow {
+  display: inline-flex; align-items: center; gap: 8px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px; font-weight: 600; letter-spacing: .16em; text-transform: uppercase;
+  color: #2563EB;
+  border: 1px solid #BFDBFE;
+  background: #EFF6FF;
+  padding: 5px 14px; border-radius: 20px;
+  margin-bottom: 28px;
+}
+.hero-eyebrow-dot {
+  width: 5px; height: 5px; border-radius: 50%; background: #2563EB;
+  animation: pulse 2s ease-in-out infinite;
+}
+@keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.4;transform:scale(.6)} }
+
+.hero-title {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: clamp(44px, 6vw, 64px);
+  font-weight: 700;
+  line-height: 1.1;
+  color: #0F172A;
+  margin-bottom: 24px;
+  letter-spacing: -.03em;
+}
+.hero-title em { font-style: normal; color: #2563EB; font-weight: 700; }
+.hero-subtitle {
+  font-size: 22px; font-weight: 400; line-height: 1.55;
+  color: #475569;
+  max-width: 620px; margin: 0 auto 40px;
+  letter-spacing: -.01em;
+}
+.hero-desc {
+  font-size: 14px; line-height: 1.75; color: #64748B;
+  max-width: 680px; margin: 0 auto 48px;
+  border-top: 1px solid #E2E8F0;
+  padding-top: 24px;
+}
+.hero-cta {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 12px 26px;
+  background: #2563EB; color: #fff;
+  font-size: 14px; font-weight: 700; letter-spacing: .005em;
+  border-radius: 8px; text-decoration: none; border: 1px solid transparent;
+  transition: all .18s; box-shadow: 0 1px 3px rgba(37,99,235,.3);
+}
+.hero-cta:hover {
+  background: #1D4ED8;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(37,99,235,.25);
+}
+.hero-cta-ghost {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 12px 22px;
+  background: #fff; color: #0F172A;
+  font-size: 14px; font-weight: 600;
+  border: 1px solid #E2E8F0;
+  border-radius: 8px; text-decoration: none;
+  transition: all .18s; margin-left: 10px;
+}
+.hero-cta-ghost:hover {
+  border-color: #2563EB; color: #2563EB;
+}
+
+/* ── STATS STRIP ─────────────────────────────────────────── */
+.stats-strip {
+  position: relative; z-index: 2;
+  display: flex; justify-content: center; gap: 0;
+  margin-top: 64px;
+  border-top: 1px solid #E2E8F0;
+  padding-top: 40px;
+}
+.stat-item {
+  padding: 0 40px;
+  border-right: 1px solid #E2E8F0;
+  text-align: center;
+}
+.stat-item:last-child { border-right: none; }
+.stat-val {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 28px; font-weight: 600;
+  color: #0F172A; letter-spacing: -.03em; line-height: 1;
+  margin-bottom: 5px;
+}
+.stat-val span { color: #2563EB; }
+.stat-lbl {
+  font-size: 10px; font-weight: 600; letter-spacing: .08em;
+  text-transform: uppercase; color: #94A3B8;
+}
+
+/* ── SECTION COMMON ──────────────────────────────────────── */
+.section { padding: 80px 0; }
+.section-inner { max-width: 1100px; margin: 0 auto; padding: 0 32px; }
+.section-hd { margin-bottom: 48px; }
+.section-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px; font-weight: 700; letter-spacing: .16em; text-transform: uppercase;
+  color: #2563EB; margin-bottom: 10px;
+  display: flex; align-items: center; gap: 8px;
+}
+.section-label::before {
+  content: ''; display: inline-block;
+  width: 20px; height: 2px; background: var(--blue); border-radius: 2px;
+}
+.section-title {
+  font-family: 'Fraunces', serif;
+  font-size: clamp(28px, 3.5vw, 40px);
+  font-weight: 400; line-height: 1.15;
+  color: #0F172A; letter-spacing: -.025em;
+}
+.section-title em { font-style: italic; color: var(--blue); }
+.section-sub {
+  font-size: 14px; color: #475569; line-height: 1.7;
+  margin-top: 10px; max-width: 560px;
+}
+
+/* ── ARCHITECTURE FLOW ───────────────────────────────────── */
+.arch-section { background: #F1F5F9; padding: 80px 0; border-top: 1px solid #E2E8F0; border-bottom: 1px solid #E2E8F0; }
+.arch-flow {
+  display: flex; flex-direction: column; align-items: center;
+  gap: 0; max-width: 560px; margin: 0 auto;
+}
+.arch-node {
+  width: 100%;
+  background: #FFFFFF;
+  border: 1px solid #E2E8F0;
+  border-radius: 14px;
+  padding: 20px 24px;
+  display: flex; align-items: center; gap: 16px;
+  transition: all .2s; cursor: pointer; text-decoration: none;
+}
+.arch-node:hover {
+  background: #EFF6FF;
+  border-color: #BFDBFE;
+  transform: translateX(4px);
+}
+.arch-node-icon {
+  width: 40px; height: 40px; border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px; flex-shrink: 0;
+}
+.arch-node-body { flex: 1; }
+.arch-node-name {
+  font-size: 13px; font-weight: 800; color: #0F172A;
+  margin-bottom: 2px; letter-spacing: -.01em;
+}
+.arch-node-desc { font-size: 11px; color: #64748B; line-height: 1.45; }
+.arch-node-score {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase;
+  padding: 3px 8px; border-radius: 4px; flex-shrink: 0;
+}
+.arch-arrow {
+  display: flex; flex-direction: column; align-items: center;
+  padding: 6px 0; gap: 2px;
+}
+.arch-arrow-line {
+  width: 1px; height: 20px;
+  background: linear-gradient(to bottom, #BFDBFE, #EFF6FF);
+}
+.arch-arrow-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 8px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase;
+  color: rgba(59,130,246,.5);
+  background: rgba(37,99,235,.08); border: 1px solid rgba(59,130,246,.18);
+  padding: 2px 8px; border-radius: 10px;
+}
+.arch-arrow-line2 {
+  width: 1px; height: 20px;
+  background: linear-gradient(to bottom, #EFF6FF, #BFDBFE);
+}
+
+/* ── MODULE CARDS ────────────────────────────────────────── */
+.modules-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+}
+@media (max-width: 720px) { .modules-grid { grid-template-columns: 1fr; } }
+
+.module-card {
+  background: #FFFFFF; color: #0F172A;
+  border: 1px solid #E2E8F0;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: var(--sh1);
+  transition: box-shadow .2s, transform .2s, border-color .2s;
+  display: flex; flex-direction: column;
+}
+.module-card:hover {
+  box-shadow: var(--sh3);
+  transform: translateY(-2px);
+  border-color: var(--border2);
+}
+.module-card-top {
+  padding: 24px 24px 0;
+  display: flex; align-items: flex-start; justify-content: space-between;
+}
+.module-card-icon {
+  width: 44px; height: 44px; border-radius: 11px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 20px; flex-shrink: 0;
+}
+.module-card-tag {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase;
+  padding: 3px 9px; border-radius: 4px;
+}
+.module-card-body { padding: 16px 24px; flex: 1; }
+.module-card-name {
+  font-size: 18px; font-weight: 800; color: #0F172A;
+  letter-spacing: -.02em; margin-bottom: 4px;
+}
+.module-card-name span { color: var(--blue); }
+.module-card-sub {
+  font-size: 10px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase;
+  color: var(--text3); margin-bottom: 12px;
+}
+.module-card-desc {
+  font-size: 13px; color: #475569; line-height: 1.65;
+}
+.module-card-signals {
+  display: flex; gap: 5px; flex-wrap: wrap; margin-top: 14px;
+}
+.signal-pill {
+  font-size: 10px; font-weight: 600;
+  padding: 2px 9px; border-radius: 4px;
+  background: #F1F5F9; color: #64748B;
+}
+.module-card-foot {
+  padding: 16px 24px;
+  border-top: 1px solid #E2E8F0;
+  background: #F8FAFC;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.module-card-meta { font-size: 10px; color: #94A3B8; font-weight: 600; }
+.open-btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 10px 16px;
+  background: #FFFFFF; color: #0F172A;
+  font-size: 12px; font-weight: 700; letter-spacing: .01em;
+  border: 1px solid #E2E8F0;
+  border-radius: 10px; text-decoration: none;
+  transition: all .15s; box-shadow: var(--sh1);
+}
+.open-btn:hover { border-color: #2563EB; color: #2563EB; box-shadow: none; }
+.open-btn-arrow { font-size: 13px; }
+
+/* ── ACCENTUATED TOP BORDER per module ───────────────────── */
+.card-so { border-top: 3px solid var(--blue); }
+.card-cf { border-top: 3px solid var(--purple); }
+.card-dl { border-top: 3px solid var(--red); }
+.card-pp { border-top: 3px solid var(--green); }
+
+.icon-so { background: var(--blue-lt); }
+.icon-cf { background: #F5F3FF; }
+.icon-dl { background: #FEF2F2; }
+.icon-pp { background: var(--green-lt); }
+
+.tag-so { background: var(--blue-lt); color: var(--blue); }
+.tag-cf { background: #F5F3FF; color: var(--purple); }
+.tag-dl { background: #FEF2F2; color: var(--red); }
+.tag-pp { background: var(--green-lt); color: var(--green); }
+
+/* ── HOW IT WORKS ─────────────────────────────────────────── */
+.how-grid {
+  display: grid; grid-template-columns: repeat(4,1fr); gap: 14px;
+}
+@media (max-width: 840px) { .how-grid { grid-template-columns: repeat(2,1fr); } }
+.how-card {
+  background: #FFFFFF; border: 1px solid #E2E8F0;
+  border-radius: 12px; padding: 20px; box-shadow: var(--sh1);
+  position: relative; overflow: hidden;
+}
+.how-card::before {
+  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+  border-radius: 12px 12px 0 0;
+}
+.how-card.c1::before { background: var(--blue); }
+.how-card.c2::before { background: var(--purple); }
+.how-card.c3::before { background: var(--red); }
+.how-card.c4::before { background: var(--green); }
+.how-num {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px; font-weight: 700; letter-spacing: .1em;
+  color: #64748B; margin-bottom: 10px;
+}
+.how-title { font-size: 13px; font-weight: 800; color: #0F172A; margin-bottom: 6px; }
+.how-desc { font-size: 11px; color: var(--text3); line-height: 1.6; }
+
+/* ── FOOTER ──────────────────────────────────────────────── */
+.footer {
+  background: var(--navy);
+  border-top: 1px solid #1E293B;
+  padding: 40px 32px;
+  text-align: center;
+}
+.footer-name {
+  font-family: 'Fraunces', serif;
+  font-size: 26px; font-weight: 300; color: #F8FAFC;
+  letter-spacing: -.01em; margin-bottom: 8px;
+}
+.footer-name em { font-style: italic; color: #3B82F6; }
+.footer-sub {
+  font-size: 13px; color: #64748B; font-weight: 400;
+  margin-bottom: 20px;
+}
+.footer-links {
+  display: flex; justify-content: center; gap: 6px; flex-wrap: wrap;
+}
+.footer-link {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase;
+  color: #94A3B8; padding: 5px 12px;
+  border: 1px solid #334155; border-radius: 5px;
+  text-decoration: none; transition: all .15s;
+}
+.footer-link:hover { color: #F8FAFC; border-color: #3B82F6; }
+.footer-copy {
+  margin-top: 28px; font-size: 13px; color: #64748B;
+}
+
+/* ── SCROLL FADE IN ──────────────────────────────────────── */
+.fade-up {
+  opacity: 0; transform: translateY(20px);
+  transition: opacity .5s ease, transform .5s ease;
+}
+.fade-up.visible { opacity: 1; transform: translateY(0); }
+
+/* ── ABOUT SECTION ───────────────────────────────────────── */
+/* about styles consolidated below */
+
+
+/* ── WHY SECTION ─────────────────────────────────────────── */
+.why-section { background: #F8FAFC; border-bottom: 1px solid #E2E8F0; }
+.why-grid { display: grid; grid-template-columns: 1fr auto 1fr auto 1fr; gap: 0; align-items: start; margin: 40px 0 32px; }
+@media (max-width: 768px) { .why-grid { grid-template-columns: 1fr; gap: 20px; } .why-arrow { display: none; } }
+.why-col { padding: 24px; background: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 12px; box-shadow: var(--sh1); }
+.why-num { font-family: 'JetBrains Mono', monospace; font-size: 9px; font-weight: 700; letter-spacing: .12em; color: #2563EB; margin-bottom: 10px; }
+.why-name { font-size: 14px; font-weight: 800; color: #0F172A; margin-bottom: 8px; }
+.why-desc { font-size: 12px; color: #475569; line-height: 1.65; }
+.why-arrow { display: flex; align-items: center; justify-content: center; padding: 0 16px; font-size: 20px; color: #CBD5E1; padding-top: 32px; }
+.why-conclusion { font-size: 15px; color: #475569; line-height: 1.8; padding: 24px; background: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 12px; border-left: 3px solid #2563EB; }
+.why-conclusion span { color: var(--text2); display: block; margin-top: 10px; }
+
+/* ── CONTEXT SECTION ─────────────────────────────────────── */
+.context-section { background: #FFFFFF; border-bottom: 1px solid #E2E8F0; }
+.context-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; margin-top: 40px; }
+@media (max-width: 640px) { .context-grid { grid-template-columns: 1fr; } }
+.context-item { display: flex; gap: 16px; padding: 20px; background: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 12px; box-shadow: var(--sh1); }
+.context-icon { font-size: 20px; flex-shrink: 0; margin-top: 2px; }
+.context-title { font-size: 13px; font-weight: 800; color: #0F172A; margin-bottom: 6px; }
+.context-desc { font-size: 12px; color: #475569; line-height: 1.65; }
+
+/* ── DEMONSTRATES SECTION ────────────────────────────────── */
+.demonstrates-section { background: #F8FAFC; border-bottom: 1px solid #E2E8F0; }
+.demonstrates-inner { display: grid; grid-template-columns: 1fr 1fr; gap: 64px; align-items: center; }
+@media (max-width: 720px) { .demonstrates-inner { grid-template-columns: 1fr; gap: 32px; } }
+.demonstrates-list { list-style: none; display: flex; flex-direction: column; gap: 14px; }
+.demonstrates-list li { display: flex; align-items: center; gap: 12px; font-size: 14px; color: #1E293B; font-weight: 500; }
+.dl-dot { width: 6px; height: 6px; border-radius: 50%; background: #2563EB; flex-shrink: 0; }
+
+/* ── ABOUT SECTION ───────────────────────────────────────── */
+.about-section { background: #F8FAFC; padding: 80px 0; border-top: 1px solid #E2E8F0; }
+.about-inner { max-width: 900px; margin: 0 auto; padding: 0 32px; display: grid; grid-template-columns: 1fr 1.6fr; gap: 64px; align-items: start; }
+@media (max-width: 720px) { .about-inner { grid-template-columns: 1fr; gap: 32px; } }
+.about-avatar { width: 72px; height: 72px; border-radius: 50%; background: linear-gradient(135deg, var(--blue-dk), var(--blue)); display: flex; align-items: center; justify-content: center; font-size: 28px; margin-bottom: 20px; box-shadow: 0 0 0 4px rgba(56,189,248,.15); }
+.about-name { font-family: 'Fraunces', serif; font-size: 38px; font-weight: 300; color: #0F172A; letter-spacing: -.02em; line-height: 1.1; margin-bottom: 6px; }
+.about-name em { font-style: italic; color: var(--blue); }
+.about-title { font-family: 'JetBrains Mono', monospace; font-size: 9px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: #64748B; margin-bottom: 20px; }
+.about-tags { display: flex; flex-direction: column; gap: 6px; }
+.about-tag { font-family: 'JetBrains Mono', monospace; font-size: 9px; font-weight: 600; letter-spacing: .06em; color: #2563EB; padding: 4px 10px; border: 1px solid #BFDBFE; background: #EFF6FF; border-radius: 4px; width: fit-content; }
+.about-section-label { font-family: 'JetBrains Mono', monospace; font-size: 9px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: #2563EB; margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
+.about-section-label::before { content: ''; display: inline-block; width: 16px; height: 2px; background: var(--blue); border-radius: 2px; }
+.about-body { font-size: 15px; line-height: 1.7; color: #475569; max-width: 680px; }
+.about-body p { margin-bottom: 16px; }
+.about-body p:last-child { margin-bottom: 0; }
+.about-body strong { color: #0F172A; font-weight: 700; }
+.about-linkedin { display: inline-flex; align-items: center; gap: 7px; margin-top: 24px; padding: 8px 18px; border: 1px solid #E2E8F0; border-radius: 7px; color: #475569; font-size: 11px; font-weight: 700; text-decoration: none; transition: all .15s; }
+.about-linkedin:hover { border-color: #2563EB; color: #2563EB; background: #EFF6FF; }
+
+/* ── GLOBAL READABILITY FIXES ────────────────────────────── */
+.section-label { color: var(--blue); }
+.section-sub { color: var(--text3); }
+.nav-link { color: var(--text3); }
+.nav-link:hover { color: #0F172A; background: #F1F5F9; }
+.nav-link.active { color: #2563EB; background: #EFF6FF; }
+.nav-badge { color: var(--text4); }
+.arch-node-desc { color: var(--text3); }
+.module-card-sub { color: var(--text3); }
+.module-card-meta { color: var(--text3); }
+.signal-pill { background: var(--s3); color: var(--text3); }
+.how-title { color: var(--text); }
+.how-desc { color: #475569; }
+.footer { background: var(--navy2); }
+
+
+/* ── SYSTEM DIAGRAM ──────────────────────────────────────── */
+.sysdiag-section { background: #FFFFFF; padding: 80px 0; border-bottom: 1px solid #E2E8F0; }
+.sysdiag-inner { max-width: 520px; margin: 0 auto; padding: 0 32px; }
+.sysdiag-flow { display: flex; flex-direction: column; align-items: center; gap: 0; }
+.sysdiag-node {
+  width: 100%; background: #FFFFFF; border: 1px solid #E2E8F0;
+  border-radius: 12px; padding: 14px 20px;
+  display: flex; align-items: center; justify-content: space-between;
+  box-shadow: 0 1px 3px rgba(0,0,0,.05);
+}
+.sysdiag-node.accent { border-color: #BFDBFE; background: #EFF6FF; }
+.sysdiag-node-left { display: flex; align-items: center; gap: 12px; }
+.sysdiag-node-icon { font-size: 16px; }
+.sysdiag-node-name { font-size: 14px; font-weight: 700; color: #0F172A; letter-spacing: -.01em; }
+.sysdiag-node-desc { font-size: 11px; color: #64748B; margin-top: 1px; }
+.sysdiag-node-tag {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase;
+  color: #2563EB; background: #EFF6FF; border: 1px solid #BFDBFE;
+  padding: 2px 8px; border-radius: 4px; flex-shrink: 0;
+}
+.sysdiag-connector {
+  display: flex; flex-direction: column; align-items: center;
+  padding: 4px 0; gap: 0;
+}
+.sysdiag-line { width: 1px; height: 18px; background: #CBD5E1; }
+.sysdiag-arrow { font-size: 10px; color: #CBD5E1; line-height: 1; }
+
+
+/* ── PROBLEM + INSIGHT SECTION ───────────────────────────── */
+.prob-section { background: #FFFFFF; border-bottom: 1px solid #E2E8F0; padding: 80px 0; }
+.prob-grid { display: grid; grid-template-columns: 1fr 1px 1fr; gap: 0 48px; align-items: start; }
+@media (max-width: 720px) { .prob-grid { grid-template-columns: 1fr; gap: 40px; } }
+.prob-divider { background: #E2E8F0; height: 100%; min-height: 180px; }
+@media (max-width: 720px) { .prob-divider { height: 1px; width: 100%; min-height: unset; } }
+.prob-block { display: flex; flex-direction: column; gap: 16px; }
+.prob-body p { font-size: 15px; color: #475569; line-height: 1.65; margin-bottom: 12px; }
+.prob-body p:last-child { margin-bottom: 0; }
+.prob-close { font-size: 15px; font-weight: 700; color: #0F172A !important; }
+.prob-list { margin: 8px 0 12px 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 6px; }
+.prob-list li { font-size: 14px; color: #64748B; padding-left: 14px; position: relative; }
+.prob-list li::before { content: '·'; position: absolute; left: 0; color: #2563EB; font-weight: 700; }
+.prob-insight p { font-size: 15px; color: #475569; line-height: 1.65; margin-bottom: 12px; }
+.insight-thesis { font-size: 17px !important; font-weight: 700; color: #0F172A !important; line-height: 1.4 !important; margin-bottom: 16px !important; }
+
+/* ── ARCH INTRO ───────────────────────────────────────────── */
+.arch-intro { margin: 20px auto 0; max-width: 480px; text-align: center; }
+.arch-intro p { font-size: 14px; color: #475569; line-height: 1.65; margin-bottom: 12px; }
+.arch-close { font-size: 13px; color: #94A3B8 !important; font-style: italic; }
+.arch-layers { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 6px; margin: 12px 0; }
+.arch-layer { font-family: 'JetBrains Mono', monospace; font-size: 10px; font-weight: 600; letter-spacing: .06em; color: #2563EB; background: #EFF6FF; border: 1px solid #BFDBFE; padding: 3px 10px; border-radius: 4px; }
+.arch-layer-sep { color: #CBD5E1; font-size: 12px; }
+
+/* ── CONTEXT + DEMONSTRATES CLOSE ────────────────────────── */
+.context-close-section { background: #F8FAFC; padding: 80px 0; border-top: 1px solid #E2E8F0; border-bottom: 1px solid #E2E8F0; }
+.ctxclose-grid { display: grid; grid-template-columns: 1fr 1px 1fr; gap: 0 48px; align-items: start; }
+@media (max-width: 720px) { .ctxclose-grid { grid-template-columns: 1fr; gap: 40px; } }
+.ctxclose-block { display: flex; flex-direction: column; gap: 14px; }
+.ctxclose-body { font-size: 15px; color: #475569; line-height: 1.65; }
+.ctxclose-list { margin-top: 4px; }
+
+
+/* ── SECTION SPACING ─────────────────────────────────────── */
+.section { padding: 88px 0; }
+.sysdiag-section { padding: 88px 0; }
+.prob-section { padding: 88px 0; }
+.context-close-section { padding: 88px 0; }
+.about-section { padding: 88px 0; }
+
+
+/* ── HERO THESIS LINE ────────────────────────────────────── */
+.hero-thesis {
+  font-size: 18px; font-weight: 400; color: #64748B;
+  max-width: 540px; margin: -20px auto 32px;
+  line-height: 1.5; letter-spacing: -.01em;
+}
+
+/* ── EXAMPLE SCENARIO SECTION ───────────────────────────── */
+.example-section { background: #FFFFFF; padding: 88px 0; border-top: 1px solid #E2E8F0; border-bottom: 1px solid #E2E8F0; }
+.example-inner { max-width: 860px; margin: 0 auto; padding: 0 32px; }
+.example-header { margin-bottom: 40px; }
+.example-flow { display: flex; flex-direction: column; gap: 0; }
+.example-step {
+  display: grid; grid-template-columns: 120px 1fr; gap: 24px;
+  padding: 20px 0; border-bottom: 1px solid #F1F5F9; align-items: start;
+}
+.example-step:last-child { border-bottom: none; }
+.example-step-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase;
+  color: #2563EB; padding-top: 3px;
+}
+.example-step-text { font-size: 15px; color: #0F172A; line-height: 1.6; }
+.example-trigger {
+  font-size: 15px; color: #475569; line-height: 1.6;
+  padding: 16px 20px; background: #F8FAFC;
+  border: 1px solid #E2E8F0; border-radius: 10px;
+  margin-bottom: 32px;
+}
+.example-close {
+  margin-top: 32px; padding-top: 24px; border-top: 1px solid #E2E8F0;
+  font-size: 14px; color: #475569; line-height: 1.5;
+}
+@media (max-width: 640px) {
+  .example-step { grid-template-columns: 1fr; gap: 6px; }
+}
+
+
+/* ── DECISIONS SECTION ───────────────────────────────────── */
+.decisions-section { background: #FFFFFF; padding: 88px 0; border-top: 1px solid #E2E8F0; border-bottom: 1px solid #E2E8F0; }
+.decisions-intro { font-size: 15px; color: #475569; line-height: 1.65; margin-bottom: 32px; max-width: 560px; }
+.decisions-list { list-style: none; display: flex; flex-direction: column; gap: 14px; }
+.decisions-list li {
+  display: flex; align-items: flex-start; gap: 14px;
+  font-size: 16px; font-weight: 500; color: #0F172A; line-height: 1.5;
+}
+.decisions-list li::before {
+  content: '→'; color: #2563EB; font-weight: 700;
+  font-size: 14px; flex-shrink: 0; margin-top: 2px;
+}
+
+
+/* ── HERO AUDIENCE LINE ─────────────────────────────────── */
+.hero-audience {
+  font-size: 15px; color: #64748B; max-width: 580px;
+  margin: -16px auto 32px; line-height: 1.65; letter-spacing: -.01em;
+}
+
+/* ── ARCH INTERPRETATION LINE ───────────────────────────── */
+.arch-interpretation {
+  max-width: 860px; margin: 24px auto 0; padding: 0 32px;
+  font-size: 15px; color: #475569; line-height: 1.65;
+  text-align: center; font-style: italic;
+}
+
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="nav">
+  <a class="nav-logo" href="index.html">
+    <div class="nav-logo-mark">G</div>
+    <span class="nav-logo-name">GTM Intelligence</span>
+  </a>
+  <div class="nav-div"></div>
+  <a class="nav-link active" href="index.html">Platform</a>
+  <a class="nav-link" href="#about">About</a>
+  <a class="nav-link" href="signalops.html">SignalOps</a>
+  <a class="nav-link" href="campaignforge.html">CampaignForge</a>
+  <a class="nav-link" href="deallens.html">DealLens</a>
+  <a class="nav-link" href="partnerpulse.html">PartnerPulse</a>
+  <div class="nav-right">
+    
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-grid"></div>
+  <div class="hero-glow"></div>
+  <div class="hero-content">
+    <div class="hero-eyebrow">
+      <div class="hero-eyebrow-dot"></div>
+      Revenue Systems Architecture
+    </div>
+    <h1 class="hero-title">
+      GTM <em>Intelligence</em> Platform
+    </h1>
+    <p class="hero-subtitle">
+      Detect buying signals. Activate targeted GTM programs. Accelerate pipeline growth.
+    </p>
+    <p class="hero-thesis">6+ years in B2B GTM — India mid-market ERP at SAP, European automotive and industrial manufacturing at HCL. This platform reflects the intelligence systems behind those programs.</p>
+    <a class="hero-cta" href="#modules">Explore Modules ↓</a>
+    <a class="hero-cta-ghost" href="#problem">View the Problem</a>
+
+    <div class="stats-strip">
+      <div class="stat-item">
+        <div class="stat-val">€40<span>M+</span></div>
+        <div class="stat-lbl">Pipeline Influenced</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-val">40<span>%</span></div>
+        <div class="stat-lbl">Pipeline Increase · 90K Accounts</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-val">34<span>%</span></div>
+        <div class="stat-lbl">Pipeline Velocity Improvement</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-val">6<span>+</span></div>
+        <div class="stat-lbl">Years B2B GTM · India &amp; Europe</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PROBLEM + INSIGHT -->
+<section class="section prob-section" id="problem">
+  <div class="section-inner">
+    <div class="prob-grid fade-up">
+
+      <div class="prob-block">
+        <div class="section-label">Problem this system solves</div>
+        <div class="prob-body">
+          <p>GTM teams detect revenue momentum too late.</p>
+          <ul class="prob-list">
+            <li>Market signals appear in one system.</li>
+            <li>Campaign execution runs in another.</li>
+            <li>Pipeline visibility appears late in CRM.</li>
+          </ul>
+          <p class="prob-close">Buying momentum is identified after it has already formed.</p>
+        </div>
+      </div>
+
+      <div class="prob-divider"></div>
+
+      <div class="prob-block">
+        <div class="section-label">System insight</div>
+        <div class="prob-insight">
+          <p class="insight-thesis">Signals reveal where buying momentum begins and where GTM teams should act.</p>
+          <p>When signal detection, campaign activation, pipeline visibility, and partner ecosystems operate as a single system, teams move earlier in the buying cycle.</p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- SYSTEM DIAGRAM -->
+<section class="sysdiag-section" id="architecture">
+  <div class="section-inner">
+    <div class="section-hd fade-up" style="text-align:center;margin-bottom:40px;">
+      <div class="section-label" style="justify-content:center;">Architecture</div>
+      <h2 class="section-title">How the GTM intelligence system works</h2>
+      
+    </div>
+    <div class="sysdiag-flow fade-up">
+
+      <div class="sysdiag-node accent">
+        <div class="sysdiag-node-left">
+          <div class="sysdiag-node-icon">📡</div>
+          <div>
+            <div class="sysdiag-node-name">Market Signals</div>
+          </div>
+        </div>
+        <div class="sysdiag-node-tag">Input</div>
+      </div>
+
+      <div class="sysdiag-connector"><div class="sysdiag-line"></div><div class="sysdiag-arrow">↓</div><div class="sysdiag-line"></div></div>
+
+      <div class="sysdiag-node">
+        <div class="sysdiag-node-left">
+          <div class="sysdiag-node-icon">⬡</div>
+          <div>
+            <div class="sysdiag-node-name">SignalOps</div>
+          </div>
+        </div>
+        <div class="sysdiag-node-tag">Prioritise</div>
+      </div>
+
+      <div class="sysdiag-connector"><div class="sysdiag-line"></div><div class="sysdiag-arrow">↓</div><div class="sysdiag-line"></div></div>
+
+      <div class="sysdiag-node">
+        <div class="sysdiag-node-left">
+          <div class="sysdiag-node-icon">⚡</div>
+          <div>
+            <div class="sysdiag-node-name">CampaignForge</div>
+          </div>
+        </div>
+        <div class="sysdiag-node-tag">Activate</div>
+      </div>
+
+      <div class="sysdiag-connector"><div class="sysdiag-line"></div><div class="sysdiag-arrow">↓</div><div class="sysdiag-line"></div></div>
+
+      <div class="sysdiag-node">
+        <div class="sysdiag-node-left">
+          <div class="sysdiag-node-icon">🔍</div>
+          <div>
+            <div class="sysdiag-node-name">DealLens</div>
+          </div>
+        </div>
+        <div class="sysdiag-node-tag">Monitor</div>
+      </div>
+
+      <div class="sysdiag-connector"><div class="sysdiag-line"></div><div class="sysdiag-arrow">↓</div><div class="sysdiag-line"></div></div>
+
+      <div class="sysdiag-node">
+        <div class="sysdiag-node-left">
+          <div class="sysdiag-node-icon">🤝</div>
+          <div>
+            <div class="sysdiag-node-name">PartnerPulse</div>
+          </div>
+        </div>
+        <div class="sysdiag-node-tag">Scale</div>
+      </div>
+
+      <div class="sysdiag-connector"><div class="sysdiag-line"></div><div class="sysdiag-arrow">↓</div><div class="sysdiag-line"></div></div>
+
+      <div class="sysdiag-node accent">
+        <div class="sysdiag-node-left">
+          <div class="sysdiag-node-icon">📈</div>
+          <div>
+            <div class="sysdiag-node-name">Pipeline Growth</div>
+          </div>
+        </div>
+        <div class="sysdiag-node-tag">Output</div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<div class="arch-interpretation fade-up">Signals move through the GTM engine before pipeline acceleration becomes visible.</div>
+
+
+
+
+
+
+
+
+<!-- MODULES -->
+<section class="section" id="modules" style="background:#F8FAFC;">
+  <div class="section-inner">
+    <div class="section-hd fade-up">
+      <div class="section-label">Platform Modules</div>
+      <h2 class="section-title">Four modules.<br><em>One operating loop.</em></h2>
+      <p class="section-sub">Each module reflects a real GTM program design. Open any module to explore the full interface.</p>
+    </div>
+    <div class="modules-grid">
+
+      <!-- SignalOps -->
+      <div class="module-card card-so fade-up">
+        <div class="module-card-top">
+          <div class="module-card-icon icon-so">⬡</div>
+          <span class="module-card-tag tag-so">Signal Intelligence</span>
+        </div>
+        <div class="module-card-body">
+          <div class="module-card-name">Signal<span>Ops</span></div>
+          <div class="module-card-sub">GTM Intelligence Engine</div>
+          <div class="module-card-desc">Identifies expansion signals from market, engagement, and behavioral data to reveal where buying activity is increasing.</div>
+          <div class="module-card-signals">
+            <span class="signal-pill">Expansion Signals</span>
+            <span class="signal-pill">Funding Triggers</span>
+            <span class="signal-pill">TAL Scoring</span>
+            <span class="signal-pill">Dual-Track Logic</span>
+          </div>
+        </div>
+        <div class="module-card-foot">
+          <span class="module-card-meta">38 India Corporate accounts · 7 signal dimensions</span>
+          <a class="open-btn" href="signalops.html" style="border-color:#E2E8F0;"><span>Open Module</span><span class="open-btn-arrow">→</span></a>
+        </div>
+      </div>
+
+      <!-- CampaignForge -->
+      <div class="module-card card-cf fade-up" style="transition-delay:.08s">
+        <div class="module-card-top">
+          <div class="module-card-icon icon-cf">⚡</div>
+          <span class="module-card-tag tag-cf">AI Activation</span>
+        </div>
+        <div class="module-card-body">
+          <div class="module-card-name">Campaign<span style="color:var(--purple)">Forge</span></div>
+          <div class="module-card-sub">AI GTM Campaign Builder</div>
+          <div class="module-card-desc">Activates targeted programs, runs experimentation cycles, and captures engagement data to refine messaging and targeting.</div>
+          <div class="module-card-signals">
+            <span class="signal-pill">Persona Builder</span>
+            <span class="signal-pill">AI Messaging</span>
+            <span class="signal-pill">Channel Strategy</span>
+            <span class="signal-pill">GTM Programs</span>
+            <span class="signal-pill">Experimentation Loops</span>
+          </div>
+        </div>
+        <div class="module-card-foot">
+          <span class="module-card-meta">AI-assisted · GTM Intelligence Platform</span>
+          <a class="open-btn" href="campaignforge.html" style="border-color:#E2E8F0;"><span>Open Module</span><span class="open-btn-arrow">→</span></a>
+        </div>
+      </div>
+
+      <!-- DealLens -->
+      <div class="module-card card-dl fade-up" style="transition-delay:.16s">
+        <div class="module-card-top">
+          <div class="module-card-icon icon-dl">🔍</div>
+          <span class="module-card-tag tag-dl">Pipeline Intelligence</span>
+        </div>
+        <div class="module-card-body">
+          <div class="module-card-name">Deal<span style="color:var(--red)">Lens</span></div>
+          <div class="module-card-sub">Pipeline Intelligence Engine</div>
+          <div class="module-card-desc">Surfaces pipeline risk and deal progression signals to guide intervention across active opportunities.</div>
+          <div class="module-card-signals">
+            <span class="signal-pill">Risk Scoring</span>
+            <span class="signal-pill">Deal Progression</span>
+            <span class="signal-pill">Forecast Confidence</span>
+            <span class="signal-pill">Seller Guidance</span>
+          </div>
+        </div>
+        <div class="module-card-foot">
+          <span class="module-card-meta">24 active opportunities · risk-scored pipeline</span>
+          <a class="open-btn" href="deallens.html" style="border-color:#E2E8F0;"><span>Open Module</span><span class="open-btn-arrow">→</span></a>
+        </div>
+      </div>
+
+      <!-- PartnerPulse -->
+      <div class="module-card card-pp fade-up" style="transition-delay:.24s">
+        <div class="module-card-top">
+          <div class="module-card-icon icon-pp">🤝</div>
+          <span class="module-card-tag tag-pp">Ecosystem Intelligence</span>
+        </div>
+        <div class="module-card-body">
+          <div class="module-card-name">Partner<span style="color:var(--green)">Pulse</span></div>
+          <div class="module-card-sub">Ecosystem Intelligence Platform</div>
+          <div class="module-card-desc">Reveals partner influence on pipeline progression and ecosystem contribution to deal growth.</div>
+          <div class="module-card-signals">
+            <span class="signal-pill">Partner Performance</span>
+            <span class="signal-pill">Pipeline Contribution</span>
+            <span class="signal-pill">QBR Readiness</span>
+            <span class="signal-pill">Tier Health</span>
+          </div>
+        </div>
+        <div class="module-card-foot">
+          <span class="module-card-meta">14 partners · pipeline contribution scoring</span>
+          <a class="open-btn" href="partnerpulse.html" style="border-color:#E2E8F0;"><span>Open Module</span><span class="open-btn-arrow">→</span></a>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- DECISIONS THIS SYSTEM ENABLES -->
+<section class="section decisions-section">
+  <div class="section-inner">
+    <div class="section-hd fade-up">
+      <div class="section-label">Decision layer</div>
+      <h2 class="section-title">Decisions this system enables</h2>
+    </div>
+    <p class="decisions-intro fade-up">At SAP India, these are the exact decisions this system was built to support — across 90,000+ accounts, 14 channel partners, and ~€10M in pipeline experiments.</p>
+    <ul class="decisions-list fade-up">
+      <li>Which of 90,000 accounts to prioritise this week based on live expansion signals</li>
+      <li>Which campaign program to activate and which message to lead with</li>
+      <li>Which deals in the pipeline are at risk and need immediate intervention</li>
+      <li>Which partners are driving pipeline and which need a QBR conversation</li>
+    </ul>
+  </div>
+</section>
+
+<!-- EXAMPLE SCENARIO -->
+<section class="example-section">
+  <div class="example-inner">
+    <div class="example-header fade-up">
+      <div class="section-label">Example: signal detected → pipeline opportunity created</div>
+      <h2 class="section-title" style="margin-top:8px;">How the system works in practice</h2>
+    </div>
+
+    <div class="example-trigger fade-up">
+      A mid-market engineering company raises Series B funding and increases finance leadership hiring by 40%.
+    </div>
+
+    <div class="example-flow fade-up">
+
+      <div class="example-step">
+        <div class="example-step-label">SignalOps</div>
+        <div class="example-step-text">Flags the account based on expansion signals — funding event and hiring pattern match.</div>
+      </div>
+
+      <div class="example-step">
+        <div class="example-step-label">CampaignForge</div>
+        <div class="example-step-text">Activates a targeted sequence matched to the account's expansion stage.</div>
+      </div>
+
+      <div class="example-step">
+        <div class="example-step-label">DealLens</div>
+        <div class="example-step-text">Tracks pipeline momentum and surfaces deal risk as the opportunity progresses.</div>
+      </div>
+
+      <div class="example-step">
+        <div class="example-step-label">PartnerPulse</div>
+        <div class="example-step-text">Identifies partner influence on deal progression and flags partner-sourced momentum.</div>
+      </div>
+
+    </div>
+
+    <div class="example-close fade-up">
+      Signals convert into pipeline acceleration through a continuous GTM learning loop.
+    </div>
+  </div>
+</section>
+
+
+<!-- CONTEXT + WHAT THIS PORTFOLIO DEMONSTRATES -->
+<section class="section context-close-section">
+  <div class="section-inner">
+    <div class="ctxclose-grid fade-up">
+
+      <div class="ctxclose-block">
+        <div class="section-label">Context</div>
+        <p class="ctxclose-body">Built from 6+ years in B2B GTM — India mid-market ERP demand generation at SAP, and European automotive and industrial manufacturing marketing at HCL Technologies.</p>
+        <p class="ctxclose-body">The systems in this platform directly reflect real program design: signal-based account targeting across 90,000+ accounts, demand programs that drove €40M+ in influenced pipeline, and experimentation at ~€10M scale.</p>
+      </div>
+
+      <div class="prob-divider"></div>
+
+      <div class="ctxclose-block">
+        <div class="section-label">What this portfolio demonstrates</div>
+        <ul class="demonstrates-list ctxclose-list">
+          <li><span class="dl-dot"></span>Signal-based account targeting — built and applied across 90,000+ India mid-market accounts</li>
+          <li><span class="dl-dot"></span>AI-assisted campaign activation — persona building, messaging, and channel strategy in one workflow</li>
+          <li><span class="dl-dot"></span>Pipeline risk intelligence — 24-deal scoring model with intervention logic and forecast confidence</li>
+          <li><span class="dl-dot"></span>Partner ecosystem analytics — performance scoring, QBR readiness, and pipeline contribution across 14 partners</li>
+          <li><span class="dl-dot"></span>End-to-end GTM systems thinking — signal to pipeline, built as a single operating loop</li>
+        </ul>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<section class="about-section" id="about">
+  <div class="about-inner">
+    <div class="about-left fade-up">
+      
+      <div class="about-name">Siva Saran<br><em>Pidaparthy</em></div>
+      <div class="about-title">Digital Campaign Manager · SAP India | B2B GTM, Demand Generation &amp; ABM · India &amp; Europe</div>
+      <div class="about-tags">
+        <span class="about-tag">GTM Intelligence Systems</span>
+        <span class="about-tag">Signal-Driven Marketing</span>
+        <span class="about-tag">Pipeline Decision Analytics</span>
+        <span class="about-tag">Partner Ecosystem Intelligence</span>
+      </div>
+    </div>
+    <div class="about-right fade-up" style="transition-delay:.1s">
+      <div class="about-section-label">About</div>
+      <div class="about-body">
+        <p>At SAP India, I run demand generation and ABM programs across India mid-market ERP accounts. Prior to that, at HCL Technologies, I worked across European automotive and industrial manufacturing markets. Over 6 years in B2B GTM, I've influenced €40M+ in pipeline, driven a 40% pipeline increase across 90,000 accounts, and improved pipeline velocity by 34%.</p>
+        <p>This platform is a working model of the signal detection, campaign activation, and pipeline intelligence systems behind those programs.</p>
+      </div>
+      <a class="about-linkedin" href="https://www.linkedin.com/in/siva-saran-pidaparthy-2181b6146/" target="_blank">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+        Connect on LinkedIn
+      </a>
+    </div>
+  </div>
+</section>
+
+
+
+<footer class="footer">
+  <div class="footer-name">GTM <em>Intelligence</em> Platform</div>
+  <div class="footer-sub">GTM operating model · Revenue intelligence systems · 2026</div>
+  
+  <div class="footer-copy">GTM Intelligence Platform · Siva Saran Pidaparthy</div>
+</footer>
+
+<script>
+// Scroll fade-in
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+}, { threshold: 0.1 });
+document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
+</script>
+</body>
+</html>
