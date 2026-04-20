@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>CampaignForge · GTM Intelligence Platform</title>
+<title>SAP APAC Digital Hub · GTM Intelligence</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;1,9..144,300;1,9..144,400&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
@@ -1024,13 +1024,12 @@ body{
 
 <!-- ─── TOPBAR ─────────────────────────────────────────────────────── -->
 <header class="topbar">
-  <a href="index.html" style="display:flex;align-items:center;gap:5px;font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:700;color:#64748B;text-decoration:none;padding:4px 10px;border:1px solid #E2E8F0;border-radius:6px;white-space:nowrap;flex-shrink:0;" onmouseover="this.style.color='#2563EB';this.style.borderColor='#BFDBFE'" onmouseout="this.style.color='#64748B';this.style.borderColor='#E2E8F0'">← Platform</a>
-  <div class="tb-logo">⚡</div>
+  <div class="tb-logo">SAP</div>
   <div class="tb-div"></div>
-  <div class="tb-title">Campaign<strong style="color:#7C3AED">Forge</strong> &middot; GTM Intelligence Platform</div>
+  <div class="tb-title">APAC Digital Hub &middot; GTM Intelligence Platform</div>
   <div class="tb-right">
     <div class="live-badge"><div class="live-dot"></div>Live AI</div>
-    <div class="proto-label">GTM Intelligence Platform · Siva Saran Pidaparthy</div>
+    <div class="proto-label">Prototype · AI-assisted GTM Intelligence</div>
     <button class="tb-btn" id="exportAllBtn" onclick="exportAll()" style="display:none">📋 Export</button>
   <button class="tb-btn" id="onePagerBtn" onclick="generateOnePager()" style="display:none">📄 1-Pager</button>
   <button class="tb-btn" id="savedRunsBtn" style="display:none!important">🗂 Saved Runs</button>
@@ -1566,7 +1565,7 @@ body{
 <div class="pager-overlay" id="pagerOverlay" onclick="closePagerIfOutside(event)">
   <div class="pager-modal" id="pagerModal">
     <div class="pager-topbar">
-      <span class="pager-topbar-title">Campaign Intelligence Brief · GTM Intelligence Platform</span>
+      <span class="pager-topbar-title">Campaign Intelligence Brief · SAP APAC Digital Hub</span>
       <div class="pager-topbar-actions">
         <button class="pager-print-btn" onclick="downloadOnePager()">⬇ Download 1-Pager</button>
         <button class="pager-close-btn" onclick="closePager()">✕</button>
@@ -2152,8 +2151,8 @@ function setPT(n,state){
 }
 
 // ─── API ─────────────────────────────────────────────────────────────
-const GEMINI_KEY = 'AIzaSyDk9eLybXTIM0VBM0AAYd-Wy-Z1lEs684I';
-const GEMINI_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${GEMINI_KEY}`;
+const GEMINI_KEY = 'AIzaSyBLbRfOaNIa8gZ7xEL61NHAe6bUajwN-rQ';
+const GEMINI_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_KEY}`;
 
 async function claude(prompt, sys, attempt=0){
   const systemText = sys || 'You are a precise B2B GTM analyst. Respond ONLY in valid JSON. No markdown. No preamble. No extra text.';
@@ -2163,7 +2162,7 @@ async function claude(prompt, sys, attempt=0){
     body: JSON.stringify({
       system_instruction: { parts: [{ text: systemText }] },
       contents: [{ role: 'user', parts: [{ text: prompt }] }],
-      generationConfig: { maxOutputTokens: 8000, temperature: 0.7 },
+      generationConfig: { maxOutputTokens: 3000, temperature: 0.7 },
     }),
   });
 
@@ -2652,67 +2651,140 @@ Return ONLY the JSON array. No other text.`;
     await new Promise(r=>setTimeout(r,400));
     setPT(3,'done');
 
-    // STEP 4: Sequence Build
+    // STEP 4: Sequence Build — deterministic, no API call
     setPT(4,'running');
     document.getElementById('emailSec').classList.add('show');
 
     const ref = pickCustomerRef(segKey, S.market, S.personas, pitchP, S.industries);
 
-    const p3 = `You are a senior B2B GTM strategist writing a cold outreach email sequence for Outreach.io.
+    // ── Pull signal data ──────────────────────────────────────────────
+    const topPains = pain.slice(0, 4);
+    const p0 = topPains[0] || { theme: 'operational fragmentation', quote: 'Teams are running on disconnected systems and manual workarounds.' };
+    const p1b = topPains[1] || topPains[0] || p0;
+    const acct = S.accountName ? `{{account.name}}` : `companies like yours`;
+    const sender = S.senderName || '{{sender.first_name}}';
+    const title  = S.senderTitle || '{{sender.title}}';
+    const signOff = `Best,\n${sender}\n${title}\n{{sender.phone}}`;
 
-SENDER: ${senderSign}
-TARGET: ${personaList} at ${mkt.label} ${segLbl} companies in ${industryList}
-STAGE: ${stageCtx}
-PERSONA: angle=${personaCtx.angle} | hook=${personaCtx.hook} | cta=${personaCtx.cta} | avoid=${personaCtx.avoid}
-${accountLine}
-${playContext}
+    // ── Persona-aware hooks ───────────────────────────────────────────
+    const PERSONA_HOOKS = {
+      'CFO / Finance Head':       { obs: `Most ${industryList} finance teams in ${mkt.label} are closing the books manually — month-end takes weeks, not days.`, q1: `How long does your team spend on consolidation and reconciliation each period?`, q2: `What's the cost of that delay to your reporting cycle?` },
+      'CTO / IT Director':        { obs: `${industryList} IT teams in ${mkt.label} are managing integrations across 4–6 disconnected systems — and every upgrade breaks something.`, q1: `How much of your team's time goes to maintaining integrations vs building new capability?`, q2: `What's your current upgrade path looking like?` },
+      'CEO / MD / Founder':       { obs: `Fast-growing ${industryList} businesses in ${mkt.label} are hitting a ceiling — not because of the market, but because the foundation can't keep up.`, q1: `Is your current setup giving you the visibility you need to make fast decisions?`, q2: `What's the one operational constraint that's slowing your growth right now?` },
+      'COO / Operations Head':    { obs: `${industryList} operations teams in ${mkt.label} spend a third of their time chasing data across systems that don't talk to each other.`, q1: `How much of your team's day is spent on manual data handoffs between departments?`, q2: `Where do the biggest delays in your operation happen today?` },
+      'VP / Head of Supply Chain':{ obs: `${industryList} supply chain teams in ${mkt.label} are managing inventory across locations with data that's 24–48 hours behind reality.`, q1: `How often does a stock discrepancy or forecast miss create a downstream problem?`, q2: `What visibility do you have across your fulfilment network right now?` },
+    };
+    const hook = PERSONA_HOOKS[personaList] || { obs: `${industryList} businesses in ${mkt.label} are running operations on systems that weren't built for where they are today.`, q1: `What's the biggest process that's still running on manual workarounds?`, q2: `How is that affecting your team's ability to move fast?` };
 
-Top buyer pain points:
-${pain.slice(0,4).map(p=>`- ${p.theme}: "${p.quote}"`).join('\n')}
+    // ── Buying stage opener adjustment ────────────────────────────────
+    const stageOpener = {
+      warm:     `We spoke briefly a while back — I wanted to follow up with something more specific to what you're dealing with now.`,
+      reengage: `We connected previously, but the timing wasn't right. Things have moved on — I thought it was worth reaching back out.`,
+    }[S.buyingStage] || '';
 
-REAL PROOF POINT (use in Email 3 by name):
-Company: ${ref.company} (${ref.industry})
-Outcome: ${ref.outcome}
+    // ── FOMO line ─────────────────────────────────────────────────────
+    const fomoLine = S.market === 'india'
+      ? `${industryList} businesses across India are moving fast on this — and the ones that act first are pulling ahead on cost and speed.`
+      : S.market === 'anz'
+      ? `${industryList} businesses across ANZ are tightening operations ahead of reporting season — the window to act before Q-end is narrow.`
+      : `${industryList} businesses across Southeast Asia are standardising operations faster than most expect — the gap between leaders and laggards is widening.`;
 
-RULES:
-- Start every email: Hi {{prospect.first_name}},
-- End every email with: Best,\n${S.senderName||'{{sender.first_name}}'}\n${S.senderTitle||'{{sender.title}}'}\n{{sender.phone}}
-- Use tokens: {{prospect.first_name}} {{account.name}} {{sender.first_name}} {{sender.title}} {{sender.phone}} {{sender.meeting_link}}
-- No em dashes. No product names in body. No competitor names. No invented deadlines.
-- Short sentences. One idea per paragraph. Active voice. No filler.
-- Banned words: transformation, innovation, seamless, unlock, leverage, excited, journey, ecosystem, synergy, empower, streamline.
+    // ── Objection bridge for Email 2 ──────────────────────────────────
+    const objBridge = {
+      'Implementation cost vs ROI': `I know the first question is always cost. The sharper question is: what's the cost of staying as you are?`,
+      'Migration complexity':        `Migration complexity is real. But the businesses that wait for a "perfect window" rarely find one.`,
+      'Budget approval risk':        `Getting budget across the line is hard. The case is easier when you can show what delay is costing you today.`,
+      'Operational disruption':      `The risk of change is real. So is the risk of not changing — it just shows up slower.`,
+      'Team change management':      `Change management is the hard part. It's also the part most implementations get wrong. Worth a conversation.`,
+      'Data integrity during migration': `Data integrity during cutover is the number one concern. It's also the most manageable with the right approach.`,
+      'Supplier and 3PL integration':    `Reconnecting your supplier and logistics network post-migration is a real challenge. One that's very solvable.`,
+    }[objection.label] || `The honest answer is that every business that's moved on this had the same hesitation. Most say they wish they'd moved sooner.`;
 
-EMAIL 1 (Day 1, 140-160 words): Pattern interrupt. One sharp observation from pain points. One FOMO line about what peers in ${industryList} are doing. One direct question. Mandatory P.S. with urgency hook.
-EMAIL 2 (Day 3, 120-140 words): Problem deep dive. Bridge from Email 1. Break down cost of problem. Address objection naturally: ${objection.label}. One specific question.
-EMAIL 3 (Day 7, 110-130 words): Name ${ref.company} directly. State outcome: ${ref.outcome}. Connect to prospect situation. One FOMO line. CTA: "I have 2 slots available this week. [Book here: {{sender.meeting_link}}]"
-EMAIL 4 (Day 12, 60-75 words): Soft breakup. Acknowledge busy. One reason now matters. Soft close. Optional P.S.
+    // ── Build 4 emails ────────────────────────────────────────────────
+    const emails = [
+      {
+        subject: `${p0.theme.slice(0,40).toLowerCase()}`,
+        timing:  `Day 1 - Tuesday, 9:00 AM ${mkt.tz}`,
+        body: [
+          `Hi {{prospect.first_name}},`,
+          ``,
+          stageOpener ? stageOpener + `\n` : ``,
+          `${hook.obs}`,
+          ``,
+          `${p0.quote}`,
+          ``,
+          `${fomoLine}`,
+          ``,
+          `${hook.q1}`,
+          ``,
+          signOff,
+          ``,
+          `P.S. If this isn't on your radar yet, it probably will be within 90 days. Worth a 20-minute call now rather than a rushed decision later.`,
+        ].filter(l => l !== undefined).join('\n').replace(/\n{3,}/g, '\n\n').trim(),
+      },
+      {
+        subject: `the real cost of ${p1b.theme.slice(0,30).toLowerCase()}`,
+        timing:  `Day 3 - Thursday, 8:30 AM ${mkt.tz}`,
+        body: [
+          `Hi {{prospect.first_name}},`,
+          ``,
+          `Following up on my last note.`,
+          ``,
+          `${p1b.quote}`,
+          ``,
+          `That's not just an operational problem. It compounds. Every month you run like this, the gap between what you can see and what you need to decide on gets wider.`,
+          ``,
+          `${objBridge}`,
+          ``,
+          `${hook.q2}`,
+          ``,
+          signOff,
+        ].join('\n'),
+      },
+      {
+        subject: `what ${ref.company} did`,
+        timing:  `Day 7 - Tuesday, 9:00 AM ${mkt.tz}`,
+        body: [
+          `Hi {{prospect.first_name}},`,
+          ``,
+          `${ref.company} — a ${ref.industry} business — ${ref.outcome}.`,
+          ``,
+          `The situation before wasn't unusual. ${p0.quote}`,
+          ``,
+          `${acct !== '{{account.name}}' ? `${acct} is at a similar point.` : `Businesses your size in ${industryList} are at a similar point.`} The question is whether to act now or wait until the pressure is higher and the options are narrower.`,
+          ``,
+          `${fomoLine}`,
+          ``,
+          `I have 2 slots available this week. [Book here: {{sender.meeting_link}}]`,
+          ``,
+          signOff,
+        ].join('\n'),
+      },
+      {
+        subject: `closing the loop`,
+        timing:  `Day 12 - Wednesday, 7:45 AM ${mkt.tz}`,
+        body: [
+          `Hi {{prospect.first_name}},`,
+          ``,
+          `I know you're busy. I'll keep this short.`,
+          ``,
+          `${p0.theme} is the kind of problem that's easy to park — until it becomes the reason something bigger goes wrong.`,
+          ``,
+          `If the timing isn't right, I understand. If it is, my calendar is open: {{sender.meeting_link}}`,
+          ``,
+          signOff,
+          ``,
+          `P.S. Happy to send a one-pager on how similar businesses have approached this if that's more useful right now.`,
+        ].join('\n'),
+      },
+    ];
 
-SUBJECT LINES: Under 44 chars. No caps, exclamation or question marks. Use tokens where impactful. Different format per email.
+    const result = {
+      topTalkingPoint: `${p0.theme} is costing ${acct !== '{{account.name}}' ? acct : `${segLbl} ${industryList} businesses`} more than it appears — and the companies moving now are pulling ahead.`,
+      displacementAngle: displacementMessage.split('.')[0] + '.',
+      onePagerSummary: `${mkt.label} ${segLbl} ${industryList} businesses are facing ${p0.theme} at scale. Signal data shows ${highPain} high-frequency pain points across ${srcs.length} sources. This sequence leads with the #1 commercial pain, references ${ref.company}'s verified outcome, and is calibrated to a ${personaList} at ${PIPELINE_STAGE_LABELS[normalize(S.pipelineStage)]?.split('.')[0] || S.pipelineStage} stage.`,
+    };
 
-Return ONLY this JSON, no markdown:
-{
-  "topTalkingPoint": "<one sharp commercial sentence>",
-  "displacementAngle": "<one sentence on structural exposure>",
-  "onePagerSummary": "<2-3 sentences executive summary>",
-  "emails": [
-    {"step":1,"subject":"<subject>","timing":"Day 1 - Tuesday, 9:00 AM ${mkt.tz}","body":"<full body with \\n line breaks>"},
-    {"step":2,"subject":"<subject>","timing":"Day 3 - Thursday, 8:30 AM ${mkt.tz}","body":"<full body>"},
-    {"step":3,"subject":"<subject>","timing":"Day 7 - Tuesday, 9:00 AM ${mkt.tz}","body":"<full body>"},
-    {"step":4,"subject":"<subject>","timing":"Day 12 - Wednesday, 7:45 AM ${mkt.tz}","body":"<full body>"}
-  ]
-}`;
-
-    let result = null;
-    for(let attempt3=0; attempt3<3; attempt3++){
-      const raw3 = await claude(p3);
-      result = safeParseJSON(raw3);
-      if(result && Array.isArray(result.emails) && result.emails.length >= 4) break;
-      result = null;
-      await new Promise(r=>setTimeout(r,2000));
-    }
-    if(!result) throw new Error('Sequence Build failed. Please retry.');
-
-    const emails = result.emails.map(e=>({ subject:e.subject||'', timing:e.timing||'', body:e.body||'' }));
     emailStore = emails;
 
     for(let i=0;i<4;i++){
@@ -2854,7 +2926,7 @@ function generateOnePager(){
   document.getElementById('pagerBody').innerHTML = `
     <div class="pb-header">
       <div>
-        <div class="pb-campaign-label">GTM Intelligence Platform · Campaign Intelligence Brief</div>
+        <div class="pb-campaign-label">SAP APAC Digital Hub · Campaign Intelligence Brief</div>
         <div class="pb-campaign-name">${x(campaignName)}</div>
         <div class="pb-campaign-meta">
           ${x(d.runDate||'')}${c.senderName ? ' &nbsp;·&nbsp; ' + x(c.senderName) : ''}${c.senderTitle ? ' &nbsp;·&nbsp; ' + x(c.senderTitle) : ''}
@@ -2913,7 +2985,7 @@ function generateOnePager(){
     </div>` : ''}
 
     <div class="pb-footer">
-      <span class="pb-footer-left">GTM Intelligence Platform · Siva Saran Pidaparthy · sivasaran591.github.io/gtm-intelligence-platform</span>
+      <span class="pb-footer-left">SAP APAC Digital Hub · Outreach Intelligence Platform · Internal use only</span>
       <span class="pb-footer-right">${metaRunId ? 'Run: ' + x(metaRunId) : ''}</span>
     </div>`;
 
@@ -2947,7 +3019,7 @@ The document must contain:
 1. A header with the run name, date, sender info and sample account
 2. A campaign configuration table (2 columns: label | value) covering current stack, pitch product, market, segment, industry, personas, revenue band, buying stage, pipeline stage
 3. All 3 emails, each with: a coloured header bar (blue), subject row, timing row, full body with line breaks preserved
-4. A footer line: "GTM Intelligence Platform · Siva Saran Pidaparthy"
+4. A footer line: "SAP APAC Digital Hub · Internal use only"
 
 Use Arial font throughout. Use #0066FF as the primary colour for headings.
 A4 page size, 2cm margins.
@@ -3050,7 +3122,7 @@ ${styles}
 <body>
 <div class="page">
   <div class="dl-topbar">
-    <span class="dl-topbar-title">GTM Intelligence Platform · Campaign Intelligence Brief</span>
+    <span class="dl-topbar-title">SAP APAC Digital Hub · Campaign Intelligence Brief</span>
     <button class="dl-print-btn" onclick="window.print()">🖨 Print / Save PDF</button>
   </div>
   <div class="pager-body">${body.innerHTML}</div>
