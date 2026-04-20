@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SAP APAC Digital Hub · GTM Intelligence</title>
+<title>CampaignForge · GTM Intelligence Platform</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;1,9..144,300;1,9..144,400&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
@@ -1024,12 +1024,13 @@ body{
 
 <!-- ─── TOPBAR ─────────────────────────────────────────────────────── -->
 <header class="topbar">
-  <div class="tb-logo">SAP</div>
+  <a href="index.html" style="display:flex;align-items:center;gap:5px;font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:700;color:#64748B;text-decoration:none;padding:4px 10px;border:1px solid #E2E8F0;border-radius:6px;white-space:nowrap;flex-shrink:0;" onmouseover="this.style.color='#2563EB';this.style.borderColor='#BFDBFE'" onmouseout="this.style.color='#64748B';this.style.borderColor='#E2E8F0'">← Platform</a>
+  <div class="tb-logo">⚡</div>
   <div class="tb-div"></div>
-  <div class="tb-title">APAC Digital Hub &middot; GTM Intelligence Platform</div>
+  <div class="tb-title">Campaign<strong style="color:#7C3AED">Forge</strong> &middot; GTM Intelligence Platform</div>
   <div class="tb-right">
     <div class="live-badge"><div class="live-dot"></div>Live AI</div>
-    <div class="proto-label">Prototype · AI-assisted GTM Intelligence</div>
+    <div class="proto-label">GTM Intelligence Platform · Siva Saran Pidaparthy</div>
     <button class="tb-btn" id="exportAllBtn" onclick="exportAll()" style="display:none">📋 Export</button>
   <button class="tb-btn" id="onePagerBtn" onclick="generateOnePager()" style="display:none">📄 1-Pager</button>
   <button class="tb-btn" id="savedRunsBtn" style="display:none!important">🗂 Saved Runs</button>
@@ -1565,7 +1566,7 @@ body{
 <div class="pager-overlay" id="pagerOverlay" onclick="closePagerIfOutside(event)">
   <div class="pager-modal" id="pagerModal">
     <div class="pager-topbar">
-      <span class="pager-topbar-title">Campaign Intelligence Brief · SAP APAC Digital Hub</span>
+      <span class="pager-topbar-title">Campaign Intelligence Brief · GTM Intelligence Platform</span>
       <div class="pager-topbar-actions">
         <button class="pager-print-btn" onclick="downloadOnePager()">⬇ Download 1-Pager</button>
         <button class="pager-close-btn" onclick="closePager()">✕</button>
@@ -2151,8 +2152,8 @@ function setPT(n,state){
 }
 
 // ─── API ─────────────────────────────────────────────────────────────
-const GEMINI_KEY = 'AIzaSyBLbRfOaNIa8gZ7xEL61NHAe6bUajwN-rQ';
-const GEMINI_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_KEY}`;
+// No API key needed — fully deterministic pipeline
+const GEMINI_URL = null; // unused
 
 async function claude(prompt, sys, attempt=0){
   const systemText = sys || 'You are a precise B2B GTM analyst. Respond ONLY in valid JSON. No markdown. No preamble. No extra text.';
@@ -2592,26 +2593,146 @@ async function startPipeline(){
   await animateSignalDiscovery();
 
   try {
-    // STEP 1: Signal Discovery
+    // STEP 1: Signal Discovery — fully deterministic, zero API calls
     setPT(1,'running');
+    await new Promise(r=>setTimeout(r,800));
 
-    const p1 = isGreenfield
-      ? `You are a B2B GTM intelligence analyst. Generate realistic buyer feedback from ${mkt.label} ${segLbl} companies in the ${industryList} sector running fragmented or non-SAP ERP systems. Target audience: ${personaList}. Sources: ${srcs.join(', ')}. ${accountCtx}
+    // Pre-baked signal library keyed by industry
+    const SIG = {
+      'Manufacturing': {
+        pain:[
+          {theme:'Multi-plant visibility gap causing production delays',quote:'We have six plants but no single view across them. By the time we know about a problem, it has already hit the customer.',sentiment:22,frequency:'High'},
+          {theme:'Manual financial close taking three to four weeks',quote:'Month-end close is a manual rebuild every cycle. Finance is locked in spreadsheets for weeks when they should be analysing.',sentiment:18,frequency:'High'},
+          {theme:'Inventory inaccuracies driving fulfilment failures',quote:'Our stock numbers are never reliable. We either carry excess or scramble to cover shortfalls at the worst time.',sentiment:25,frequency:'High'},
+          {theme:'Compliance reporting consuming excessive team hours',quote:'Statutory reconciliation takes four people two weeks every quarter. The volume of manual work is unsustainable.',sentiment:30,frequency:'Medium'},
+          {theme:'Legacy system blocking new product line launches',quote:'Every time we want to add a product category, IT says six months and a customisation budget. We cannot move at that speed.',sentiment:28,frequency:'Medium'},
+        ],
+        praise:[
+          {theme:'Real-time production data improving decision speed',quote:'Having live plant data means we catch bottlenecks in hours, not days. It has changed how our ops team makes decisions.',sentiment:78,frequency:'Medium'},
+          {theme:'Integrated finance reducing month-end from weeks to days',quote:'Financial close used to take three weeks. Now we are done in four days and the numbers are right the first time.',sentiment:82,frequency:'Low'},
+          {theme:'Standardised processes across all plants finally possible',quote:'For the first time we have one way of working across every site. Onboarding a new plant now takes weeks, not months.',sentiment:75,frequency:'Low'},
+        ]
+      },
+      'FMCG': {
+        pain:[
+          {theme:'Demand forecast errors causing stock-outs and wastage',quote:'We run a 72-hour shelf life on some lines. When the forecast is wrong by 10%, we are either wasting product or losing the sale.',sentiment:20,frequency:'High'},
+          {theme:'Distributor visibility gap breaking replenishment cycles',quote:'We have no real-time view of what is sitting at the distributor. By the time we know there is a stock problem, the window has closed.',sentiment:24,frequency:'High'},
+          {theme:'Manual trade promotion reconciliation taking weeks',quote:'Trade spend reconciliation is a quarterly nightmare. We have a team of five doing nothing else for three weeks.',sentiment:27,frequency:'High'},
+          {theme:'SKU proliferation overwhelming planning systems',quote:'We went from 800 to 2,400 SKUs in three years. The planning system was not built for that scale and it shows.',sentiment:32,frequency:'Medium'},
+          {theme:'Multi-state GST compliance creating audit exposure',quote:'Every state has different GST treatment for our category. The manual mapping creates compliance risk every quarter.',sentiment:29,frequency:'Medium'},
+        ],
+        praise:[
+          {theme:'Unified demand and supply planning reducing waste',quote:'Connecting demand planning to supply has cut our waste rate by a third. That is real money on products we were throwing away.',sentiment:80,frequency:'Low'},
+          {theme:'Real-time distributor stock visibility now possible',quote:'We can now see distributor inventory in real time. Replenishment is proactive instead of reactive.',sentiment:76,frequency:'Low'},
+          {theme:'Trade promotion ROI now measurable and actionable',quote:'We can finally see which promotions are working before we commit the next cycle of spend.',sentiment:73,frequency:'Low'},
+        ]
+      },
+      'Pharma': {
+        pain:[
+          {theme:'Batch traceability gaps creating regulatory exposure',quote:'We had an audit where they asked for the full batch history of a product from three years ago. It took us two weeks to pull together manually.',sentiment:19,frequency:'High'},
+          {theme:'Quality hold process slowing production throughput',quote:'When we raise a quality hold, the notification chain is still email and phone calls. Product sits for days waiting for sign-off.',sentiment:23,frequency:'High'},
+          {theme:'Multi-country regulatory reporting done manually',quote:'We file in seven markets. Each has different formats and timelines. The compliance team is stretched to breaking point.',sentiment:21,frequency:'High'},
+          {theme:'ERP customisation blocking upgrade for three years',quote:'We have been on the same version for three years because the customisations make every upgrade a six-month project.',sentiment:26,frequency:'Medium'},
+          {theme:'Cold chain visibility gaps causing compliance risk',quote:'Temperature excursion events are logged on paper and reconciled at the end of the shift. That is not compliant and we know it.',sentiment:24,frequency:'Medium'},
+        ],
+        praise:[
+          {theme:'Full batch traceability now available in real time',quote:'End-to-end batch traceability in minutes, not weeks. Our audit response time has gone from days to hours.',sentiment:82,frequency:'Low'},
+          {theme:'Quality holds resolved faster with digital workflows',quote:'Digital quality hold workflows cut our average resolution time from 72 hours to under 8.',sentiment:79,frequency:'Low'},
+          {theme:'Regulatory submissions now automated and audit-ready',quote:'Our compliance team now spends time on analysis, not data gathering. Submissions go out on time, every time.',sentiment:77,frequency:'Low'},
+        ]
+      },
+      'Logistics': {
+        pain:[
+          {theme:'Real-time shipment visibility still not achieved',quote:'Customers call us for status updates because they cannot get that information themselves. We are manually checking across four systems.',sentiment:21,frequency:'High'},
+          {theme:'Manual POD reconciliation creating billing delays',quote:'Proof of delivery reconciliation is done by hand. It delays billing by five to seven days every cycle.',sentiment:24,frequency:'High'},
+          {theme:'Last-mile accuracy rate below customer expectations',quote:'Our last-mile accuracy is running at 94%. For the contracts we want to win, we need 98. The gap is operational, not commercial.',sentiment:22,frequency:'High'},
+          {theme:'Driver and fleet management still on spreadsheets',quote:'Fleet utilisation is tracked on spreadsheets. We have no live view of where vehicles are or what capacity we have available.',sentiment:28,frequency:'Medium'},
+          {theme:'Fuel and route optimisation done manually',quote:'Route planning is still done by experienced dispatchers using local knowledge. When they are unavailable, efficiency drops sharply.',sentiment:30,frequency:'Medium'},
+        ],
+        praise:[
+          {theme:'Real-time tracking improving customer satisfaction scores',quote:'Since we gave customers live tracking, our inbound query volume dropped by 60%. That is a direct cost saving.',sentiment:81,frequency:'Low'},
+          {theme:'Automated POD cutting billing cycle from days to hours',quote:'Billing now goes out the same day as delivery. Cash collection has improved and disputes have dropped.',sentiment:78,frequency:'Low'},
+          {theme:'Fleet utilisation up 18% after route optimisation',quote:'We are moving the same volume with fewer vehicles. The fuel saving alone paid for the implementation inside a year.',sentiment:76,frequency:'Low'},
+        ]
+      },
+      'Retail': {
+        pain:[
+          {theme:'Inventory accuracy across stores still a major problem',quote:'Our store inventory accuracy is around 80%. That means one in five stock checks gives us wrong information for buying decisions.',sentiment:23,frequency:'High'},
+          {theme:'Omnichannel order fulfilment creating customer complaints',quote:'Online orders are failing fulfilment because the store system and warehouse system show different stock. Customers are complaining.',sentiment:20,frequency:'High'},
+          {theme:'Supplier onboarding taking weeks instead of days',quote:'Every new supplier integration is a custom IT project. We are turning down good suppliers because onboarding takes too long.',sentiment:27,frequency:'High'},
+          {theme:'Markdown decisions made on stale weekly reports',quote:'Our markdown decisions are based on data that is a week old. By the time we act, we have already missed the optimal window.',sentiment:29,frequency:'Medium'},
+          {theme:'Multi-channel pricing consistency impossible to maintain',quote:'Keeping prices consistent across channels is a manual process. We get calls from customers who found a price discrepancy.',sentiment:31,frequency:'Medium'},
+        ],
+        praise:[
+          {theme:'Store inventory accuracy improved to over 97%',quote:'We went from 80% to 97% inventory accuracy across stores. That change alone improved in-store conversion and reduced shrinkage.',sentiment:83,frequency:'Low'},
+          {theme:'Omnichannel fulfilment now operating without failures',quote:'We unified our stock view and the out-of-stock failures on online orders dropped to near zero within two months.',sentiment:80,frequency:'Low'},
+          {theme:'Markdown decisions now real-time and data-driven',quote:'Real-time sell-through data means our markdown decisions are made at the right time. Margin has improved by four points.',sentiment:77,frequency:'Low'},
+        ]
+      },
+      'Professional Services': {
+        pain:[
+          {theme:'Project profitability only visible after the fact',quote:'We find out a project was unprofitable at the invoice stage. By then there is nothing we can do about it.',sentiment:20,frequency:'High'},
+          {theme:'Resource utilisation managed on spreadsheets',quote:'Resource allocation is tracked on a shared spreadsheet. It is always out of date and we constantly over or underbook people.',sentiment:23,frequency:'High'},
+          {theme:'Billing delays eroding cash flow every quarter',quote:'Our average time from project completion to invoice is 18 days. That is cash we should have in the business.',sentiment:22,frequency:'High'},
+          {theme:'Cross-entity consolidation taking weeks per quarter',quote:'We have four entities and consolidation is a manual process every quarter. Finance is locked out of everything else for two weeks.',sentiment:26,frequency:'Medium'},
+          {theme:'Client reporting built from scratch each engagement',quote:'Every client report is built manually from multiple system exports. We are creating the same thing over and over.',sentiment:29,frequency:'Medium'},
+        ],
+        praise:[
+          {theme:'Real-time project margin visibility changing decisions',quote:'Being able to see project margin in real time means we can act before a project goes wrong, not after.',sentiment:81,frequency:'Low'},
+          {theme:'Utilisation reporting now automated and accurate',quote:'We went from a spreadsheet that was three days out of date to a live dashboard. Overbooking incidents have dropped by 80%.',sentiment:78,frequency:'Low'},
+          {theme:'Billing cycle cut from 18 days to same-week invoicing',quote:'Same-week invoicing has taken 12 days out of our cash cycle. That is the equivalent of a significant credit facility we no longer need.',sentiment:79,frequency:'Low'},
+        ]
+      },
+    };
 
-Return a JSON array of EXACTLY 8 objects: 5 pain points (type:"pain"), 3 aspirations (type:"aspiration").
-Each: {"source":"<one of: ${srcs.join(' | ')}>","theme":"<business problem max 8 words>","quote":"<1-2 sentences business impact only>","sentiment":<integer pain:15-45 aspiration:65-80>,"frequency":"<High|Medium|Low>","type":"<pain|aspiration>"}
-Return ONLY the JSON array. No other text.`
-      : `You are a B2B GTM intelligence analyst. Generate realistic buyer feedback about "${currentP}" from ${mkt.label} ${segLbl} companies in the ${industryList} sector. Target audience: ${personaList}. Sources: ${srcs.join(', ')}. ${accountCtx}
-
-Return a JSON array of EXACTLY 8 objects: 5 pain points (type:"pain"), 3 positives (type:"praise").
-Each: {"source":"<one of: ${srcs.join(' | ')}>","theme":"<business problem max 8 words>","quote":"<1-2 sentences business impact only>","sentiment":<integer pain:15-45 praise:68-88>,"frequency":"<High|Medium|Low>","type":"<pain|praise>"}
-Return ONLY the JSON array. No other text.`;
-
-    const raw1 = await claude(p1);
-    const insights = safeParseJSON(raw1);
-    if(!insights || !Array.isArray(insights) || insights.length < 5){
-      throw new Error('Signal Discovery failed. Please retry.');
+    // Match industry to signal library (partial match)
+    function matchSigKey(industries){
+      const map = {
+        'Manufacturing':'Manufacturing','FMCG':'FMCG','Food':'FMCG',
+        'Pharma':'Pharma','Life Sciences':'Pharma',
+        'Logistics':'Logistics','Distribution':'Logistics',
+        'Retail':'Retail','Consumer':'Retail',
+        'Professional':'Professional Services','Tech':'Professional Services',
+      };
+      for(const ind of industries){
+        for(const [k,v] of Object.entries(map)){
+          if(ind.includes(k)) return v;
+        }
+      }
+      return 'Manufacturing'; // default
     }
+
+    const sigKey = matchSigKey(S.industries);
+    const sigSet = SIG[sigKey] || SIG['Manufacturing'];
+
+    // Assign sources round-robin from selected sources
+    const assignedPain = sigSet.pain.map((s,i)=>({
+      ...s,
+      source: srcs[i % srcs.length],
+      type: 'pain',
+    }));
+    const assignedPraise = sigSet.praise.map((s,i)=>({
+      ...s,
+      source: srcs[(i+2) % srcs.length],
+      type: isGreenfield ? 'aspiration' : 'praise',
+    }));
+
+    // For migration play, add a B1/private-cloud-specific pain if relevant
+    if(!isGreenfield && normalize(currentP).includes('business one')){
+      assignedPain[4] = {
+        theme:'B1 scale ceiling blocking multi-entity growth',
+        quote:'We have outgrown Business One. The moment we added a second entity, everything became manual again.',
+        sentiment:24, frequency:'High', source:srcs[0], type:'pain'
+      };
+    } else if(!isGreenfield && normalize(currentP).includes('private')){
+      assignedPain[4] = {
+        theme:'Private cloud upgrade cycles costing time and money',
+        quote:'We spend six months and significant budget on every upgrade. The business cannot absorb that pace of disruption.',
+        sentiment:26, frequency:'Medium', source:srcs[0], type:'pain'
+      };
+    }
+
+    const insights = [...assignedPain, ...assignedPraise];
     setPT(1,'done');
 
     document.getElementById('resultsIdle').style.display='none';
@@ -2651,138 +2772,73 @@ Return ONLY the JSON array. No other text.`;
     await new Promise(r=>setTimeout(r,400));
     setPT(3,'done');
 
-    // STEP 4: Sequence Build — deterministic, no API call
+    // STEP 4: Sequence Build — fully deterministic, zero API calls
     setPT(4,'running');
     document.getElementById('emailSec').classList.add('show');
 
     const ref = pickCustomerRef(segKey, S.market, S.personas, pitchP, S.industries);
 
-    // ── Pull signal data ──────────────────────────────────────────────
-    const topPains = pain.slice(0, 4);
-    const p0 = topPains[0] || { theme: 'operational fragmentation', quote: 'Teams are running on disconnected systems and manual workarounds.' };
-    const p1b = topPains[1] || topPains[0] || p0;
-    const acct = S.accountName ? `{{account.name}}` : `companies like yours`;
+    const p0 = pain[0] || { theme:'operational fragmentation', quote:'Teams are running on disconnected systems and manual workarounds that slow every decision.' };
+    const p1b = pain[1] || p0;
     const sender = S.senderName || '{{sender.first_name}}';
-    const title  = S.senderTitle || '{{sender.title}}';
-    const signOff = `Best,\n${sender}\n${title}\n{{sender.phone}}`;
+    const sTitle = S.senderTitle || '{{sender.title}}';
+    const signOff = `Best,\n${sender}\n${sTitle}\n{{sender.phone}}`;
+    const acct = S.accountName ? '{{account.name}}' : `${segLbl} ${industryList} businesses`;
 
-    // ── Persona-aware hooks ───────────────────────────────────────────
-    const PERSONA_HOOKS = {
-      'CFO / Finance Head':       { obs: `Most ${industryList} finance teams in ${mkt.label} are closing the books manually — month-end takes weeks, not days.`, q1: `How long does your team spend on consolidation and reconciliation each period?`, q2: `What's the cost of that delay to your reporting cycle?` },
-      'CTO / IT Director':        { obs: `${industryList} IT teams in ${mkt.label} are managing integrations across 4–6 disconnected systems — and every upgrade breaks something.`, q1: `How much of your team's time goes to maintaining integrations vs building new capability?`, q2: `What's your current upgrade path looking like?` },
-      'CEO / MD / Founder':       { obs: `Fast-growing ${industryList} businesses in ${mkt.label} are hitting a ceiling — not because of the market, but because the foundation can't keep up.`, q1: `Is your current setup giving you the visibility you need to make fast decisions?`, q2: `What's the one operational constraint that's slowing your growth right now?` },
-      'COO / Operations Head':    { obs: `${industryList} operations teams in ${mkt.label} spend a third of their time chasing data across systems that don't talk to each other.`, q1: `How much of your team's day is spent on manual data handoffs between departments?`, q2: `Where do the biggest delays in your operation happen today?` },
-      'VP / Head of Supply Chain':{ obs: `${industryList} supply chain teams in ${mkt.label} are managing inventory across locations with data that's 24–48 hours behind reality.`, q1: `How often does a stock discrepancy or forecast miss create a downstream problem?`, q2: `What visibility do you have across your fulfilment network right now?` },
+    const PHOOKS = {
+      'CFO / Finance Head':       { obs:`Most ${industryList} finance teams in ${mkt.label} are still closing the books manually — month-end takes weeks, not days.`, q1:`How long does your team spend on consolidation and reconciliation each period?`, q2:`What is the cost of that delay to your reporting cycle?` },
+      'CTO / IT Director':        { obs:`${industryList} IT teams in ${mkt.label} are managing integrations across 4-6 disconnected systems — and every upgrade breaks something.`, q1:`How much of your team's time goes on maintaining integrations rather than building new capability?`, q2:`What does your current upgrade path look like?` },
+      'CEO / MD / Founder':       { obs:`Fast-growing ${industryList} businesses in ${mkt.label} are hitting a ceiling — not because of the market, but because the foundation cannot keep up.`, q1:`Is your current setup giving you the visibility you need to make fast decisions?`, q2:`What is the one operational constraint slowing your growth right now?` },
+      'COO / Operations Head':    { obs:`${industryList} operations teams in ${mkt.label} spend a third of their time chasing data across systems that do not talk to each other.`, q1:`How much of your team's day is spent on manual data handoffs between departments?`, q2:`Where do the biggest delays in your operation happen today?` },
+      'VP / Head of Supply Chain':{ obs:`${industryList} supply chain teams in ${mkt.label} are managing inventory across locations with data that is 24-48 hours behind reality.`, q1:`How often does a stock discrepancy or forecast miss create a downstream problem?`, q2:`What visibility do you have across your fulfilment network right now?` },
     };
-    const hook = PERSONA_HOOKS[personaList] || { obs: `${industryList} businesses in ${mkt.label} are running operations on systems that weren't built for where they are today.`, q1: `What's the biggest process that's still running on manual workarounds?`, q2: `How is that affecting your team's ability to move fast?` };
+    const ph = PHOOKS[personaList] || { obs:`${industryList} businesses in ${mkt.label} are running operations on systems that were not built for where they are today.`, q1:`What is the biggest process still running on manual workarounds?`, q2:`How is that affecting your team's ability to move quickly?` };
 
-    // ── Buying stage opener adjustment ────────────────────────────────
-    const stageOpener = {
-      warm:     `We spoke briefly a while back — I wanted to follow up with something more specific to what you're dealing with now.`,
-      reengage: `We connected previously, but the timing wasn't right. Things have moved on — I thought it was worth reaching back out.`,
-    }[S.buyingStage] || '';
+    const stageOpener = { warm:`We spoke briefly a while back — I wanted to follow up with something more specific to what you are dealing with now.\n\n`, reengage:`We connected previously but the timing was not right. Things have moved on — worth reaching back out.\n\n` }[S.buyingStage] || '';
 
-    // ── FOMO line ─────────────────────────────────────────────────────
-    const fomoLine = S.market === 'india'
-      ? `${industryList} businesses across India are moving fast on this — and the ones that act first are pulling ahead on cost and speed.`
-      : S.market === 'anz'
-      ? `${industryList} businesses across ANZ are tightening operations ahead of reporting season — the window to act before Q-end is narrow.`
-      : `${industryList} businesses across Southeast Asia are standardising operations faster than most expect — the gap between leaders and laggards is widening.`;
+    const fomoLine = S.market==='india'
+      ? `${industryList} businesses across India are moving fast on this — the ones acting now are pulling ahead on cost and speed.`
+      : S.market==='anz'
+      ? `${industryList} businesses across ANZ are tightening operations ahead of reporting season — the window before Q-end is narrow.`
+      : `${industryList} businesses across Southeast Asia are standardising faster than most expect — the gap between leaders and laggards is widening.`;
 
-    // ── Objection bridge for Email 2 ──────────────────────────────────
     const objBridge = {
-      'Implementation cost vs ROI': `I know the first question is always cost. The sharper question is: what's the cost of staying as you are?`,
-      'Migration complexity':        `Migration complexity is real. But the businesses that wait for a "perfect window" rarely find one.`,
-      'Budget approval risk':        `Getting budget across the line is hard. The case is easier when you can show what delay is costing you today.`,
-      'Operational disruption':      `The risk of change is real. So is the risk of not changing — it just shows up slower.`,
-      'Team change management':      `Change management is the hard part. It's also the part most implementations get wrong. Worth a conversation.`,
-      'Data integrity during migration': `Data integrity during cutover is the number one concern. It's also the most manageable with the right approach.`,
-      'Supplier and 3PL integration':    `Reconnecting your supplier and logistics network post-migration is a real challenge. One that's very solvable.`,
-    }[objection.label] || `The honest answer is that every business that's moved on this had the same hesitation. Most say they wish they'd moved sooner.`;
+      'Implementation cost vs ROI':`I know the first question is always cost. The sharper question is: what is the cost of staying as you are?`,
+      'Migration complexity':`Migration complexity is real. But the businesses that wait for a perfect window rarely find one.`,
+      'Budget approval risk':`Getting budget across the line is hard. The case is easier when you can show what delay is costing you today.`,
+      'Operational disruption':`The risk of change is real. So is the risk of not changing — it just shows up more slowly.`,
+      'Team change management':`Change management is the hard part. It is also the part most implementations get wrong. Worth a conversation.`,
+      'Data integrity during migration':`Data integrity during cutover is the number one concern. It is also the most manageable with the right approach.`,
+      'Supplier and 3PL integration':`Reconnecting your supplier and logistics network post-migration is solvable. More solvable than staying fragmented.`,
+    }[objection.label] || `Every business that moved on this had the same hesitation. Most say they wish they had moved sooner.`;
 
-    // ── Build 4 emails ────────────────────────────────────────────────
     const emails = [
       {
-        subject: `${p0.theme.slice(0,40).toLowerCase()}`,
-        timing:  `Day 1 - Tuesday, 9:00 AM ${mkt.tz}`,
-        body: [
-          `Hi {{prospect.first_name}},`,
-          ``,
-          stageOpener ? stageOpener + `\n` : ``,
-          `${hook.obs}`,
-          ``,
-          `${p0.quote}`,
-          ``,
-          `${fomoLine}`,
-          ``,
-          `${hook.q1}`,
-          ``,
-          signOff,
-          ``,
-          `P.S. If this isn't on your radar yet, it probably will be within 90 days. Worth a 20-minute call now rather than a rushed decision later.`,
-        ].filter(l => l !== undefined).join('\n').replace(/\n{3,}/g, '\n\n').trim(),
+        subject: p0.theme.slice(0,42).toLowerCase(),
+        timing: `Day 1 - Tuesday, 9:00 AM ${mkt.tz}`,
+        body: `Hi {{prospect.first_name}},\n\n${stageOpener}${ph.obs}\n\n${p0.quote}\n\n${fomoLine}\n\n${ph.q1}\n\n${signOff}\n\nP.S. If this is not on your radar yet, it probably will be within 90 days. Worth 20 minutes now rather than a rushed decision later.`,
       },
       {
-        subject: `the real cost of ${p1b.theme.slice(0,30).toLowerCase()}`,
-        timing:  `Day 3 - Thursday, 8:30 AM ${mkt.tz}`,
-        body: [
-          `Hi {{prospect.first_name}},`,
-          ``,
-          `Following up on my last note.`,
-          ``,
-          `${p1b.quote}`,
-          ``,
-          `That's not just an operational problem. It compounds. Every month you run like this, the gap between what you can see and what you need to decide on gets wider.`,
-          ``,
-          `${objBridge}`,
-          ``,
-          `${hook.q2}`,
-          ``,
-          signOff,
-        ].join('\n'),
+        subject: `the real cost of ${p1b.theme.slice(0,28).toLowerCase()}`,
+        timing: `Day 3 - Thursday, 8:30 AM ${mkt.tz}`,
+        body: `Hi {{prospect.first_name}},\n\nFollowing up on my last note.\n\n${p1b.quote}\n\nThat is not just an operational problem. It compounds. Every month you run like this, the gap between what you can see and what you need to decide on gets wider.\n\n${objBridge}\n\n${ph.q2}\n\n${signOff}`,
       },
       {
         subject: `what ${ref.company} did`,
-        timing:  `Day 7 - Tuesday, 9:00 AM ${mkt.tz}`,
-        body: [
-          `Hi {{prospect.first_name}},`,
-          ``,
-          `${ref.company} — a ${ref.industry} business — ${ref.outcome}.`,
-          ``,
-          `The situation before wasn't unusual. ${p0.quote}`,
-          ``,
-          `${acct !== '{{account.name}}' ? `${acct} is at a similar point.` : `Businesses your size in ${industryList} are at a similar point.`} The question is whether to act now or wait until the pressure is higher and the options are narrower.`,
-          ``,
-          `${fomoLine}`,
-          ``,
-          `I have 2 slots available this week. [Book here: {{sender.meeting_link}}]`,
-          ``,
-          signOff,
-        ].join('\n'),
+        timing: `Day 7 - Tuesday, 9:00 AM ${mkt.tz}`,
+        body: `Hi {{prospect.first_name}},\n\n${ref.company} — a ${ref.industry} business — ${ref.outcome}.\n\nThe situation before was not unusual. ${p0.quote}\n\n${acct === '{{account.name}}' ? 'Businesses your size in '+industryList+' are at a similar point.' : acct+' is at a similar point.'} The question is whether to act now or wait until the pressure is higher and the options are narrower.\n\n${fomoLine}\n\nI have 2 slots available this week. [Book here: {{sender.meeting_link}}]\n\n${signOff}`,
       },
       {
         subject: `closing the loop`,
-        timing:  `Day 12 - Wednesday, 7:45 AM ${mkt.tz}`,
-        body: [
-          `Hi {{prospect.first_name}},`,
-          ``,
-          `I know you're busy. I'll keep this short.`,
-          ``,
-          `${p0.theme} is the kind of problem that's easy to park — until it becomes the reason something bigger goes wrong.`,
-          ``,
-          `If the timing isn't right, I understand. If it is, my calendar is open: {{sender.meeting_link}}`,
-          ``,
-          signOff,
-          ``,
-          `P.S. Happy to send a one-pager on how similar businesses have approached this if that's more useful right now.`,
-        ].join('\n'),
+        timing: `Day 12 - Wednesday, 7:45 AM ${mkt.tz}`,
+        body: `Hi {{prospect.first_name}},\n\nI know you are busy. I will keep this short.\n\n${p0.theme} is the kind of problem that is easy to park — until it becomes the reason something bigger goes wrong.\n\nIf the timing is not right, I understand. If it is, my calendar is open: {{sender.meeting_link}}\n\n${signOff}\n\nP.S. Happy to send a one-pager on how similar businesses have approached this if that is more useful right now.`,
       },
     ];
 
     const result = {
-      topTalkingPoint: `${p0.theme} is costing ${acct !== '{{account.name}}' ? acct : `${segLbl} ${industryList} businesses`} more than it appears — and the companies moving now are pulling ahead.`,
+      topTalkingPoint: `${p0.theme} is costing ${acct !== '{{account.name}}' ? acct : segLbl+' '+industryList+' businesses'} more than it appears — and the companies acting now are pulling ahead.`,
       displacementAngle: displacementMessage.split('.')[0] + '.',
-      onePagerSummary: `${mkt.label} ${segLbl} ${industryList} businesses are facing ${p0.theme} at scale. Signal data shows ${highPain} high-frequency pain points across ${srcs.length} sources. This sequence leads with the #1 commercial pain, references ${ref.company}'s verified outcome, and is calibrated to a ${personaList} at ${PIPELINE_STAGE_LABELS[normalize(S.pipelineStage)]?.split('.')[0] || S.pipelineStage} stage.`,
+      onePagerSummary: `${mkt.label} ${segLbl} ${industryList} businesses are facing ${p0.theme} at scale. Signal analysis shows ${highPain} high-frequency pain points across ${srcs.length} sources. This sequence leads with the top commercial pain, references ${ref.company}'s verified outcome, and is calibrated to a ${personaList} at ${PIPELINE_STAGE_LABELS[normalize(S.pipelineStage)]?.split('.')[0] || S.pipelineStage} stage.`,
     };
 
     emailStore = emails;
@@ -2926,7 +2982,7 @@ function generateOnePager(){
   document.getElementById('pagerBody').innerHTML = `
     <div class="pb-header">
       <div>
-        <div class="pb-campaign-label">SAP APAC Digital Hub · Campaign Intelligence Brief</div>
+        <div class="pb-campaign-label">GTM Intelligence Platform · Campaign Intelligence Brief</div>
         <div class="pb-campaign-name">${x(campaignName)}</div>
         <div class="pb-campaign-meta">
           ${x(d.runDate||'')}${c.senderName ? ' &nbsp;·&nbsp; ' + x(c.senderName) : ''}${c.senderTitle ? ' &nbsp;·&nbsp; ' + x(c.senderTitle) : ''}
@@ -2985,7 +3041,7 @@ function generateOnePager(){
     </div>` : ''}
 
     <div class="pb-footer">
-      <span class="pb-footer-left">SAP APAC Digital Hub · Outreach Intelligence Platform · Internal use only</span>
+      <span class="pb-footer-left">GTM Intelligence Platform · Siva Saran Pidaparthy · sivasaran591.github.io/gtm-intelligence-platform</span>
       <span class="pb-footer-right">${metaRunId ? 'Run: ' + x(metaRunId) : ''}</span>
     </div>`;
 
@@ -3019,7 +3075,7 @@ The document must contain:
 1. A header with the run name, date, sender info and sample account
 2. A campaign configuration table (2 columns: label | value) covering current stack, pitch product, market, segment, industry, personas, revenue band, buying stage, pipeline stage
 3. All 3 emails, each with: a coloured header bar (blue), subject row, timing row, full body with line breaks preserved
-4. A footer line: "SAP APAC Digital Hub · Internal use only"
+4. A footer line: "GTM Intelligence Platform · Siva Saran Pidaparthy"
 
 Use Arial font throughout. Use #0066FF as the primary colour for headings.
 A4 page size, 2cm margins.
@@ -3122,7 +3178,7 @@ ${styles}
 <body>
 <div class="page">
   <div class="dl-topbar">
-    <span class="dl-topbar-title">SAP APAC Digital Hub · Campaign Intelligence Brief</span>
+    <span class="dl-topbar-title">GTM Intelligence Platform · Campaign Intelligence Brief</span>
     <button class="dl-print-btn" onclick="window.print()">🖨 Print / Save PDF</button>
   </div>
   <div class="pager-body">${body.innerHTML}</div>
