@@ -2152,7 +2152,7 @@ function setPT(n,state){
 
 // ─── API ─────────────────────────────────────────────────────────────
 const GEMINI_KEY = 'AIzaSyBLbRfOaNIa8gZ7xEL61NHAe6bUajwN-rQ';
-const GEMINI_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_KEY}`;
+const GEMINI_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${GEMINI_KEY}`;
 
 async function claude(prompt, sys, attempt=0){
   const systemText = sys || 'You are a precise B2B GTM analyst. Respond ONLY in valid JSON. No markdown. No preamble. No extra text.';
