@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SAP APAC Digital Hub · GTM Intelligence</title>
+<title>CampaignForge · GTM Intelligence Platform</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;1,9..144,300;1,9..144,400&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
@@ -1024,12 +1024,13 @@ body{
 
 <!-- ─── TOPBAR ─────────────────────────────────────────────────────── -->
 <header class="topbar">
-  <div class="tb-logo">SAP</div>
+  <a href="index.html" style="display:flex;align-items:center;gap:5px;font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:700;color:#64748B;text-decoration:none;padding:4px 10px;border:1px solid #E2E8F0;border-radius:6px;white-space:nowrap;flex-shrink:0;" onmouseover="this.style.color='#2563EB';this.style.borderColor='#BFDBFE'" onmouseout="this.style.color='#64748B';this.style.borderColor='#E2E8F0'">← Platform</a>
+  <div class="tb-logo">⚡</div>
   <div class="tb-div"></div>
-  <div class="tb-title">APAC Digital Hub &middot; GTM Intelligence Platform</div>
+  <div class="tb-title">Campaign<strong style="color:#7C3AED">Forge</strong> &middot; GTM Intelligence Platform</div>
   <div class="tb-right">
     <div class="live-badge"><div class="live-dot"></div>Live AI</div>
-    <div class="proto-label">Prototype · AI-assisted GTM Intelligence</div>
+    <div class="proto-label">GTM Intelligence Platform · Siva Saran Pidaparthy</div>
     <button class="tb-btn" id="exportAllBtn" onclick="exportAll()" style="display:none">📋 Export</button>
   <button class="tb-btn" id="onePagerBtn" onclick="generateOnePager()" style="display:none">📄 1-Pager</button>
   <button class="tb-btn" id="savedRunsBtn" style="display:none!important">🗂 Saved Runs</button>
@@ -1565,7 +1566,7 @@ body{
 <div class="pager-overlay" id="pagerOverlay" onclick="closePagerIfOutside(event)">
   <div class="pager-modal" id="pagerModal">
     <div class="pager-topbar">
-      <span class="pager-topbar-title">Campaign Intelligence Brief · SAP APAC Digital Hub</span>
+      <span class="pager-topbar-title">Campaign Intelligence Brief · GTM Intelligence Platform</span>
       <div class="pager-topbar-actions">
         <button class="pager-print-btn" onclick="downloadOnePager()">⬇ Download 1-Pager</button>
         <button class="pager-close-btn" onclick="closePager()">✕</button>
@@ -2152,7 +2153,7 @@ function setPT(n,state){
 
 // ─── API ─────────────────────────────────────────────────────────────
 const GEMINI_KEY = 'AIzaSyBLbRfOaNIa8gZ7xEL61NHAe6bUajwN-rQ';
-const GEMINI_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_KEY}`;
+const GEMINI_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${GEMINI_KEY}`;
 
 async function claude(prompt, sys, attempt=0){
   const systemText = sys || 'You are a precise B2B GTM analyst. Respond ONLY in valid JSON. No markdown. No preamble. No extra text.';
@@ -2853,7 +2854,7 @@ function generateOnePager(){
   document.getElementById('pagerBody').innerHTML = `
     <div class="pb-header">
       <div>
-        <div class="pb-campaign-label">SAP APAC Digital Hub · Campaign Intelligence Brief</div>
+        <div class="pb-campaign-label">GTM Intelligence Platform · Campaign Intelligence Brief</div>
         <div class="pb-campaign-name">${x(campaignName)}</div>
         <div class="pb-campaign-meta">
           ${x(d.runDate||'')}${c.senderName ? ' &nbsp;·&nbsp; ' + x(c.senderName) : ''}${c.senderTitle ? ' &nbsp;·&nbsp; ' + x(c.senderTitle) : ''}
@@ -2912,7 +2913,7 @@ function generateOnePager(){
     </div>` : ''}
 
     <div class="pb-footer">
-      <span class="pb-footer-left">SAP APAC Digital Hub · Outreach Intelligence Platform · Internal use only</span>
+      <span class="pb-footer-left">GTM Intelligence Platform · Siva Saran Pidaparthy · sivasaran591.github.io/gtm-intelligence-platform</span>
       <span class="pb-footer-right">${metaRunId ? 'Run: ' + x(metaRunId) : ''}</span>
     </div>`;
 
@@ -2946,7 +2947,7 @@ The document must contain:
 1. A header with the run name, date, sender info and sample account
 2. A campaign configuration table (2 columns: label | value) covering current stack, pitch product, market, segment, industry, personas, revenue band, buying stage, pipeline stage
 3. All 3 emails, each with: a coloured header bar (blue), subject row, timing row, full body with line breaks preserved
-4. A footer line: "SAP APAC Digital Hub · Internal use only"
+4. A footer line: "GTM Intelligence Platform · Siva Saran Pidaparthy"
 
 Use Arial font throughout. Use #0066FF as the primary colour for headings.
 A4 page size, 2cm margins.
@@ -3049,7 +3050,7 @@ ${styles}
 <body>
 <div class="page">
   <div class="dl-topbar">
-    <span class="dl-topbar-title">SAP APAC Digital Hub · Campaign Intelligence Brief</span>
+    <span class="dl-topbar-title">GTM Intelligence Platform · Campaign Intelligence Brief</span>
     <button class="dl-print-btn" onclick="window.print()">🖨 Print / Save PDF</button>
   </div>
   <div class="pager-body">${body.innerHTML}</div>
