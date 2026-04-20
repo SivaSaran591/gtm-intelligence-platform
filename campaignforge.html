@@ -2493,10 +2493,6 @@ async function startPipeline(){
   running=true;
   showResults();
 
-  // ── PRE-BAKED DEMO RUN ──────────────────────────────────────────────
-  // All output below is a real sample run. No API call required.
-  // Config: Unknown/Non-SAP → S/4HANA Public Cloud | Manufacturing | India | Mid-Market | ₹150-299 Cr | CFO / Finance Head | Cold
-
   document.getElementById('errBar').style.display='none';
   document.getElementById('insightsSec').classList.remove('show');
   document.getElementById('emailSec').classList.remove('show');
@@ -2509,201 +2505,271 @@ async function startPipeline(){
     if(el){el.classList.remove('show');if(id==='signalDiscovery')el.style.display='none';}
   });
 
-  const mkt    = MARKETS[S.market] || MARKETS['india'];
-  const segKey = S.segment || 'midmarket';
-  const segLbl = segKey==='midmarket'?'Mid-Market':'Enterprise';
-  const srcs   = S.selectedSources.length > 0 ? S.selectedSources : MARKETS[mkt? S.market:'india'].sources[segKey];
+  const mkt      = MARKETS[S.market];
+  const segKey   = S.segment;
+  const srcs     = S.selectedSources.length > 0 ? S.selectedSources : MARKETS[S.market].sources[S.segment];
+  const segLbl   = segKey==='midmarket'?'Mid-Market':'Enterprise';
+  const revLabel = S.revenues.length===1 ? S.revenues[0] : S.revenues.join(' or ');
+  const currentP = S.currentProduct;
+  const pitchP   = S.pitchProduct;
+  const isGreenfield = normalize(currentP) === normalize('Unknown / Non-SAP');
+  const isMigration  = !isGreenfield && normalize(currentP) !== normalize(pitchP);
+  const personaList  = S.personas.join(', ');
+  const industryList = S.industries.join(', ');
+  const hasAccount   = !!(S.accountName);
+  const accountCtx   = hasAccount
+    ? `Target account: ${S.accountName}${S.accountDomain?' ('+S.accountDomain+')':''}. Make all insights feel specific to a company like ${S.accountName}.`
+    : '';
+  const senderSign = S.senderName
+    ? `${S.senderName}${S.senderTitle ? '\n'+S.senderTitle : ''}`
+    : `GTM Intelligence Platform`;
+
+  const displacementMessage = computeDisplacement(currentP);
+  const objection           = computeObjection(S.pipelineStage, personaList);
+  const pipelineStageFull   = PIPELINE_STAGE_LABELS[normalize(S.pipelineStage)] || S.pipelineStage;
+
+  const PERSONA_CTX = {
+    'CFO / Finance Head': {
+      angle:'Financial control, close cycle compression, audit readiness, cost of carry, and the risk of fragmented data across entities.',
+      hook:'Lead with close cycle time, manual reconciliation cost, or compliance exposure.',
+      cta:'Frame the conversation as a financial review, not a product demo.',
+      avoid:'Do not lead with technology. The CFO cares about the number.',
+    },
+    'CTO / IT Director': {
+      angle:'Technical debt, integration complexity, upgrade cycles, total cost of ownership.',
+      hook:'Lead with upgrade friction, integration sprawl, or the cost of maintaining customised on-prem systems.',
+      cta:'Frame the conversation as an architecture review.',
+      avoid:'Do not use business outcome language only — the CTO needs the technical case.',
+    },
+    'CEO / MD / Founder': {
+      angle:'Growth ceiling, competitive positioning, visibility across the business.',
+      hook:'Lead with scale ceiling or competitive gap.',
+      cta:'Frame the conversation as a growth conversation, not a system conversation.',
+      avoid:'Do not go deep on features or technical detail.',
+    },
+    'COO / Operations Head': {
+      angle:'Process fragmentation, cross-functional visibility, manual handoffs between teams.',
+      hook:'Lead with the cost of disconnected operations.',
+      cta:'Frame the conversation as an operational efficiency review.',
+      avoid:'Do not lead with finance metrics.',
+    },
+    'VP / Head of Supply Chain': {
+      angle:'Inventory accuracy, fulfilment speed, demand forecasting reliability.',
+      hook:'Lead with inventory exposure or fulfilment gap.',
+      cta:'Frame the conversation as a supply chain visibility assessment.',
+      avoid:'Do not lead with finance or IT language.',
+    },
+  };
+  const personaCtx = PERSONA_CTX[personaList] || {
+    angle:'Business outcomes: time saved, cost reduced, risk removed, growth enabled.',
+    hook:'Lead with the most relevant pain point from the signals.',
+    cta:'Frame the conversation as a review or assessment.',
+    avoid:'Do not lead with features or technology.',
+  };
+
+  const stageCtx = [
+    { cold:'Cold outreach — never engaged. Build credibility from scratch.', warm:'Warm outreach — previously engaged. Acknowledge the shared context briefly.', reengage:'Re-engagement — went cold. Reference prior conversations and frame what has changed.' }[S.buyingStage] || '',
+    `Pipeline stage: ${pipelineStageFull}.`,
+  ].filter(Boolean).join(' ');
+
+  const fomoContext = S.market==='india'
+    ? `the pace at which Indian ${industryList} companies are modernising`
+    : S.market==='anz'
+    ? `the pressure ANZ businesses face on audit and reporting standards`
+    : `the speed at which leading ${industryList} companies across Southeast Asia are standardising operations`;
+
+  const playContext = isGreenfield
+    ? `Greenfield play: stack unknown or non-SAP. Frame pain as universal operational problems. System weakness: ${displacementMessage}`
+    : isMigration
+    ? `Migration play: on ${currentP}, pitching ${pitchP}. Pain = reason to move. System weakness: ${displacementMessage}`
+    : `Expansion play: on ${currentP}, deepening to ${pitchP}. Pain = unlocked value. System weakness: ${displacementMessage}`;
+
+  const accountLine = hasAccount
+    ? `Target account: ${S.accountName}${S.accountDomain?' ('+S.accountDomain+')':''}. Use {{account.name}} token where it adds impact.`
+    : 'No specific account. Use {{account.name}} token generically.';
 
   document.getElementById('resultsIdle').style.display='none';
   await animateSignalDiscovery();
 
-  setPT(1,'running');
-  await new Promise(r=>setTimeout(r,800));
+  try {
+    // STEP 1: Signal Discovery
+    setPT(1,'running');
 
-  const DEMO_INSIGHTS = [
-    { source:'G2 Reviews', theme:'Month-end close taking 12 days manually', quote:'Our finance team spends nearly two weeks every month reconciling data across three different systems. By the time the numbers are ready, the window to act on them has already passed.', sentiment:22, frequency:'High', type:'pain' },
-    { source:'Reddit r/SAP & r/ERP', theme:'No single view of inventory across locations', quote:'We run four plants and three warehouses. Every morning someone calls someone else to find out what stock we actually have. We are making procurement decisions on spreadsheets that are already 48 hours old.', sentiment:18, frequency:'High', type:'pain' },
-    { source:'LinkedIn Discussions', theme:'GST and e-invoicing compliance done in spreadsheets', quote:'Every quarter is a scramble. Our team manually reconciles GSTR-1 and GSTR-3B, cross-referencing ledgers that don\'t talk to each other. One error and we are looking at notices.', sentiment:25, frequency:'High', type:'pain' },
-    { source:'Capterra', theme:'Finance and ops running on different data', quote:'Our CFO presents one set of numbers to the board. Our COO has a different view from the plant. They argue about whose numbers are right instead of what to do about it.', sentiment:30, frequency:'Medium', type:'pain' },
-    { source:'Economic Times Tech', theme:'Upgrade cycles creating operational dead zones', quote:'Every time we try to update the system, we lose two weeks of normal operations. We have stopped upgrading because the cost of downtime is higher than the cost of running outdated software.', sentiment:28, frequency:'Medium', type:'pain' },
-    { source:'NASSCOM Insights', theme:'Real-time visibility reduces close cycle by 60%+', quote:'Companies that moved to unified cloud ERP report cutting financial close from 12 days to under 5. The CFO no longer chases data — the data comes to them.', sentiment:78, frequency:'High', type:'aspiration' },
-    { source:'SAP Community Forums', theme:'Single system of record across finance and ops', quote:'When finance, supply chain, and operations all work from the same data, the conversation in the boardroom changes completely. You stop debating the numbers and start making decisions.', sentiment:82, frequency:'Medium', type:'aspiration' },
-    { source:'Gartner Peer Insights', theme:'Audit readiness becomes a byproduct, not a project', quote:'The best outcome we didn\'t expect: when auditors came in, we gave them system access and walked away. There was nothing to prepare because everything was already there.', sentiment:85, frequency:'Medium', type:'aspiration' },
-  ];
+    const p1 = isGreenfield
+      ? `You are a B2B GTM intelligence analyst. Generate realistic buyer feedback from ${mkt.label} ${segLbl} companies in the ${industryList} sector running fragmented or non-SAP ERP systems. Target audience: ${personaList}. Sources: ${srcs.join(', ')}. ${accountCtx}
 
-  setPT(1,'done');
-  renderInsights(DEMO_INSIGHTS, srcs, 'CFO / Finance Head');
+Return a JSON array of EXACTLY 8 objects: 5 pain points (type:"pain"), 3 aspirations (type:"aspiration").
+Each: {"source":"<one of: ${srcs.join(' | ')}>","theme":"<business problem max 8 words>","quote":"<1-2 sentences business impact only>","sentiment":<integer pain:15-45 aspiration:65-80>,"frequency":"<High|Medium|Low>","type":"<pain|aspiration>"}
+Return ONLY the JSON array. No other text.`
+      : `You are a B2B GTM intelligence analyst. Generate realistic buyer feedback about "${currentP}" from ${mkt.label} ${segLbl} companies in the ${industryList} sector. Target audience: ${personaList}. Sources: ${srcs.join(', ')}. ${accountCtx}
 
-  const pain = DEMO_INSIGHTS.filter(i=>i.type==='pain');
-  document.getElementById('sv0').textContent = DEMO_INSIGHTS.length;
-  document.getElementById('sv1').textContent = pain.filter(p=>p.frequency==='High').length;
-  document.getElementById('statsRow').classList.add('show');
+Return a JSON array of EXACTLY 8 objects: 5 pain points (type:"pain"), 3 positives (type:"praise").
+Each: {"source":"<one of: ${srcs.join(' | ')}>","theme":"<business problem max 8 words>","quote":"<1-2 sentences business impact only>","sentiment":<integer pain:15-45 praise:68-88>,"frequency":"<High|Medium|Low>","type":"<pain|praise>"}
+Return ONLY the JSON array. No other text.`;
 
-  const topPain = pain[0];
-  document.getElementById('topInsightText').textContent = topPain.theme;
-  document.getElementById('topInsightSub').textContent = topPain.quote;
-  const tib = document.getElementById('topInsightBlock');
-  tib.style.display='block';
-  setTimeout(()=>tib.classList.add('show'),100);
+    const raw1 = await claude(p1);
+    const insights = safeParseJSON(raw1);
+    if(!insights || !Array.isArray(insights) || insights.length < 5){
+      throw new Error('Signal Discovery failed. Please retry.');
+    }
+    setPT(1,'done');
 
-  const rs = computeReadiness(DEMO_INSIGHTS, srcs);
-  renderReadiness(rs);
-  renderCRM(S.accountName || 'Target Account', rs);
+    document.getElementById('resultsIdle').style.display='none';
+    renderInsights(insights, srcs, personaList);
+    const pain = insights.filter(i=>i.type==='pain'||i.sentiment<55);
+    const highPain = pain.filter(p=>p.frequency==='High').length;
+    document.getElementById('sv0').textContent = insights.length;
+    document.getElementById('sv1').textContent = highPain;
+    document.getElementById('statsRow').classList.add('show');
 
-  setPT(2,'running');
-  await new Promise(r=>setTimeout(r,600));
-  renderThemes(pain);
-  renderGTMStrategy(DEMO_INSIGHTS, ['CFO / Finance Head'], segKey, S.industries.length ? S.industries : ['Manufacturing'], rs);
-  renderCampaignPillars(DEMO_INSIGHTS, S.industries.length ? S.industries : ['Manufacturing']);
-  setPT(2,'done');
+    const topPain = pain.sort((a,b)=>{
+      const freq={'High':3,'Medium':2,'Low':1};
+      return (freq[b.frequency]||0)-(freq[a.frequency]||0)||a.sentiment-b.sentiment;
+    })[0];
+    if(topPain){
+      document.getElementById('topInsightText').textContent = topPain.theme;
+      document.getElementById('topInsightSub').textContent = topPain.quote;
+      const tib = document.getElementById('topInsightBlock');
+      tib.style.display='block';
+      setTimeout(()=>tib.classList.add('show'),100);
+    }
 
-  setPT(3,'running');
-  await new Promise(r=>setTimeout(r,500));
-  setPT(3,'done');
+    const rs = computeReadiness(insights, srcs);
+    renderReadiness(rs);
+    renderCRM(S.accountName, rs);
 
-  setPT(4,'running');
-  document.getElementById('emailSec').classList.add('show');
+    // STEP 2: Insight Clustering
+    setPT(2,'running');
+    await new Promise(r=>setTimeout(r,400));
+    renderThemes(pain);
+    renderGTMStrategy(insights, S.personas, segKey, S.industries, rs);
+    renderCampaignPillars(insights, S.industries);
+    setPT(2,'done');
 
-  const DEMO_EMAILS = [
-    {
-      step:1,
-      subject:'{{account.name}} — the 12-day close problem',
-      timing:'Day 1 — Tuesday, 9:00 AM IST',
-      body:`Hi {{prospect.first_name}},
+    // STEP 3: Campaign Strategy
+    setPT(3,'running');
+    await new Promise(r=>setTimeout(r,400));
+    setPT(3,'done');
 
-Manufacturing CFOs running multi-plant operations in India are losing an average of 12 working days every month to manual close cycles. Finance teams reconciling GSTR-1, GSTR-3B, and ledgers across disconnected systems are not slow because they lack effort — they are slow because the system forces it.
+    // STEP 4: Sequence Build
+    setPT(4,'running');
+    document.getElementById('emailSec').classList.add('show');
 
-Leaders in your sector who consolidated onto a single cloud ERP platform cut that cycle to under five days. The difference is not headcount. It is architecture.
+    const ref = pickCustomerRef(segKey, S.market, S.personas, pitchP, S.industries);
 
-What does your current close cycle look like across your entities?
+    const p3 = `You are a senior B2B GTM strategist writing a cold outreach email sequence for Outreach.io.
 
-Best,
-{{sender.first_name}}
-{{sender.title}}
-{{sender.phone}}
+SENDER: ${senderSign}
+TARGET: ${personaList} at ${mkt.label} ${segLbl} companies in ${industryList}
+STAGE: ${stageCtx}
+PERSONA: angle=${personaCtx.angle} | hook=${personaCtx.hook} | cta=${personaCtx.cta} | avoid=${personaCtx.avoid}
+${accountLine}
+${playContext}
 
-P.S. The GST e-invoicing mandate has raised the compliance bar permanently. Companies still reconciling manually are one audit notice away from a very expensive quarter.`,
-    },
-    {
-      step:2,
-      subject:'What Nippon Steel Engineering did differently',
-      timing:'Day 3 — Thursday, 8:30 AM IST',
-      body:`Hi {{prospect.first_name}},
+Top buyer pain points:
+${pain.slice(0,4).map(p=>`- ${p.theme}: "${p.quote}"`).join('\n')}
 
-The close cycle problem I mentioned cuts deeper than finance. When {{account.name}}'s operations team runs on different inventory numbers than your finance team, every procurement decision carries hidden risk.
+REAL PROOF POINT (use in Email 3 by name):
+Company: ${ref.company} (${ref.industry})
+Outcome: ${ref.outcome}
 
-Nippon Steel Engineering India solved exactly this. They moved to a unified cloud ERP and cut financial report preparation time by 70%, with a 60% improvement in budget and cash flow forecasting accuracy. Their finance team stopped chasing data and started leading decisions.
+RULES:
+- Start every email: Hi {{prospect.first_name}},
+- End every email with: Best,\n${S.senderName||'{{sender.first_name}}'}\n${S.senderTitle||'{{sender.title}}'}\n{{sender.phone}}
+- Use tokens: {{prospect.first_name}} {{account.name}} {{sender.first_name}} {{sender.title}} {{sender.phone}} {{sender.meeting_link}}
+- No em dashes. No product names in body. No competitor names. No invented deadlines.
+- Short sentences. One idea per paragraph. Active voice. No filler.
+- Banned words: transformation, innovation, seamless, unlock, leverage, excited, journey, ecosystem, synergy, empower, streamline.
 
-The concern I hear from CFOs at this stage is always the same: the cost and complexity of getting there. The real cost is what staying costs — in audit exposure, in close cycle drag, and in decisions made on stale data.
+EMAIL 1 (Day 1, 140-160 words): Pattern interrupt. One sharp observation from pain points. One FOMO line about what peers in ${industryList} are doing. One direct question. Mandatory P.S. with urgency hook.
+EMAIL 2 (Day 3, 120-140 words): Problem deep dive. Bridge from Email 1. Break down cost of problem. Address objection naturally: ${objection.label}. One specific question.
+EMAIL 3 (Day 7, 110-130 words): Name ${ref.company} directly. State outcome: ${ref.outcome}. Connect to prospect situation. One FOMO line. CTA: "I have 2 slots available this week. [Book here: {{sender.meeting_link}}]"
+EMAIL 4 (Day 12, 60-75 words): Soft breakup. Acknowledge busy. One reason now matters. Soft close. Optional P.S.
 
-What is the current gap between when your books close and when you can act on the numbers?
+SUBJECT LINES: Under 44 chars. No caps, exclamation or question marks. Use tokens where impactful. Different format per email.
 
-Best,
-{{sender.first_name}}
-{{sender.title}}
-{{sender.phone}}`,
-    },
-    {
-      step:3,
-      subject:'The window for {{account.name}} is narrowing',
-      timing:'Day 7 — Tuesday, 9:00 AM IST',
-      body:`Hi {{prospect.first_name}},
+Return ONLY this JSON, no markdown:
+{
+  "topTalkingPoint": "<one sharp commercial sentence>",
+  "displacementAngle": "<one sentence on structural exposure>",
+  "onePagerSummary": "<2-3 sentences executive summary>",
+  "emails": [
+    {"step":1,"subject":"<subject>","timing":"Day 1 - Tuesday, 9:00 AM ${mkt.tz}","body":"<full body with \\n line breaks>"},
+    {"step":2,"subject":"<subject>","timing":"Day 3 - Thursday, 8:30 AM ${mkt.tz}","body":"<full body>"},
+    {"step":3,"subject":"<subject>","timing":"Day 7 - Tuesday, 9:00 AM ${mkt.tz}","body":"<full body>"},
+    {"step":4,"subject":"<subject>","timing":"Day 12 - Wednesday, 7:45 AM ${mkt.tz}","body":"<full body>"}
+  ]
+}`;
 
-Manufacturing companies in India that delayed this decision by two quarters found themselves playing catch-up on three fronts simultaneously: compliance readiness, multi-entity consolidation, and real-time ops visibility. Their peers who moved earlier spent that same period closing faster and forecasting with confidence.
+    let result = null;
+    for(let attempt3=0; attempt3<2; attempt3++){
+      const raw3 = await claude(p3);
+      result = safeParseJSON(raw3);
+      if(result && Array.isArray(result.emails) && result.emails.length >= 4) break;
+      result = null;
+      await new Promise(r=>setTimeout(r,2000));
+    }
+    if(!result) throw new Error('Sequence Build failed. Please retry.');
 
-Nippon Steel Engineering India went from a 12-day close to a 5-day close. JSW Minerals cut their financial closing time by 53%. Both decisions were made by CFOs who decided the cost of waiting was higher than the cost of moving.
+    const emails = result.emails.map(e=>({ subject:e.subject||'', timing:e.timing||'', body:e.body||'' }));
+    emailStore = emails;
 
-I have two slots available this week for a 20-minute call to map where {{account.name}}'s biggest consolidation exposure sits right now.
+    for(let i=0;i<4;i++){
+      const subjEl = document.getElementById('eS'+i);
+      subjEl.innerHTML='';
+      const parts = (emails[i]?.subject||'').split(/(\{\{[^}]+\}\})/g);
+      parts.forEach(p=>{
+        if(p.match(/^\{\{[^}]+\}\}$/)){
+          const pill=document.createElement('span'); pill.className='ot-token'; pill.textContent=p;
+          subjEl.appendChild(pill);
+        } else if(p) subjEl.appendChild(document.createTextNode(p));
+      });
+      document.getElementById('eT'+i).textContent='📅 '+(emails[i]?.timing||'—');
+    }
 
-[Book here: {{sender.meeting_link}}]
+    await typeWriteTokens(document.getElementById('eB0'), emails[0]?.body||'', 7);
+    renderEmailBody(document.getElementById('eB1'), emails[1]?.body||'');
+    renderEmailBody(document.getElementById('eB2'), emails[2]?.body||'');
+    renderEmailBody(document.getElementById('eB3'), emails[3]?.body||'');
 
-Best,
-{{sender.first_name}}
-{{sender.title}}
-{{sender.phone}}`,
-    },
-    {
-      step:4,
-      subject:'Last note, {{prospect.first_name}}',
-      timing:'Day 12 — Wednesday, 7:45 AM IST',
-      body:`Hi {{prospect.first_name}},
+    const badge = document.getElementById('refBadge');
+    const badgeName = document.getElementById('refBadgeName');
+    if(badge && badgeName){ badgeName.textContent=ref.company+' · '+ref.industry; badge.style.display='flex'; }
 
-I know your plate is full. I will step back after this.
+    document.getElementById('sv3').textContent='4';
+    document.getElementById('sv4').textContent=rs.total;
+    setPT(4,'done');
+    document.getElementById('archPanel').classList.add('show');
 
-One thought worth leaving with you: manufacturing CFOs who consolidated finance and ops onto a single platform in the last 18 months are now running close cycles that their peers consider impossible. The gap between them and companies still on fragmented systems is widening every quarter.
+    pagerData = {
+      runName: [S.accountName, S.industries[0], mkt.label].filter(Boolean).join(' · ') || 'Campaign Run',
+      runDate: new Date().toLocaleDateString('en-IN',{day:'numeric',month:'long',year:'numeric'}),
+      config:{
+        currentProduct:S.currentProduct, pitchProduct:S.pitchProduct,
+        industries:[...S.industries], segment:segKey, segmentLabel:segLbl,
+        market:mkt.label, marketFlag:mkt.flag, revenues:[...S.revenues],
+        personas:[...S.personas], buyingStage:S.buyingStage, pipelineStage:S.pipelineStage,
+        pipelineStageFull, accountName:S.accountName, accountDomain:S.accountDomain,
+        senderName:S.senderName, senderTitle:S.senderTitle, sources:srcs,
+        displacementMessage, objection,
+      },
+      topTalkingPoint: result.topTalkingPoint||null,
+      displacementAngle: result.displacementAngle||null,
+      onePagerSummary: result.onePagerSummary||null,
+      topPain, insights:insights.slice(0,5), ref, emails, emailCount:4,
+      metadata:{ runId:'run_'+Date.now(), generatedAt:new Date().toISOString() },
+    };
 
-If operational visibility across {{account.name}}'s entities becomes a priority, I am one reply away.
-
-Best,
-{{sender.first_name}}
-{{sender.title}}
-{{sender.phone}}
-
-P.S. India's e-invoicing compliance requirements are expanding to more business categories this year. Companies with unified ERPs are already compliant by default. Everyone else is adding manual work.`,
-    },
-  ];
-
-  emailStore = DEMO_EMAILS;
-
-  for(let i=0;i<4;i++){
-    const subjEl = document.getElementById('eS'+i);
-    subjEl.innerHTML='';
-    const parts = DEMO_EMAILS[i].subject.split(/(\{\{[^}]+\}\})/g);
-    parts.forEach(p=>{
-      if(p.match(/^\{\{[^}]+\}\}$/)){
-        const pill=document.createElement('span'); pill.className='ot-token'; pill.textContent=p;
-        subjEl.appendChild(pill);
-      } else if(p) subjEl.appendChild(document.createTextNode(p));
-    });
-    document.getElementById('eT'+i).textContent='📅 '+DEMO_EMAILS[i].timing;
+  } catch(err){
+    document.getElementById('errBar').textContent='⚠ '+(err.message||'Something went wrong. Please retry.');
+    document.getElementById('errBar').style.display='block';
+    document.getElementById('resultsIdle').style.display='none';
+    [1,2,3,4].forEach(n=>setPT(n,''));
   }
-
-  await typeWriteTokens(document.getElementById('eB0'), DEMO_EMAILS[0].body, 7);
-  renderEmailBody(document.getElementById('eB1'), DEMO_EMAILS[1].body);
-  renderEmailBody(document.getElementById('eB2'), DEMO_EMAILS[2].body);
-  renderEmailBody(document.getElementById('eB3'), DEMO_EMAILS[3].body);
-
-  const badge = document.getElementById('refBadge');
-  const badgeName = document.getElementById('refBadgeName');
-  if(badge && badgeName){ badgeName.textContent='Nippon Steel Engineering India · Manufacturing'; badge.style.display='flex'; }
-
-  document.getElementById('sv3').textContent='4';
-  document.getElementById('sv4').textContent=rs.total;
-  setPT(4,'done');
-  document.getElementById('archPanel').classList.add('show');
-
-  pagerData = {
-    runName:'Manufacturing · CFO · India · Demo Run',
-    runDate: new Date().toLocaleDateString('en-IN',{day:'numeric',month:'long',year:'numeric'}),
-    config:{
-      currentProduct:'Unknown / Non-SAP', pitchProduct:'S/4HANA Public Cloud',
-      industries:S.industries.length?S.industries:['Manufacturing'],
-      segment:segKey, segmentLabel:segLbl, market:'India', marketFlag:'🇮🇳',
-      revenues:S.revenues.length?S.revenues:['₹150-299 Cr'],
-      personas:['CFO / Finance Head'], buyingStage:S.buyingStage||'cold',
-      pipelineStage:S.pipelineStage||'no_opportunity',
-      pipelineStageFull:'No Opportunity: account not yet in CRM.',
-      accountName:S.accountName||'', accountDomain:S.accountDomain||'',
-      senderName:S.senderName||'', senderTitle:S.senderTitle||'',
-      sources:srcs, displacementMessage:'Fragmented systems are creating visibility and integration gaps.',
-      objection:{label:'Implementation cost vs ROI', instruction:'Address total cost of ownership and ROI timeline.'},
-    },
-    topTalkingPoint:'Month-end close taking 12 days manually — a direct cost to forecast accuracy and audit readiness.',
-    displacementAngle:'Fragmented finance and operations systems create a visibility gap that compounds with every entity added.',
-    onePagerSummary:'Cold outreach targeting CFOs at India mid-market manufacturing companies running fragmented or non-SAP ERP. The sequence anchors on the 12-day close cycle problem, uses Nippon Steel Engineering India as proof, and is designed to secure a 20-minute ops visibility assessment call.',
-    topPain:topPain,
-    insights:DEMO_INSIGHTS.slice(0,5),
-    ref:SAP_REFS.find(r=>r.company==='Nippon Steel Engineering India')||SAP_REFS[1],
-    emails:DEMO_EMAILS,
-    emailCount:4,
-    metadata:{ triggerId:null, triggerName:null, effectiveWeight:1.0, marketPenetration:0, aqiBand:null, riskScore:null, pipelineStage:'no_opportunity', buyingStage:'cold', runId:'demo_run', generatedAt:new Date().toISOString() },
-  };
 
   running=false;
   document.getElementById('mainRunBtn').disabled=false;
   document.getElementById('rerunBtn').disabled=false;
-  return; // skip original API pipeline below
-  // ── END PRE-BAKED DEMO ──────────────────────────────────────────────
 }
 
 async function rerunPipeline(){
@@ -3231,92 +3297,6 @@ function copyEmail(n){
 // ─── UTIL ─────────────────────────────────────────────────────────────
 function x(s){if(!s)return '';return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
 
-// ─── DEMO PRE-FILL ────────────────────────────────────────────────────
-// Pre-selects all wizard inputs on page load so the demo looks ready to run.
-// The user sees a fully configured wizard and just hits Run.
-(function prefillDemo(){
-  // Step 1: Product — Unknown/Non-SAP current, S/4HANA Public Cloud pitch
-  S.currentProduct = 'Unknown / Non-SAP';
-  S.pitchProduct   = 'S/4HANA Public Cloud';
-  S.buyingStage    = 'cold';
-  S.pipelineStage  = 'no_opportunity';
-  S.accountName    = 'Mahindra Logistics';
-  S.accountDomain  = 'mahindralogistics.com';
-  S.senderName     = 'Priya Sharma';
-  S.senderTitle    = 'Enterprise Account Executive';
-
-  // Update input fields
-  const setVal = (id, val) => { const el = document.getElementById(id); if(el) el.value = val; };
-  setVal('accountName',   S.accountName);
-  setVal('accountDomain', S.accountDomain);
-  setVal('senderName',    S.senderName);
-  setVal('senderTitle',   S.senderTitle);
-  setVal('buyingStage',   S.buyingStage);
-  setVal('pipelineStage', S.pipelineStage);
-
-  // Highlight selected product cards after DOM ready
-  setTimeout(() => {
-    // Current product
-    document.querySelectorAll('#currentProductGrid .choice-card').forEach(c => {
-      if(c.querySelector('.cc-label')?.textContent?.includes('Unknown')) c.classList.add('selected');
-    });
-    // Pitch product
-    document.querySelectorAll('#pitchProductGrid .choice-card').forEach(c => {
-      if(c.querySelector('.cc-label')?.textContent?.includes('Public')) c.classList.add('selected');
-    });
-    document.getElementById('next1')?.classList.add('ready');
-
-    // Step 2: Industry — Manufacturing
-    S.industries = ['Manufacturing'];
-    document.querySelectorAll('#screen2 .choice-card').forEach(c => {
-      if(c.querySelector('.cc-label')?.textContent?.includes('Manufacturing')) {
-        c.classList.add('selected');
-      }
-    });
-    document.getElementById('next2')?.classList.add('ready');
-
-    // Step 3: Segment — Mid-Market
-    S.segment = 'midmarket';
-    document.querySelectorAll('#screen3 .choice-card').forEach(c => {
-      if(c.querySelector('.cc-label')?.textContent?.includes('Mid-Market')) c.classList.add('selected');
-    });
-    document.getElementById('next3')?.classList.add('ready');
-
-    // Step 4: Market — India
-    S.market = 'india';
-    document.querySelectorAll('#screen4 .choice-card').forEach(c => {
-      if(c.querySelector('.cc-label')?.textContent === 'India') c.classList.add('selected');
-    });
-    document.getElementById('next4')?.classList.add('ready');
-
-    // Step 5: Revenue — ₹150-299 Cr (built dynamically, trigger after market set)
-    S.revenues = ['₹150-299 Cr'];
-
-    // Step 6: Persona — CFO / Finance Head
-    S.personas = ['CFO / Finance Head'];
-    document.querySelectorAll('#screen6 .choice-card').forEach(c => {
-      if(c.querySelector('.cc-label')?.textContent?.includes('CFO')) c.classList.add('selected');
-    });
-    document.getElementById('next6')?.classList.add('ready');
-
-    // Step 7: Sources — all India mid-market sources
-    S.selectedSources = [...(MARKETS['india'].sources['midmarket'])];
-    document.getElementById('next7')?.classList.add('ready');
-
-    // Mark wizard steps 1-7 as done visually
-    for(let i=1;i<=7;i++){
-      const ws = document.getElementById('ws'+i);
-      if(ws){ ws.classList.remove('active'); ws.classList.add('done'); }
-    }
-    // Set step 8 as active
-    const ws8 = document.getElementById('ws8');
-    if(ws8){ ws8.classList.add('active'); }
-
-    // Jump to step 8 (Run screen) with summary pills
-    showScreen(8);
-
-  }, 100);
-})();
 </script>
 </body>
 </html>
