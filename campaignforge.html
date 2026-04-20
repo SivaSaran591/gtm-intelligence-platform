@@ -2151,20 +2151,23 @@ function setPT(n,state){
 }
 
 // ─── API ─────────────────────────────────────────────────────────────
+const GEMINI_KEY = 'AIzaSyBLbRfOaNIa8gZ7xEL61NHAe6bUajwN-rQ';
+const GEMINI_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_KEY}`;
+
 async function claude(prompt, sys, attempt=0){
-  const r = await fetch('https://api.anthropic.com/v1/messages',{
-    method:'POST',
-    headers:{'Content-Type':'application/json','x-api-key':'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','anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
-    body:JSON.stringify({
-      model:'claude-sonnet-4-20250514',
-      max_tokens:3000,
-      system: sys||'You are a precise B2B GTM analyst. Respond ONLY in valid JSON. No markdown. No preamble. No extra text.',
-      messages:[{role:'user',content:prompt}],
+  const systemText = sys || 'You are a precise B2B GTM analyst. Respond ONLY in valid JSON. No markdown. No preamble. No extra text.';
+  const r = await fetch(GEMINI_URL, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      system_instruction: { parts: [{ text: systemText }] },
+      contents: [{ role: 'user', parts: [{ text: prompt }] }],
+      generationConfig: { maxOutputTokens: 3000, temperature: 0.7 },
     }),
   });
 
-  // Retry on overload (529) or server errors (500, 503) — up to 4 attempts
-  if((r.status===529||r.status===500||r.status===503) && attempt < 4){
+  // Retry on overload or server errors — up to 4 attempts
+  if((r.status===429||r.status===500||r.status===503) && attempt < 4){
     const wait = [4000,8000,16000,30000][attempt];
     const bar = document.getElementById('errBar');
     if(bar){
@@ -2181,10 +2184,10 @@ async function claude(prompt, sys, attempt=0){
 
   if(!r.ok){
     const e = await r.json().catch(()=>({}));
-    throw new Error(e?.error?.message||'API error '+r.status);
+    throw new Error(e?.error?.message || 'Gemini API error '+r.status);
   }
   const d = await r.json();
-  return d.content[0].text;
+  return d.candidates?.[0]?.content?.parts?.[0]?.text || '';
 }
 
 function parseJ(raw){return JSON.parse(raw.replace(/```json|```/g,'').trim());}
@@ -2886,18 +2889,17 @@ Write a complete Node.js script, execute it, and return ONLY the base64 string o
 Return format: {"base64": "<base64string>", "filename": "<runname>.docx"}
 No markdown. No explanation. Just valid JSON.`;
 
-    const response = await fetch('https://api.anthropic.com/v1/messages', {
+    const response = await fetch(GEMINI_URL, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'x-api-key': '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', 'anthropic-version': '2023-06-01', 'anthropic-dangerous-direct-browser-access': 'true' },
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        model: 'claude-sonnet-4-20250514',
-        max_tokens: 4000,
-        messages: [{ role: 'user', content: prompt }],
+        contents: [{ role: 'user', parts: [{ text: prompt }] }],
+        generationConfig: { maxOutputTokens: 4000, temperature: 0.7 },
       }),
     });
 
     const data = await response.json();
-    const text = (data.content?.[0]?.text || '').trim();
+    const text = (data.candidates?.[0]?.content?.parts?.[0]?.text || '').trim();
 
     // Try to parse base64 response
     let parsed;
